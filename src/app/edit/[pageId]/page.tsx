@@ -17,7 +17,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileEditor, profileSchema } from '@/components/profile-editor';
 import { AddContentDialog } from '@/components/add-content-dialog';
-import { LinkEditor } from '@/components/link-editor';
+import { LinkEditor, linkSchema as linkEditorSchema } from '@/components/link-editor';
 import { hexToHsl, getContrastColor } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserNav } from '@/components/user-nav';
@@ -43,12 +43,6 @@ const initialAppearance: AppearanceSettings = {
   borderColor: '#e5e7eb',
 };
 
-const linkEditorSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  url: z.string().url('Please enter a valid URL'),
-  colSpan: z.number().min(1).max(4).default(1),
-  rowSpan: z.number().min(1).max(2).default(1),
-});
 
 export default function EditPage() {
   const params = useParams();
@@ -125,22 +119,17 @@ export default function EditPage() {
     closeSheet();
   };
 
-  const handleSaveLink = (data: z.infer<typeof linkEditorSchema>, thumbnailUrl?: string) => {
+  const handleSaveLink = (data: z.infer<typeof linkEditorSchema>) => {
     if (!linksRef || !pageId) return;
     if (sheetState.open && sheetState.view === 'editLink') {
       const linkRef = doc(linksRef, sheetState.link.id);
-      const dataToSave: Partial<LinkType> = {...data};
-      if (thumbnailUrl) {
-          dataToSave.thumbnailUrl = thumbnailUrl;
-          dataToSave.thumbnailHint = 'website meta image';
-      }
-      setDocumentNonBlocking(linkRef, dataToSave, { merge: true });
+      setDocumentNonBlocking(linkRef, data, { merge: true });
     } else {
       const randomImage = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)];
       const newLinkData = {
         ...data,
-        thumbnailUrl: thumbnailUrl || randomImage.imageUrl,
-        thumbnailHint: thumbnailUrl ? 'website meta image' : randomImage.imageHint,
+        thumbnailUrl: data.thumbnailUrl || randomImage.imageUrl,
+        thumbnailHint: data.thumbnailUrl ? 'custom image' : randomImage.imageHint,
         pageId: pageId,
         orderIndex: (links?.length || 0) + 1,
       };

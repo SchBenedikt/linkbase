@@ -2,17 +2,17 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link as LinkIcon, Music } from 'lucide-react';
+import { Link as LinkIcon, Music, Youtube } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import type { z } from 'zod';
 
 interface AddContentDialogProps {
-  onSave: (data: z.infer<typeof linkSchema>, thumbnailUrl?: string) => void;
+  onSave: (data: z.infer<typeof linkSchema>) => void;
   onCancel: () => void;
 }
 
 export function AddContentDialog({ onSave, onCancel }: AddContentDialogProps) {
-  const [contentType, setContentType] = useState<'link' | 'spotify' | null>(null);
+  const [contentType, setContentType] = useState<'link' | 'spotify' | 'youtube' | null>(null);
 
   const handleBack = () => setContentType(null);
 
@@ -40,6 +40,13 @@ export function AddContentDialog({ onSave, onCancel }: AddContentDialogProps) {
         <div className="text-left">
             <p>Spotify Track</p>
             <p className="text-sm font-normal text-muted-foreground">Embed a song from Spotify.</p>
+        </div>
+      </Button>
+       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('youtube')}>
+        <Youtube className="mr-4 h-8 w-8" />
+        <div className="text-left">
+            <p>YouTube Video</p>
+            <p className="text-sm font-normal text-muted-foreground">Embed a video from YouTube.</p>
         </div>
       </Button>
       <div className="mt-4 flex justify-end">

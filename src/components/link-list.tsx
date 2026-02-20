@@ -10,6 +10,7 @@ import type { Link, AppearanceSettings } from '@/lib/types';
 import { LinkCard } from './link-card';
 import { Button } from './ui/button';
 import { SpotifyLinkCard } from './spotify-link-card';
+import { YoutubeLinkCard } from './youtube-link-card';
 
 // Sortable Item Wrapper
 function SortableLinkItem(props: {
@@ -34,22 +35,20 @@ function SortableLinkItem(props: {
   };
 
   const isSpotifyTrack = /open\.spotify\.com\/.*\/track\//.test(props.link.url);
+  const isYoutubeVideo = /(?:youtube\.com|youtu\.be)/.test(props.link.url);
+
+  let CardComponent: React.ReactNode;
+  if (isSpotifyTrack) {
+     CardComponent = <SpotifyLinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+  } else if (isYoutubeVideo) {
+    CardComponent = <YoutubeLinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+  } else {
+    CardComponent = <LinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+  }
 
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
-      {isSpotifyTrack ? (
-        <SpotifyLinkCard
-          {...props}
-          isEditable={true}
-          dragHandleListeners={listeners}
-        />
-      ) : (
-        <LinkCard
-          {...props}
-          isEditable={true}
-          dragHandleListeners={listeners}
-        />
-      )}
+      {CardComponent}
     </div>
   );
 }
@@ -125,26 +124,25 @@ export function LinkList({
     <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[10rem] gap-4">
       {sortedLinks.map((link) => {
         const isSpotifyTrack = /open\.spotify\.com\/.*\/track\//.test(link.url);
+        const isYoutubeVideo = /(?:youtube\.com|youtu\.be)/.test(link.url);
+
         const style: React.CSSProperties = {
             gridColumn: `span ${link.colSpan || 1}`,
             gridRow: `span ${link.rowSpan || 1}`,
         };
+        
+        let CardComponent: React.ReactNode;
+        if (isSpotifyTrack) {
+            CardComponent = <SpotifyLinkCard link={link} appearance={appearance} isEditable={false} />;
+        } else if (isYoutubeVideo) {
+            CardComponent = <YoutubeLinkCard link={link} appearance={appearance} isEditable={false} />;
+        } else {
+            CardComponent = <LinkCard link={link} appearance={appearance} isEditable={false} />;
+        }
 
         return (
           <div key={link.id} style={style}>
-            {isSpotifyTrack ? (
-              <SpotifyLinkCard
-                link={link}
-                appearance={appearance}
-                isEditable={false}
-              />
-            ) : (
-              <LinkCard
-                link={link}
-                appearance={appearance}
-                isEditable={false}
-              />
-            )}
+            {CardComponent}
           </div>
         );
       })}

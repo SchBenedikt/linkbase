@@ -16,15 +16,16 @@ import { useToast } from '@/hooks/use-toast';
 export const linkSchema = z.object({
   title: z.string().min(1, 'Title is required').optional(),
   url: z.string().url('Please enter a valid URL'),
+  thumbnailUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
   colSpan: z.number().min(1).max(4).default(1),
   rowSpan: z.number().min(1).max(2).default(1),
 });
 
 interface LinkEditorProps {
   link?: Link | null; // if null, it's a new link
-  onSave: (data: z.infer<typeof linkSchema>, thumbnailUrl?: string) => void;
+  onSave: (data: z.infer<typeof linkSchema>) => void;
   onCancel: () => void;
-  mode?: 'link' | 'spotify';
+  mode?: 'link' | 'spotify' | 'youtube';
 }
 
 export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditorProps) {
@@ -33,14 +34,14 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
     defaultValues: {
       title: link?.title || '',
       url: link?.url || '',
-      colSpan: link?.colSpan || (mode === 'spotify' ? 4 : 1),
-      rowSpan: link?.rowSpan || 1,
+      thumbnailUrl: link?.thumbnailUrl || '',
+      colSpan: link?.colSpan || (mode === 'spotify' ? 4 : (mode === 'youtube' ? 2 : 1)),
+      rowSpan: link?.rowSpan || (mode === 'youtube' ? 2 : 1),
     },
   });
 
   const { toast } = useToast();
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
-  const [fetchedThumbnailUrl, setFetchedThumbnailUrl] = useState<string | undefined>(link?.thumbnailUrl);
 
   const handleFetchMeta = async () => {
     const url = form.getValues('url');
@@ -53,10 +54,10 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
       return;
     }
     
-    if (/open\.spotify\.com/.test(url)) {
+    if (/open\.spotify\.com/.test(url) || /youtube\.com|youtu\.be/.test(url)) {
         toast({
-            title: 'Spotify Link Detected',
-            description: "The link will be displayed as an interactive music embed.",
+            title: 'Special Link Detected',
+            description: "This link will be displayed as an interactive embed.",
         });
         return;
     }
@@ -73,7 +74,7 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
         }
       }
       if (result.imageUrl) {
-        setFetchedThumbnailUrl(result.imageUrl);
+        form.setValue('thumbnailUrl', result.imageUrl, { shouldValidate: true });
         if (!toastShown) {
             toast({ title: 'Metadata fetched successfully!' });
             toastShown = true;
@@ -107,21 +108,20 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
   };
 
   const onSubmit = (data: z.infer<typeof linkSchema>) => {
-     // If it's a new spotify link, and title is empty, give it a default.
-    if (mode === 'spotify' && !link && !data.title) {
-        data.title = 'Spotify Track';
+    let finalTitle = data.title;
+    if (!link && !data.title) {
+        if (mode === 'spotify') finalTitle = 'Spotify Track';
+        else if (mode === 'youtube') finalTitle = 'YouTube Video';
+        else finalTitle = 'Untitled Link';
     }
-    const finalData = {
-        ...data,
-        title: data.title || (mode === 'link' ? 'Untitled Link' : 'Spotify Track'),
-    }
-    onSave(finalData, fetchedThumbnailUrl);
+    onSave({ ...data, title: finalTitle });
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-1">
         {mode === 'link' && (
+          <>
             <FormField
             control={form.control}
             name="title"
@@ -135,6 +135,21 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
                 </FormItem>
             )}
             />
+            <FormField
+              control={form.control}
+              name="thumbnailUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Thumbnail URL</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://images.unsplash.com/..." {...field} />
+                  </FormControl>
+                  <FormDescription>Optional. Will be fetched automatically for many sites.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
         )}
         <FormField
           control={form.control}
@@ -144,7 +159,11 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
               <FormLabel>URL</FormLabel>
               <div className="flex items-center gap-2">
                 <FormControl>
-                  <Input placeholder={mode === 'spotify' ? "https://open.spotify.com/track/..." : "https://example.com"} {...field} />
+                  <Input placeholder={
+                    mode === 'spotify' ? "https://open.spotify.com/track/..." 
+                    : mode === 'youtube' ? "https://www.youtube.com/watch?v=..."
+                    : "https://example.com"
+                  } {...field} />
                 </FormControl>
                 {mode === 'link' && (
                     <Button type="button" variant="outline" size="icon" onClick={handleFetchMeta} disabled={isFetchingMeta} aria-label="Fetch website metadata">
@@ -155,7 +174,7 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
               <FormDescription>
                 {mode === 'link' 
                   ? "Enter a URL and click the magic button to fetch its title and image."
-                  : "Paste the URL of the Spotify track you want to embed."
+                  : `Paste the URL of the ${mode} content you want to embed.`
                 }
                 </FormDescription>
               <FormMessage />
