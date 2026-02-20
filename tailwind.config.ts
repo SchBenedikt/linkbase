@@ -91,12 +91,17 @@ export default {
         'gradient': {
           '0%, 100%': { backgroundPosition: '0% 50%' },
           '50%': { backgroundPosition: '100% 50%' },
-        }
+        },
+        'marquee': {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(calc(-100% - 1.5rem))' }, // 1.5rem is the gap
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'gradient': 'gradient 10s ease infinite',
+        'marquee': 'marquee 50s linear infinite',
       },
       backgroundSize: {
         '200%': '200% auto',

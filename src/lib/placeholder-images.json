@@ -35,6 +35,54 @@
       "description": "Image of founders of a small business.",
       "imageUrl": "https://images.unsplash.com/photo-1681949101473-9aea8b928a55?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmb3VuZGVycyUyMGJ1c2luZXNzfGVufDB8fHx8MTc3MTU3NzkzNXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "founders business"
+    },
+    {
+      "id": "marquee-1",
+      "description": "Portrait of a woman with creative makeup",
+      "imageUrl": "https://images.unsplash.com/photo-1596779350130-353c7c0df61f?w=400&q=80",
+      "imageHint": "creative portrait"
+    },
+    {
+      "id": "marquee-2",
+      "description": "Abstract pink and blue circular logo",
+      "imageUrl": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&q=80",
+      "imageHint": "abstract logo"
+    },
+    {
+      "id": "marquee-3",
+      "description": "Portrait of a musician",
+      "imageUrl": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&q=80",
+      "imageHint": "musician portrait"
+    },
+    {
+      "id": "marquee-4",
+      "description": "A square logo with geometric shapes",
+      "imageUrl": "https://images.unsplash.com/photo-1611162618071-b39a2ec055fb?w=400&q=80",
+      "imageHint": "geometric logo"
+    },
+    {
+      "id": "marquee-5",
+      "description": "Portrait of a smiling person",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
+      "imageHint": "person smiling"
+    },
+    {
+      "id": "marquee-6",
+      "description": "A vibrant and colorful abstract shape",
+      "imageUrl": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400&q=80",
+      "imageHint": "vibrant abstract"
+    },
+    {
+      "id": "marquee-7",
+      "description": "Portrait of an athlete",
+      "imageUrl": "https://images.unsplash.com/photo-1541534401786-204b884024b5?w=400&q=80",
+      "imageHint": "athlete portrait"
+    },
+    {
+      "id": "marquee-8",
+      "description": "A simple black and white logo",
+      "imageUrl": "https://images.unsplash.com/photo-1612810806995-56a1b8c1f9a2?w=400&q=80",
+      "imageHint": "minimalist logo"
     }
   ]
 }
