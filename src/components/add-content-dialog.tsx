@@ -2,14 +2,15 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link as LinkIcon, Music, Youtube, BookText } from 'lucide-react';
+import { Link as LinkIcon, Music, Youtube, BookText, Newspaper } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
+import { ArticleEditor, articleSchema } from './article-editor';
 import type { z } from 'zod';
 import type { Link } from '@/lib/types';
 
 
-type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema>) & { type: Link['type'] };
+type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema>) & { type: Link['type'] };
 
 interface AddContentDialogProps {
   onSave: (data: ContentFormData) => void;
@@ -18,11 +19,11 @@ interface AddContentDialogProps {
 }
 
 export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContentDialogProps) {
-  const [contentType, setContentType] = useState<'link' | 'spotify' | 'youtube' | 'text' | null>(contentToEdit?.type || null);
+  const [contentType, setContentType] = useState<'link' | 'spotify' | 'youtube' | 'text' | 'article' | null>(contentToEdit?.type || null);
 
   const handleBack = () => setContentType(null);
   
-  const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema>, type: Link['type']) => {
+  const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema>, type: Link['type']) => {
     onSave({ ...data, type });
   };
 
@@ -31,6 +32,9 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
      if (contentToEdit.type === 'text') {
         return <TextEditor onSave={(data) => handleSave(data, 'text')} onCancel={onCancel} content={contentToEdit} />;
     }
+    if (contentToEdit.type === 'article') {
+        return <ArticleEditor onSave={(data) => handleSave(data, 'article')} onCancel={onCancel} article={contentToEdit} />;
+    }
     return <LinkEditor onSave={(data) => handleSave(data, contentToEdit.type)} onCancel={onCancel} mode={contentToEdit.type} link={contentToEdit} />;
   }
 
@@ -38,6 +42,9 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
   if (contentType) {
     if (contentType === 'text') {
         return <TextEditor onSave={(data) => handleSave(data, 'text')} onCancel={handleBack} />;
+    }
+    if (contentType === 'article') {
+        return <ArticleEditor onSave={(data) => handleSave(data, 'article')} onCancel={handleBack} />;
     }
     // link, spotify, youtube
     return (
@@ -64,6 +71,13 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
         <div className="text-left">
             <p>Text Block</p>
             <p className="text-sm font-normal text-muted-foreground">Add a title and some text.</p>
+        </div>
+      </Button>
+      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('article')}>
+        <Newspaper className="mr-4 h-8 w-8" />
+        <div className="text-left">
+            <p>Article Link</p>
+            <p className="text-sm font-normal text-muted-foreground">Feature an article with metadata.</p>
         </div>
       </Button>
       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('spotify')}>

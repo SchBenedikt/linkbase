@@ -12,6 +12,7 @@ import { Button } from './ui/button';
 import { SpotifyLinkCard } from './spotify-link-card';
 import { YoutubeLinkCard } from './youtube-link-card';
 import { TextCard } from './text-card';
+import { ArticleCard } from './article-card';
 
 // Sortable Item Wrapper
 function SortableLinkItem(props: {
@@ -54,6 +55,9 @@ function SortableLinkItem(props: {
       break;
     case 'youtube':
       CardComponent = <YoutubeLinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+      break;
+    case 'article':
+      CardComponent = <ArticleCard {...props} isEditable={true} dragHandleListeners={listeners} />;
       break;
     default:
       CardComponent = <LinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
@@ -160,6 +164,9 @@ export function LinkList({
                 break;
             case 'youtube':
                 CardComponent = <YoutubeLinkCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'article':
+                CardComponent = <ArticleCard link={link} appearance={appearance} isEditable={false} />;
                 break;
             default:
                 CardComponent = <LinkCard link={link} appearance={appearance} isEditable={false} />;

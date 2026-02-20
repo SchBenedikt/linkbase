@@ -3,7 +3,7 @@ export type Link = {
   pageId: string;
   orderIndex: number;
   title: string;
-  type: 'link' | 'text' | 'spotify' | 'youtube';
+  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article';
   colSpan?: number;
   rowSpan?: number;
   content?: string; // For text cards
@@ -11,6 +11,10 @@ export type Link = {
   thumbnailUrl?: string;
   thumbnailHint?: string;
   hasTransparentBackground?: boolean;
+  // New fields for articles
+  excerpt?: string;
+  readingTime?: string;
+  publicationDate?: string;
 };
 
 export type Page = {
