@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { doc, getDoc, collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { useFirestore, initializeFirebase } from '@/firebase';
 import type { Page, Link as LinkType, SlugLookup, AppearanceSettings } from '@/lib/types';
@@ -24,8 +23,7 @@ const initialAppearance: AppearanceSettings = {
 };
 
 export default function PublicPage({ params }: { params: { slug: string } }) {
-    const resolvedParams = use(Promise.resolve(params));
-    const { slug } = resolvedParams;
+    const { slug } = params;
     // We can't use the useFirestore hook here as this component isn't inside the provider tree by default.
     // So we initialize a temporary instance. This is safe.
     const { firestore } = initializeFirebase();
