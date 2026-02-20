@@ -19,35 +19,15 @@ export default function BlogDashboardPage() {
     const firestore = useFirestore();
     const router = useRouter();
 
-    // Query for draft posts
-    const draftPostsQuery = useMemoFirebase(() =>
-        user ? query(collection(firestore, 'posts'), where('ownerId', '==', user.uid), where('status', '==', 'draft'), orderBy('createdAt', 'desc')) : null,
+    // Single query for all posts by the user, sorted by creation date.
+    // This query is simple enough that it doesn't require a custom composite index.
+    const postsQuery = useMemoFirebase(() =>
+        user ? query(collection(firestore, 'posts'), where('ownerId', '==', user.uid), orderBy('createdAt', 'desc')) : null,
         [user, firestore]
     );
-    const { data: draftPosts, isLoading: areDraftsLoading } = useCollection<Post>(draftPostsQuery);
 
-    // Query for published posts
-    const publishedPostsQuery = useMemoFirebase(() =>
-        user ? query(collection(firestore, 'posts'), where('ownerId', '==', user.uid), where('status', '==', 'published'), orderBy('createdAt', 'desc')) : null,
-        [user, firestore]
-    );
-    const { data: publishedPosts, isLoading: arePublishedLoading } = useCollection<Post>(publishedPostsQuery);
-
-    const arePostsLoading = areDraftsLoading || arePublishedLoading;
-
-    // Merge and sort posts
-    const posts = useMemo(() => {
-        if (!draftPosts && !publishedPosts) {
-            return [];
-        }
-        const allPosts = [...(draftPosts || []), ...(publishedPosts || [])];
-        allPosts.sort((a, b) => {
-            const dateA = a.createdAt?.toDate()?.getTime() || 0;
-            const dateB = b.createdAt?.toDate()?.getTime() || 0;
-            return dateB - dateA;
-        });
-        return allPosts;
-    }, [draftPosts, publishedPosts]);
+    // Fetch all posts (drafts and published) with one hook.
+    const { data: posts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
 
     if (isUserLoading || arePostsLoading) {
         return (
@@ -101,7 +81,7 @@ export default function BlogDashboardPage() {
                                     <div>
                                         <CardTitle className="text-2xl font-bold">{post.title}</CardTitle>
                                         <CardDescription className="pt-2">
-                                            {post.createdAt ? format(post.createdAt.toDate(), 'PPP') : '...'}
+                                            {post.createdAt?.toDate ? format(post.createdAt.toDate(), 'PPP') : '...'}
                                         </CardDescription>
                                     </div>
                                     <Badge variant={post.status === 'published' ? 'default' : 'secondary'} className="capitalize">
