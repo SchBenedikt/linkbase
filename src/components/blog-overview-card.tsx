@@ -25,19 +25,20 @@ interface BlogOverviewCardProps {
 export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, isEditable = false, dragHandleListeners }: BlogOverviewCardProps) {
   const firestore = useFirestore();
   
-  // Fetch all published posts. This avoids needing a composite index on (ownerId, status).
+  // IMPORTANT: Only run the query on the public page (when not editable).
+  // In the editor, we just show a placeholder, so no data fetching is needed.
   const postsQuery = useMemoFirebase(() =>
-    firestore ? query(
+    (!isEditable && firestore) ? query(
         collection(firestore, 'posts'),
         where('status', '==', 'published')
     ) : null,
-    [firestore]
+    [isEditable, firestore]
   );
   const { data: allPublishedPosts, isLoading } = useCollection<Post>(postsQuery);
 
-  // On the client, filter by ownerId, sort by date, and take the top 5.
+  // On the client (for the public page), filter all published posts to find the ones for this specific owner.
   const posts = useMemo(() => {
-    if (!allPublishedPosts || !ownerId) return [];
+    if (isEditable || !allPublishedPosts || !ownerId) return [];
     return allPublishedPosts
       .filter(p => p.ownerId === ownerId)
       .sort((a, b) => {
@@ -46,7 +47,7 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
         return dateB - dateA; // Sort descending
       })
       .slice(0, 5);
-  }, [allPublishedPosts, ownerId]);
+  }, [isEditable, allPublishedPosts, ownerId]);
 
   const cardStyle: React.CSSProperties = {
     borderWidth: `${appearance.borderWidth || 0}px`,
@@ -68,6 +69,7 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
   };
   
   if (isEditable) {
+    // In the editor, show a static placeholder to prevent crashes and unnecessary data loads.
     return (
       <Card 
           className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card flex flex-col w-full h-full p-5"
@@ -78,14 +80,14 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
           </CardHeader>
           <CardContent className="p-0 flex-grow">
                <div className="space-y-3">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-5 w-1/2" />
-                  <Skeleton className="h-5 w-2/3" />
+                  <Skeleton className="h-5 w-3/4 bg-foreground/20" />
+                  <Skeleton className="h-5 w-1/2 bg-foreground/20" />
+                  <Skeleton className="h-5 w-2/3 bg-foreground/20" />
               </div>
-              <p className="text-sm mt-4" style={textMutedStyle}>Live posts will be shown here.</p>
+              <p className="text-sm mt-4" style={textMutedStyle}>Your latest blog posts will be shown here on your public page.</p>
           </CardContent>
 
-          {isEditable && onEdit && onDelete && (
+          {onEdit && onDelete && (
               <div className="absolute top-2 right-2 z-20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button variant="ghost" size="icon" className="h-9 w-9 cursor-grab bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Reorder link" {...dragHandleListeners}>
                       <GripVertical className="h-5 w-5" />
@@ -114,6 +116,7 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
     )
   }
 
+  // This is the public view. It uses the data fetched by the hook.
   return (
     <Card 
         className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card flex flex-col w-full h-full p-5"
@@ -125,9 +128,9 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
         <CardContent className="p-0 flex-grow">
             {isLoading && (
                 <div className="space-y-3">
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-5 w-1/2" />
-                    <Skeleton className="h-5 w-2/3" />
+                    <Skeleton className="h-5 w-3/4 bg-foreground/20" />
+                    <Skeleton className="h-5 w-1/2 bg-foreground/20" />
+                    <Skeleton className="h-5 w-2/3 bg-foreground/20" />
                 </div>
             )}
             {posts && posts.length > 0 && !isLoading && (
