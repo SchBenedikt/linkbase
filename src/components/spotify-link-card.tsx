@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { MoreVertical, Trash2, Edit, GripVertical } from 'lucide-react';
 import type { Link, AppearanceSettings } from '@/lib/types';
 import { Card } from './ui/card';
@@ -18,7 +17,6 @@ interface SpotifyLinkCardProps {
 }
 
 export function SpotifyLinkCard({ link, onEdit, onDelete, isEditable = false, appearance, dragHandleListeners }: SpotifyLinkCardProps) {
-    // Regex to find track ID from various Spotify URL formats
     const match = link.url.match(/track\/([a-zA-Z0-9]+)/);
     const trackId = match ? match[1] : null;
 
@@ -43,6 +41,7 @@ export function SpotifyLinkCard({ link, onEdit, onDelete, isEditable = false, ap
         borderColor: appearance.borderColor,
         borderStyle: appearance.borderWidth ? 'solid' : 'none',
         backgroundColor: appearance.cardColor,
+        display: 'flex',
     };
 
      if (!appearance.borderWidth) {
@@ -51,34 +50,20 @@ export function SpotifyLinkCard({ link, onEdit, onDelete, isEditable = false, ap
 
     return (
         <Card
-            className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card flex flex-col w-full h-full"
+            className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card w-full h-full"
             style={cardStyle}
         >
-            <div className="flex flex-col h-full">
-                 <div className="z-10 p-3 pb-0 flex-shrink-0">
-                     <iframe
-                        src={embedUrl}
-                        width="100%"
-                        height="80"
-                        frameBorder="0"
-                        allowFullScreen={false}
-                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                        loading="lazy"
-                        className="rounded-lg"
-                    ></iframe>
-                </div>
-
-                <div className="relative flex-grow -mt-3">
-                    <Image
-                        src={link.thumbnailUrl}
-                        alt={link.title}
-                        data-ai-hint={link.thumbnailHint}
-                        fill
-                        sizes="(max-width: 640px) 100vw, 640px"
-                        className="object-cover"
-                    />
-                </div>
-            </div>
+            <iframe
+                title={`Spotify Embed: ${link.title}`}
+                src={embedUrl}
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                allowFullScreen={false}
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                className="flex-grow"
+            ></iframe>
 
             {isEditable && onEdit && onDelete && (
                  <div className="absolute top-2 right-2 z-20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
