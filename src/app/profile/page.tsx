@@ -1,20 +1,25 @@
 'use client';
 
-import { collection, query, where, doc, setDoc } from 'firebase/firestore';
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
+import { useState } from 'react';
+import { collection, query, where, doc, setDoc, getDocs } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PlusCircle, Link as LinkIcon, Edit, Eye, ArrowRight } from 'lucide-react';
+import { PlusCircle, Link as LinkIcon, Edit, Eye, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import type { Page } from '@/lib/types';
 import { UserNav } from '@/components/user-nav';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
 
 export default function DashboardPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
+
+    const [pageToDelete, setPageToDelete] = useState<Page | null>(null);
 
     const pagesQuery = useMemoFirebase(() =>
         user ? query(collection(firestore, 'pages'), where('ownerId', '==', user.uid)) : null,
@@ -52,6 +57,35 @@ export default function DashboardPage() {
             }
         } catch(e) {
             console.error("Error creating new page", e);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!pageToDelete || !firestore) return;
+
+        try {
+            // 1. Delete all links in the subcollection
+            const linksQuery = query(collection(firestore, 'pages', pageToDelete.id, 'links'));
+            const linksSnapshot = await getDocs(linksQuery);
+            linksSnapshot.forEach(linkDoc => {
+                deleteDocumentNonBlocking(linkDoc.ref);
+            });
+
+            // 2. Delete the slug lookup
+            if (pageToDelete.slug) {
+                const slugRef = doc(firestore, 'slug_lookups', pageToDelete.slug);
+                deleteDocumentNonBlocking(slugRef);
+            }
+
+            // 3. Delete the page itself
+            const pageRef = doc(firestore, 'pages', pageToDelete.id);
+            deleteDocumentNonBlocking(pageRef);
+
+        } catch (error) {
+            console.error("Error deleting page:", error);
+            // Optionally, show a toast notification for the error
+        } finally {
+            setPageToDelete(null); // Close the dialog
         }
     };
     
@@ -110,13 +144,20 @@ export default function DashboardPage() {
                                         biobloom.co/{page.slug} <Eye className="h-4 w-4" />
                                     </Link>
                                 </CardDescription>
-                                <CardFooter className="flex justify-between">
-                                    <p className="text-sm text-muted-foreground">{page.bio || 'Keine Beschreibung.'}</p>
-                                    <Button asChild>
-                                        <Link href={`/edit/${page.id}`}>
-                                            Bearbeiten <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Link>
-                                    </Button>
+                                <CardFooter className="flex justify-between items-center">
+                                    <p className="text-sm text-muted-foreground truncate pr-4">{page.bio || 'Keine Beschreibung.'}</p>
+                                    <div className="flex items-center gap-2 flex-shrink-0">
+                                        <Button asChild>
+                                            <Link href={`/edit/${page.id}`}>
+                                                <Edit className="mr-2 h-4 w-4" />
+                                                Bearbeiten
+                                            </Link>
+                                        </Button>
+                                        <Button variant="destructive" onClick={() => setPageToDelete(page)}>
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Löschen
+                                        </Button>
+                                    </div>
                                 </CardFooter>
                             </Card>
                         ))}
@@ -132,6 +173,20 @@ export default function DashboardPage() {
                     </div>
                 )}
             </main>
+            <AlertDialog open={!!pageToDelete} onOpenChange={(open) => !open && setPageToDelete(null)}>
+                <AlertDialogContent className="bg-[#f3f3f1]">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Sind Sie absolut sicher?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Diese Aktion kann nicht rückgängig gemacht werden. Dies wird die Seite "{pageToDelete?.displayName}" und alle zugehörigen Links dauerhaft löschen.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel onClick={() => setPageToDelete(null)}>Abbrechen</AlertDialogCancel>
+                    <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDelete}>Löschen</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
         </div>
     );
 }

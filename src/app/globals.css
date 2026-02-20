@@ -8,8 +8,8 @@ body {
 
 @layer base {
   :root {
-    --background: 84 78% 51%; /* Vibrant Lime Green */
-    --foreground: 240 10% 3.9%; /* Almost Black */
+    --background: 0 0% 98%;
+    --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;

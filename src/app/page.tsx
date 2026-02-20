@@ -165,8 +165,8 @@ export default function LandingPage() {
               </Card>
               <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-card shadow-lg hover:shadow-xl transition-shadow">
                 <div>
-                  <div className="p-2 bg-chart-2/10 rounded-full w-fit mb-4">
-                     <BarChart3 className="h-6 w-6 text-chart-2" />
+                  <div className="p-2 bg-chart-4/10 rounded-full w-fit mb-4">
+                     <BarChart3 className="h-6 w-6 text-chart-4" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Detaillierte Analysen</h3>
                   <p className="text-muted-foreground">Verstehe dein Publikum. Finde heraus, welche deiner Inhalte am besten ankommen, und optimiere deine Präsenz.</p>
