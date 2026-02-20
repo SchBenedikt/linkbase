@@ -114,12 +114,12 @@ export default function LandingPage() {
                  </div>
                  <div className="hidden md:block relative h-96">
                     {heroImage1 && (
-                        <div className="absolute top-0 right-0 w-64 h-72 rounded-3xl overflow-hidden transform rotate-6 translate-x-8">
+                        <div className="absolute top-0 right-0 w-64 h-72 rounded-3xl overflow-hidden transform rotate-6 translate-x-8 transition-transform duration-300 ease-in-out hover:scale-105 hover:rotate-3">
                              <Image src={heroImage1.imageUrl} alt={heroImage1.description} data-ai-hint={heroImage1.imageHint} fill sizes="256px" className="object-cover"/>
                         </div>
                     )}
                     {heroImage2 && (
-                        <div className="absolute bottom-0 left-0 w-48 h-56 rounded-3xl overflow-hidden transform -rotate-8 -translate-y-4">
+                        <div className="absolute bottom-0 left-0 w-48 h-56 rounded-3xl overflow-hidden transform -rotate-8 -translate-y-4 transition-transform duration-300 ease-in-out hover:scale-105 hover:-rotate-3">
                             <Image src={heroImage2.imageUrl} alt={heroImage2.description} data-ai-hint={heroImage2.imageHint} fill sizes="192px" className="object-cover"/>
                         </div>
                     )}
@@ -139,13 +139,13 @@ export default function LandingPage() {
 
 
         {/* New Bento Grid Section */}
-        <section className="py-16 sm:py-24 bg-[#e9c0e9] text-[#780c16]">
+        <section className="py-16 sm:py-24 bg-[#f3f3f1] text-[#780c16]">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
                 Eine Leinwand für deine digitale Welt
               </h2>
-              <p className="mt-4 text-lg sm:text-xl text-[#780c16]/80">
+              <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
                 BioBloom bietet dir alle Werkzeuge, um eine Seite zu gestalten, die so einzigartig ist wie du. Flexibel, leistungsstark und wunderschön.
               </p>
             </div>
@@ -181,13 +181,13 @@ export default function LandingPage() {
                   <p className="text-[#4c2f05]/80">Von Social Media über Projekte bis hin zu Shops – präsentiere alles, was dich ausmacht, an einem zentralen Ort.</p>
                 </div>
               </Card>
-              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-[#780c16] text-[#e9c0e9] rounded-3xl border-none shadow-none">
+              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-[#780c16] text-[#f3f3f1] rounded-3xl border-none shadow-none">
                 <div>
                   <div className="p-2 bg-white/10 rounded-full w-fit mb-4">
                      <BarChart3 className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Detaillierte Analysen</h3>
-                  <p className="text-[#e9c0e9]/80">Verstehe dein Publikum. Finde heraus, welche deiner Inhalte am besten ankommen, und optimiere deine Präsenz.</p>
+                  <p className="text-[#f3f3f1]/80">Verstehe dein Publikum. Finde heraus, welche deiner Inhalte am besten ankommen, und optimiere deine Präsenz.</p>
                 </div>
                 <Link href="/login" className="font-semibold inline-flex items-center gap-2 group">
                   Einblicke erhalten <MoveRight className="h-4 w-4" />
