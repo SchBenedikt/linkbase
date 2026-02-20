@@ -4,6 +4,7 @@ import { PlusCircle } from 'lucide-react';
 import type { Link, AppearanceSettings } from '@/lib/types';
 import { LinkCard } from './link-card';
 import { Button } from './ui/button';
+import { SpotifyLinkCard } from './spotify-link-card';
 
 interface LinkListProps {
   links: Link[];
@@ -17,16 +18,33 @@ interface LinkListProps {
 export function LinkList({ links, onAddLink, onEditLink, onDeleteLink, appearance, isEditable = false }: LinkListProps) {
   return (
     <div className="space-y-4">
-      {links.map((link) => (
-        <LinkCard
-          key={link.id}
-          link={link}
-          onEdit={onEditLink ? () => onEditLink(link) : undefined}
-          onDelete={onDeleteLink ? () => onDeleteLink(link) : undefined}
-          appearance={appearance}
-          isEditable={isEditable}
-        />
-      ))}
+      {links.map((link) => {
+        const isSpotifyTrack = link.url.includes('open.spotify.com/track/');
+
+        if (isSpotifyTrack) {
+          return (
+            <SpotifyLinkCard
+              key={link.id}
+              link={link}
+              onEdit={onEditLink ? () => onEditLink(link) : undefined}
+              onDelete={onDeleteLink ? () => onDeleteLink(link) : undefined}
+              isEditable={isEditable}
+              appearance={appearance}
+            />
+          );
+        }
+
+        return (
+          <LinkCard
+            key={link.id}
+            link={link}
+            onEdit={onEditLink ? () => onEditLink(link) : undefined}
+            onDelete={onDeleteLink ? () => onDeleteLink(link) : undefined}
+            appearance={appearance}
+            isEditable={isEditable}
+          />
+        );
+      })}
       {isEditable && onAddLink && (
         <Button variant="outline" className="w-full h-16 border-dashed hover:border-solid hover:bg-accent/20 transition-all duration-300" onClick={onAddLink}>
             <PlusCircle className="mr-2 h-5 w-5" />
