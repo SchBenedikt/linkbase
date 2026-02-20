@@ -9,16 +9,16 @@ import { ShareButton } from '@/components/share-button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const initialProfile: Profile = {
-  name: 'Alex Doe',
-  bio: 'Digital creator, photographer, and storyteller. Exploring the world one snapshot at a time.',
+  name: 'Jamie Doe',
+  bio: 'Creator, dreamer, and coffee enthusiast. Building my little corner of the internet.',
   avatarUrl: PlaceHolderImages.find(p => p.id === 'profile-avatar')?.imageUrl || '',
   avatarHint: PlaceHolderImages.find(p => p.id === 'profile-avatar')?.imageHint || '',
 };
 
 const initialLinks: Link[] = [
-  { id: '1', title: 'My Personal Portfolio', url: '#', thumbnailUrl: PlaceHolderImages.find(p => p.id === 'link-thumb-1')?.imageUrl || '', thumbnailHint: PlaceHolderImages.find(p => p.id === 'link-thumb-1')?.imageHint || '' },
-  { id: '2', title: 'Follow me on Social Media', url: '#', thumbnailUrl: PlaceHolderImages.find(p => p.id === 'link-thumb-2')?.imageUrl || '', thumbnailHint: PlaceHolderImages.find(p => p.id === 'link-thumb-2')?.imageHint || '' },
-  { id: '3', title: 'My Latest Project', url: '#', thumbnailUrl: PlaceHolderImages.find(p => p.id === 'link-thumb-3')?.imageUrl || '', thumbnailHint: PlaceHolderImages.find(p => p.id === 'link-thumb-3')?.imageHint || '' },
+  { id: '1', title: 'My Work', url: '#', thumbnailUrl: PlaceHolderImages.find(p => p.id === 'link-thumb-1')?.imageUrl || '', thumbnailHint: PlaceHolderImages.find(p => p.id === 'link-thumb-1')?.imageHint || '' },
+  { id: '2', title: 'Connect on Social', url: '#', thumbnailUrl: PlaceHolderImages.find(p => p.id === 'link-thumb-2')?.imageUrl || '', thumbnailHint: PlaceHolderImages.find(p => p.id === 'link-thumb-2')?.imageHint || '' },
+  { id: '3', title: 'Latest Adventure', url: '#', thumbnailUrl: PlaceHolderImages.find(p => p.id === 'link-thumb-3')?.imageUrl || '', thumbnailHint: PlaceHolderImages.find(p => p.id === 'link-thumb-3')?.imageHint || '' },
 ];
 
 export default function Home() {

@@ -3,26 +3,26 @@
     {
       "id": "profile-avatar",
       "description": "A placeholder avatar for a user profile.",
-      "imageUrl": "https://images.unsplash.com/photo-1593628525442-f94a810619e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwb3J0cmFpdCUyMHBlcnNvbnxlbnwwfHx8fDE3NzE1MTg5NDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "portrait person"
+      "imageUrl": "https://images.unsplash.com/photo-1544005313-94ddf0286de2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwb3J0cmFpdCUyMHdvbWFufGVufDB8fHx8MTc3MTU5ODAyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "portrait woman"
     },
     {
       "id": "link-thumb-1",
       "description": "Thumbnail for a portfolio link.",
-      "imageUrl": "https://images.unsplash.com/photo-1676018526208-0c80014f8a50?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMGRlc2lnbnxlbnwwfHx8fDE3NzE0OTkzNzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "abstract design"
+      "imageUrl": "https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMHBhc3RlbHxlbnwwfHx8fDE3NzE1OTgwODd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract pastel"
     },
     {
       "id": "link-thumb-2",
       "description": "Thumbnail for a social media link.",
-      "imageUrl": "https://images.unsplash.com/photo-1762330463580-9bfa9645b0f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx0ZWNobm9sb2d5JTIwc29jaWFsfGVufDB8fHx8MTc3MTU3NzE4MHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "technology social"
+      "imageUrl": "https://images.unsplash.com/photo-1633939924353-909b4d8f582d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxzb2NpYWwlMjBtZWRpYSUyMGFic3RyYWN0fGVufDB8fHx8MTc3MTU5ODIwNHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "social media"
     },
     {
       "id": "link-thumb-3",
       "description": "Thumbnail for a project link.",
-      "imageUrl": "https://images.unsplash.com/photo-1615118265620-d8decf628275?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxuYXR1cmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzcxNTE5MzU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "nature landscape"
+      "imageUrl": "https://images.unsplash.com/photo-1501854140801-50d01698950b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx2aWJyYW50JTIwbGFuZHNjYXBlfGVufDB8fHx8MTc3MTU5ODMwN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vibrant landscape"
     }
   ]
 }
