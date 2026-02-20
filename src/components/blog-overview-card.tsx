@@ -25,7 +25,6 @@ interface BlogOverviewCardProps {
 export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, isEditable = false, dragHandleListeners }: BlogOverviewCardProps) {
   const firestore = useFirestore();
   
-  // Simplified query for all posts by the owner, avoiding composite index
   const postsQuery = useMemoFirebase(() =>
     ownerId ? query(
         collection(firestore, 'posts'),
@@ -35,7 +34,6 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
   );
   const { data: allPosts, isLoading } = useCollection<Post>(postsQuery);
 
-  // Client-side filtering and sorting
   const posts = useMemo(() => {
     if (!allPosts) return [];
     return allPosts
@@ -66,6 +64,53 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
       color: appearance.cardForegroundColor || '#FFFFFF',
       opacity: 0.8,
   };
+  
+  if (isEditable) {
+    return (
+      <Card 
+          className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card flex flex-col w-full h-full p-5"
+          style={cardStyle}
+      >
+          <CardHeader className="p-0 mb-4">
+              <CardTitle style={textStyle}>{link.title}</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0 flex-grow">
+               <div className="space-y-3">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-5 w-1/2" />
+                  <Skeleton className="h-5 w-2/3" />
+              </div>
+              <p className="text-sm mt-4" style={textMutedStyle}>Live posts will be shown here.</p>
+          </CardContent>
+
+          {isEditable && onEdit && onDelete && (
+              <div className="absolute top-2 right-2 z-20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Button variant="ghost" size="icon" className="h-9 w-9 cursor-grab bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Reorder link" {...dragHandleListeners}>
+                      <GripVertical className="h-5 w-5" />
+                  </Button>
+                  <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-9 w-9 bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Link options">
+                              <MoreVertical className="h-5 w-5" />
+                          </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={onEdit}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              <span>Edit</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              <span>Delete</span>
+                          </DropdownMenuItem>
+                      </DropdownMenuContent>
+                  </DropdownMenu>
+              </div>
+          )}
+      </Card>
+    )
+  }
 
   return (
     <Card 
@@ -87,7 +132,7 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
                 <ul className="space-y-3">
                     {posts.map(post => (
                         <li key={post.id}>
-                            <Link href={`/post/${post.id}`} className="hover:underline" style={textStyle}>
+                            <Link href={`/post/${post.id}`} className="hover:underline" style={textStyle} target="_blank">
                                 {post.title}
                             </Link>
                         </li>
@@ -98,32 +143,6 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
                 <p style={textMutedStyle}>No published posts yet.</p>
             )}
         </CardContent>
-
-        {isEditable && onEdit && onDelete && (
-            <div className="absolute top-2 right-2 z-20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <Button variant="ghost" size="icon" className="h-9 w-9 cursor-grab bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Reorder link" {...dragHandleListeners}>
-                    <GripVertical className="h-5 w-5" />
-                </Button>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-9 w-9 bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Link options">
-                            <MoreVertical className="h-5 w-5" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={onEdit}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            <span>Edit</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive focus:bg-destructive/10">
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            <span>Delete</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-        )}
     </Card>
   );
 }

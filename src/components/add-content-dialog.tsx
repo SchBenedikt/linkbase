@@ -6,11 +6,12 @@ import { Link as LinkIcon, Music, Youtube, BookText, Newspaper, Rss } from 'luci
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
 import { ArticleEditor, articleSchema } from './article-editor';
+import { BlogOverviewEditor, blogOverviewSchema } from './blog-overview-editor';
 import type { z } from 'zod';
 import type { Link } from '@/lib/types';
 
 
-type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | { title: string }) & { type: Link['type'] };
+type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | z.infer<typeof blogOverviewSchema>) & { type: Link['type'] };
 
 interface AddContentDialogProps {
   onSave: (data: ContentFormData) => void;
@@ -23,19 +24,10 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
 
   const handleBack = () => setContentType(null);
   
-  const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema>, type: Link['type']) => {
+  const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | z.infer<typeof blogOverviewSchema>, type: Link['type']) => {
     onSave({ ...data, type });
   };
   
-  const handleBlogOverviewSave = () => {
-    onSave({
-      type: 'blog-overview',
-      title: 'Blog Posts',
-      colSpan: 4,
-      rowSpan: 2,
-    });
-  };
-
   // If we are editing, jump straight to the editor
   if (contentType && contentToEdit) {
      if (contentToEdit.type === 'text') {
@@ -45,15 +37,9 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
         return <ArticleEditor onSave={(data) => handleSave(data, 'article')} onCancel={onCancel} article={contentToEdit} />;
     }
     if (contentToEdit.type === 'blog-overview') {
-      // Blog overview doesn't have an editor for now, just show a message.
-      return (
-        <div className="text-center p-4 space-y-4">
-          <p>This card automatically displays your latest blog posts. Configuration options will be available soon.</p>
-          <Button onClick={onCancel}>Close</Button>
-        </div>
-      )
+      return <BlogOverviewEditor onSave={(data) => handleSave(data, 'blog-overview')} onCancel={onCancel} content={contentToEdit} />;
     }
-    return <LinkEditor onSave={(data) => handleSave(data, contentToEdit.type)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube'} link={contentToEdit} />;
+    return <LinkEditor onSave={(data) => handleSave(data, contentToEdit.type as 'link' | 'spotify' | 'youtube')} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube'} link={contentToEdit} />;
   }
 
   // If we are adding new content, show the correct editor after selection
@@ -63,6 +49,9 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     }
     if (contentType === 'article') {
         return <ArticleEditor onSave={(data) => handleSave(data, 'article')} onCancel={handleBack} />;
+    }
+    if (contentType === 'blog-overview') {
+        return <BlogOverviewEditor onSave={(data) => handleSave(data, 'blog-overview')} onCancel={handleBack} />;
     }
     // link, spotify, youtube
     return (
@@ -98,7 +87,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
             <p className="text-sm font-normal text-muted-foreground">Feature an article with metadata.</p>
         </div>
       </Button>
-      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={handleBlogOverviewSave}>
+      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('blog-overview')}>
         <Rss className="mr-4 h-8 w-8" />
         <div className="text-left">
             <p>Blog Overview</p>
