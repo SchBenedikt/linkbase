@@ -26,8 +26,7 @@ service cloud.firestore {
     }
 
     match /posts/{postId} {
-      allow get: if resource.data.status == 'published' || (isSignedIn() && resource.data.ownerId == request.auth.uid);
-      allow list: if isSignedIn(); // For user's own blog management dashboard
+      allow read: if resource.data.status == 'published' || (isSignedIn() && resource.data.ownerId == request.auth.uid);
       allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     }
