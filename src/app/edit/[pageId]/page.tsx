@@ -124,17 +124,22 @@ export default function EditPage() {
     closeSheet();
   };
 
-  const handleSaveLink = (data: z.infer<typeof linkEditorSchema>) => {
+  const handleSaveLink = (data: z.infer<typeof linkEditorSchema>, thumbnailUrl?: string) => {
     if (!linksRef || !pageId) return;
     if (sheetState.open && sheetState.view === 'editLink') {
       const linkRef = doc(linksRef, sheetState.link.id);
-      setDocumentNonBlocking(linkRef, data, { merge: true });
+      const dataToSave: Partial<LinkType> = {...data};
+      if (thumbnailUrl) {
+          dataToSave.thumbnailUrl = thumbnailUrl;
+          dataToSave.thumbnailHint = 'website meta image';
+      }
+      setDocumentNonBlocking(linkRef, dataToSave, { merge: true });
     } else {
       const randomImage = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)];
       const newLinkData = {
         ...data,
-        thumbnailUrl: randomImage.imageUrl,
-        thumbnailHint: randomImage.imageHint,
+        thumbnailUrl: thumbnailUrl || randomImage.imageUrl,
+        thumbnailHint: thumbnailUrl ? 'website meta image' : randomImage.imageHint,
         pageId: pageId,
         orderIndex: (links?.length || 0) + 1,
       };

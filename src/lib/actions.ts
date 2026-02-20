@@ -28,7 +28,7 @@ export async function generateTheme(prevState: any, formData: FormData) {
   }
 }
 
-export async function getWebsiteTitle(url: string): Promise<{ title?: string; error?: string }> {
+export async function getWebsiteMeta(url: string): Promise<{ title?: string; imageUrl?: string, error?: string }> {
   try {
     if (!url || !url.startsWith('http')) {
       return { error: 'Please enter a valid URL.' };
@@ -37,7 +37,13 @@ export async function getWebsiteTitle(url: string): Promise<{ title?: string; er
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
 
-    const response = await fetch(url, { signal: controller.signal });
+    const response = await fetch(url, { 
+      signal: controller.signal,
+      headers: {
+        // Some sites block requests without a user-agent
+        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+      }
+    });
     clearTimeout(timeoutId);
 
     if (!response.ok) {
@@ -45,28 +51,39 @@ export async function getWebsiteTitle(url: string): Promise<{ title?: string; er
     }
 
     const html = await response.text();
+    let title, imageUrl;
     
     // Try to find og:title first
-    const ogTitleMatch = html.match(/<meta\s+property="og:title"\s+content="([^"]*)"/i);
+    const ogTitleMatch = html.match(/<meta\s+(?:name|property)="og:title"\s+content="([^"]*)"/i);
     if (ogTitleMatch && ogTitleMatch[1]) {
-        return { title: ogTitleMatch[1] };
+        title = ogTitleMatch[1];
+    } else {
+        // Fallback to <title> tag
+        const titleMatch = html.match(/<title>(.*?)<\/title>/is);
+        if (titleMatch && titleMatch[1]) {
+            title = titleMatch[1].trim().replace(/\s+/g, ' ');
+        }
+    }
+    
+    // Try to find og:image
+    const ogImageMatch = html.match(/<meta\s+(?:name|property)="og:image"\s+content="([^"]*)"/i);
+    if (ogImageMatch && ogImageMatch[1]) {
+      try {
+        const parsedUrl = new URL(url);
+        imageUrl = new URL(ogImageMatch[1], parsedUrl.origin).href;
+      } catch (e) {
+        // Ignore if URL creation fails
+        imageUrl = ogImageMatch[1];
+      }
     }
 
-    // Fallback to <title> tag
-    const titleMatch = html.match(/<title>(.*?)<\/title>/is);
-    if (titleMatch && titleMatch[1]) {
-        // The title might contain newlines or extra spaces, so let's clean it up.
-        const cleanedTitle = titleMatch[1].trim().replace(/\s+/g, ' ');
-        return { title: cleanedTitle };
-    }
-
-    return { title: '' }; // No title found, return empty string
+    return { title, imageUrl };
 
   } catch (error: any) {
     if (error.name === 'AbortError') {
         return { error: 'Request timed out.' };
     }
-    console.error('Error fetching website title:', error);
-    return { error: 'Failed to fetch title from the URL.' };
+    console.error('Error fetching website meta:', error);
+    return { error: 'Failed to fetch meta data from the URL.' };
   }
 }

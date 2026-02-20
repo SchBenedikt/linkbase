@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { Link } from '@/lib/types';
 import { Slider } from './ui/slider';
-import { getWebsiteTitle } from '@/lib/actions';
+import { getWebsiteMeta } from '@/lib/actions';
 import { Loader2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -22,7 +22,7 @@ const linkSchema = z.object({
 
 interface LinkEditorProps {
   link?: Link | null; // if null, it's a new link
-  onSave: (data: z.infer<typeof linkSchema>) => void;
+  onSave: (data: z.infer<typeof linkSchema>, thumbnailUrl?: string) => void;
   onCancel: () => void;
 }
 
@@ -38,20 +38,20 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
   });
 
   const { toast } = useToast();
-  const [isFetchingTitle, setIsFetchingTitle] = useState(false);
+  const [isFetchingMeta, setIsFetchingMeta] = useState(false);
+  const [fetchedThumbnailUrl, setFetchedThumbnailUrl] = useState<string | undefined>(link?.thumbnailUrl);
 
-  const handleFetchTitle = async () => {
+  const handleFetchMeta = async () => {
     const url = form.getValues('url');
     if (!url) {
       toast({
         variant: 'destructive',
         title: 'URL is missing',
-        description: 'Please enter a URL to fetch its title.',
+        description: 'Please enter a URL to fetch its metadata.',
       });
       return;
     }
     
-    // Don't fetch for Spotify, as it will be an embed
     if (/open\.spotify\.com/.test(url)) {
         toast({
             title: 'Spotify Link Detected',
@@ -60,41 +60,58 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
         return;
     }
 
-    setIsFetchingTitle(true);
+    setIsFetchingMeta(true);
     try {
-      const result = await getWebsiteTitle(url);
+      const result = await getWebsiteMeta(url);
+      let toastShown = false;
       if (result.title) {
         form.setValue('title', result.title, { shouldValidate: true });
-        toast({
-          title: 'Title fetched successfully!',
-        });
-      } else if (result.error) {
+        if (!toastShown) {
+            toast({ title: 'Metadata fetched successfully!' });
+            toastShown = true;
+        }
+      }
+      if (result.imageUrl) {
+        setFetchedThumbnailUrl(result.imageUrl);
+        if (!toastShown) {
+            toast({ title: 'Metadata fetched successfully!' });
+            toastShown = true;
+        }
+      }
+      
+      if (!result.title && !result.imageUrl && !result.error) {
+          toast({
+              variant: 'default',
+              title: 'No metadata found',
+              description: 'We could not find a title or image for this URL.',
+          });
+      }
+
+      if (result.error) {
         toast({
           variant: 'destructive',
-          title: 'Error fetching title',
+          title: 'Error fetching metadata',
           description: result.error,
-        });
-      } else {
-        toast({
-            variant: 'destructive',
-            title: 'No title found',
-            description: 'We could not find a title for this URL.',
         });
       }
     } catch(e: any) {
         toast({
             variant: 'destructive',
             title: 'An unexpected error occurred',
-            description: e.message || 'Could not fetch title.',
+            description: e.message || 'Could not fetch metadata.',
         });
     } finally {
-      setIsFetchingTitle(false);
+      setIsFetchingMeta(false);
     }
+  };
+
+  const onSubmit = (data: z.infer<typeof linkSchema>) => {
+    onSave(data, fetchedThumbnailUrl);
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSave)} className="space-y-6 p-1">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-1">
         <FormField
           control={form.control}
           name="title"
@@ -118,11 +135,11 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
                 <FormControl>
                   <Input placeholder="https://example.com" {...field} />
                 </FormControl>
-                <Button type="button" variant="outline" size="icon" onClick={handleFetchTitle} disabled={isFetchingTitle} aria-label="Fetch website title">
-                  {isFetchingTitle ? <Loader2 className="animate-spin" /> : <Sparkles />}
+                <Button type="button" variant="outline" size="icon" onClick={handleFetchMeta} disabled={isFetchingMeta} aria-label="Fetch website metadata">
+                  {isFetchingMeta ? <Loader2 className="animate-spin" /> : <Sparkles />}
                 </Button>
               </div>
-              <FormDescription>Enter a URL and click the magic button to fetch its title.</FormDescription>
+              <FormDescription>Enter a URL and click the magic button to fetch its title and image.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
