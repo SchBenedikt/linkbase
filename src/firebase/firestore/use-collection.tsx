@@ -23,6 +23,7 @@ export interface UseCollectionResult<T> {
   data: WithId<T>[] | null; // Document data with ID, or null.
   isLoading: boolean;       // True if loading.
   error: FirestoreError | Error | null; // Error object, or null.
+  setData: React.Dispatch<React.SetStateAction<WithId<T>[] | null>>; // For optimistic updates
 }
 
 /* Internal implementation of Query:
@@ -110,5 +111,5 @@ export function useCollection<T = any>(
   if(memoizedTargetRefOrQuery && !memoizedTargetRefOrQuery.__memo) {
     throw new Error(memoizedTargetRefOrQuery + ' was not properly memoized using useMemoFirebase');
   }
-  return { data, isLoading, error };
+  return { data, isLoading, error, setData };
 }

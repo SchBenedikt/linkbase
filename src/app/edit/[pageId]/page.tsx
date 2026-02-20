@@ -3,10 +3,11 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { doc, collection, deleteDoc, setDoc } from 'firebase/firestore';
+import { doc, collection, writeBatch } from 'firebase/firestore';
 import { z } from 'zod';
-import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, setDocumentNonBlocking, addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
 import type { Page, Link as LinkType, AITheme, AppearanceSettings } from '@/lib/types';
+import { arrayMove } from '@dnd-kit/sortable';
 
 import { ProfileHeader } from '@/components/profile-header';
 import { LinkList } from '@/components/link-list';
@@ -42,8 +43,15 @@ const initialAppearance: AppearanceSettings = {
   borderColor: '#e5e7eb',
 };
 
+const linkEditorSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  url: z.string().url('Please enter a valid URL'),
+  colSpan: z.number().min(1).max(4).default(1),
+  rowSpan: z.number().min(1).max(2).default(1),
+});
+
 export default function EditPage({ params }: { params: { pageId: string } }) {
-  const resolvedParams = use(params);
+  const resolvedParams = use(Promise.resolve(params));
   const { pageId } = resolvedParams;
   const router = useRouter();
   const { user, isUserLoading } = useUser();
@@ -56,8 +64,8 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
   const pageRef = useMemoFirebase(() => pageId ? doc(firestore, 'pages', pageId) : null, [firestore, pageId]);
   const linksRef = useMemoFirebase(() => pageId ? collection(firestore, 'pages', pageId, 'links') : null, [firestore, pageId]);
 
-  const { data: page, isLoading: isPageLoading, error: pageError } = useDoc<Page>(pageRef);
-  const { data: links, isLoading: areLinksLoading, error: linksError } = useCollection<LinkType>(linksRef);
+  const { data: page, isLoading: isPageLoading, error: pageError, setData: setPageData } = useDoc<Page>(pageRef);
+  const { data: links, isLoading: areLinksLoading, error: linksError, setData: setLinksData } = useCollection<LinkType>(linksRef);
   
   const [appearance, setAppearance] = useState<AppearanceSettings>(initialAppearance);
   const [dynamicStyles, setDynamicStyles] = useState<React.CSSProperties>({});
@@ -98,28 +106,26 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
   const closeSheet = () => setSheetState({ open: false });
 
   const handleSaveProfile = async (data: z.infer<typeof profileSchema>) => {
-    if (!pageRef || !page) return;
+    if (!pageRef || !page || !firestore) return;
 
     const oldSlug = page.slug;
     const newSlug = data.slug;
 
-    // 1. Update the page document
-    setDocumentNonBlocking(pageRef, data, { merge: true });
+    const batch = writeBatch(firestore);
+    batch.set(pageRef, data, { merge: true });
 
-    // 2. Update the slug lookup document if it has changed
     if (newSlug && newSlug !== oldSlug) {
-        // Use a transaction or batched write in a real app, but for simplicity:
-        // Delete old slug doc
         if (oldSlug) {
-            await deleteDoc(doc(firestore, 'slug_lookups', oldSlug));
+            batch.delete(doc(firestore, 'slug_lookups', oldSlug));
         }
-        // Create new slug doc
-        await setDoc(doc(firestore, 'slug_lookups', newSlug), { pageId: page.id });
+        batch.set(doc(firestore, 'slug_lookups', newSlug), { pageId: page.id });
     }
+    
+    await batch.commit();
     closeSheet();
   };
 
-  const handleSaveLink = (data: { title: string; url: string }) => {
+  const handleSaveLink = (data: z.infer<typeof linkEditorSchema>) => {
     if (!linksRef || !pageId) return;
     if (sheetState.open && sheetState.view === 'editLink') {
       const linkRef = doc(linksRef, sheetState.link.id);
@@ -127,8 +133,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
     } else {
       const randomImage = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)];
       const newLinkData = {
-        title: data.title,
-        url: data.url,
+        ...data,
         thumbnailUrl: randomImage.imageUrl,
         thumbnailHint: randomImage.imageHint,
         pageId: pageId,
@@ -146,6 +151,34 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
       setLinkToDelete(null);
     }
   };
+
+  const handleDragEnd = async (activeId: string, overId: string) => {
+    if (!links || !linksRef || !firestore) return;
+
+    const oldIndex = links.findIndex(l => l.id === activeId);
+    const newIndex = links.findIndex(l => l.id === overId);
+
+    const newLinksOrder = arrayMove(links, oldIndex, newIndex);
+    
+    // Optimistically update UI
+    setLinksData(newLinksOrder);
+
+    // Update orderIndex in Firestore
+    const batch = writeBatch(firestore);
+    newLinksOrder.forEach((link, index) => {
+        const linkRef = doc(linksRef, link.id);
+        batch.update(linkRef, { orderIndex: index });
+    });
+
+    try {
+        await batch.commit();
+    } catch(e) {
+        console.error("Failed to reorder links", e);
+        // Optionally revert UI state
+        setLinksData(links);
+    }
+  };
+
 
   const generateStylesFromAppearance = (settings: AppearanceSettings): React.CSSProperties => {
     return {
@@ -232,7 +265,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
   if (isUserLoading || isPageLoading) {
     return (
         <div className="min-h-screen bg-[#f3f3f1] p-8">
-            <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
+            <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
                 <div className="w-full flex justify-end gap-2 mb-8">
                     <Skeleton className="h-10 w-24" />
                     <Skeleton className="h-10 w-24" />
@@ -241,9 +274,13 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
                 <Skeleton className="w-28 h-28 rounded-full mb-6" />
                 <Skeleton className="h-12 w-64 mb-4" />
                 <Skeleton className="h-6 w-96 mb-10" />
-                <Skeleton className="w-full h-48 mb-4" />
-                <Skeleton className="w-full h-48 mb-4" />
-                <Skeleton className="w-full h-16" />
+                <div className="w-full grid grid-cols-4 gap-4">
+                    <Skeleton className="h-40 col-span-2" />
+                    <Skeleton className="h-40" />
+                    <Skeleton className="h-40" />
+                    <Skeleton className="h-40" />
+                    <Skeleton className="h-40 col-span-3" />
+                </div>
             </div>
         </div>
     );
@@ -260,7 +297,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
   return (
     <div style={dynamicStyles as React.CSSProperties}>
       <main className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
-        <div className="w-full max-w-2xl mx-auto">
+        <div className="w-full max-w-4xl mx-auto">
           <div className="fixed top-4 left-4 z-50">
             <Button variant="outline" asChild>
               <Link href="/profile">&larr; Back to Dashboard</Link>
@@ -281,11 +318,12 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
             onAddLink={() => setSheetState({ view: 'addLink', open: true })}
             onEditLink={(link) => setSheetState({ view: 'editLink', open: true, link })}
             onDeleteLink={setLinkToDelete}
+            onDragEnd={handleDragEnd}
             appearance={appearance}
             isEditable={true}
           />
         </div>
-        <footer className="w-full max-w-2xl mx-auto mt-12 mb-6 text-center">
+        <footer className="w-full max-w-4xl mx-auto mt-12 mb-6 text-center">
             <p className="text-sm text-muted-foreground">
                 Powered by <span className="font-semibold text-primary">BioBloom</span>
             </p>

@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Urbanist', 'sans-serif'],
-        headline: ['Poppins', 'sans-serif'],
+        body: ['Bricolage Grotesque', 'sans-serif'],
+        headline: ['Bricolage Grotesque', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

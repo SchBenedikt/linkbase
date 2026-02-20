@@ -6,6 +6,8 @@ export type Link = {
   thumbnailHint: string;
   orderIndex: number;
   pageId: string;
+  colSpan?: number;
+  rowSpan?: number;
 };
 
 export type Page = {

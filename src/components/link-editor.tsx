@@ -5,12 +5,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { Link } from '@/lib/types';
+import { Slider } from './ui/slider';
 
 const linkSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   url: z.string().url('Please enter a valid URL'),
+  colSpan: z.number().min(1).max(4).default(1),
+  rowSpan: z.number().min(1).max(2).default(1),
 });
 
 interface LinkEditorProps {
@@ -25,6 +28,8 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
     defaultValues: {
       title: link?.title || '',
       url: link?.url || '',
+      colSpan: link?.colSpan || 1,
+      rowSpan: link?.rowSpan || 1,
     },
   });
 
@@ -57,6 +62,46 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
             </FormItem>
           )}
         />
+
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="colSpan"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Width: {field.value}</FormLabel>
+                    <FormControl>
+                        <Slider
+                            min={1} max={4} step={1}
+                            defaultValue={[field.value]}
+                            onValueChange={(value) => field.onChange(value[0])}
+                        />
+                    </FormControl>
+                    <FormDescription>In grid columns (1-4)</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="rowSpan"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Height: {field.value}</FormLabel>
+                    <FormControl>
+                         <Slider
+                            min={1} max={2} step={1}
+                            defaultValue={[field.value]}
+                            onValueChange={(value) => field.onChange(value[0])}
+                        />
+                    </FormControl>
+                    <FormDescription>In grid rows (1-2)</FormDescription>
+                    <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
+
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
             Cancel
