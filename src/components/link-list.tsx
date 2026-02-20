@@ -19,7 +19,7 @@ export function LinkList({ links, onAddLink, onEditLink, onDeleteLink, appearanc
   return (
     <div className="space-y-4">
       {links.map((link) => {
-        const isSpotifyTrack = link.url.includes('open.spotify.com/track/');
+        const isSpotifyTrack = /open\.spotify\.com\/.*\/track\//.test(link.url);
 
         if (isSpotifyTrack) {
           return (

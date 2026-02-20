@@ -6,6 +6,7 @@ import type { Link, AppearanceSettings } from '@/lib/types';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from './ui/dropdown-menu';
+import { LinkCard } from './link-card';
 
 interface SpotifyLinkCardProps {
   link: Link;
@@ -16,9 +17,21 @@ interface SpotifyLinkCardProps {
 }
 
 export function SpotifyLinkCard({ link, onEdit, onDelete, isEditable = false, appearance }: SpotifyLinkCardProps) {
-    const trackId = link.url.split('track/')[1]?.split('?')[0];
+    const match = link.url.match(/track\/([a-zA-Z0-9]+)/);
+    const trackId = match ? match[1] : null;
 
-    if (!trackId) return null;
+    if (!trackId) {
+        console.error("Could not extract Spotify track ID. Rendering as a standard link.", link.url);
+        return (
+            <LinkCard
+                link={link}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                appearance={appearance}
+                isEditable={isEditable}
+            />
+        );
+    }
 
     const embedUrl = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator`;
 
