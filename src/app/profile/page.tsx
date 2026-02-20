@@ -57,8 +57,8 @@ export default function DashboardPage() {
     
     if (isUserLoading || arePagesLoading) {
         return (
-            <div className="min-h-screen bg-secondary/30">
-                <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
+            <div className="min-h-screen bg-[#f3f3f1]">
+                <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                         <Skeleton className="h-6 w-32" />
                         <Skeleton className="h-8 w-8 rounded-full" />
@@ -79,8 +79,8 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-secondary/30">
-            <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
+        <div className="min-h-screen bg-[#f3f3f1]">
+            <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                     <h1 className="font-headline text-2xl font-bold text-foreground">
                         Dashboard

@@ -63,14 +63,14 @@ export default function LoginPage() {
   
   if (isUserLoading || user) {
       return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex items-center justify-center min-h-screen bg-[#f3f3f1]">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
         </div>
       )
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#f3f3f1] p-4">
         <div className="absolute top-4 left-4">
              <Button variant="ghost" asChild>
                 <Link href="/">&larr; Zurück zur Startseite</Link>
