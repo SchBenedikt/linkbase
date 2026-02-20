@@ -36,10 +36,6 @@ export function LinkCard({ link, onEdit, onDelete, appearance, isEditable = fals
       opacity: 0.8,
   };
 
-  const overlayStyle: React.CSSProperties = {
-      background: `linear-gradient(to top, ${appearance.cardColor || '#000000'} 20%, transparent 80%)`
-  }
-
   return (
     <Card 
         className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card flex flex-col w-full h-full"
@@ -57,11 +53,10 @@ export function LinkCard({ link, onEdit, onDelete, appearance, isEditable = fals
                 sizes="(max-width: 640px) 100vw, 640px"
                 className="object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
             />
-            <div className="absolute inset-0" style={overlayStyle} />
         </div>
         <div className="relative flex flex-col justify-end p-5">
-            <h3 className="font-headline font-bold text-xl drop-shadow-md" style={textStyle}>{link.title}</h3>
-            <p className="text-sm drop-shadow-sm flex items-center gap-1.5 mt-1 truncate" style={textMutedStyle}>
+            <h3 className="font-headline font-bold text-xl" style={textStyle}>{link.title}</h3>
+            <p className="text-sm flex items-center gap-1.5 mt-1 truncate" style={textMutedStyle}>
               <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
               <span className="truncate">{link.url}</span>
             </p>
