@@ -5,10 +5,13 @@ export type Link = {
   thumbnailUrl: string;
   thumbnailHint: string;
   orderIndex: number;
+  pageId: string;
 };
 
-export type UserProfile = {
+export type Page = {
   id: string; // Same as user.uid
+  ownerId: string;
+  slug: string;
   displayName: string;
   bio: string;
   avatarUrl: string;
@@ -24,6 +27,10 @@ export type UserProfile = {
   borderRadius?: number;
   borderWidth?: number;
   borderColor?: string;
+};
+
+export type SlugLookup = {
+  pageId: string;
 };
 
 export type ColorPalette = {

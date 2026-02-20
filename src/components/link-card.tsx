@@ -9,12 +9,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 interface LinkCardProps {
   link: Link;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   appearance: AppearanceSettings;
+  isEditable?: boolean;
 }
 
-export function LinkCard({ link, onEdit, onDelete, appearance }: LinkCardProps) {
+export function LinkCard({ link, onEdit, onDelete, appearance, isEditable = false }: LinkCardProps) {
   const cardStyle: React.CSSProperties = {
     borderWidth: `${appearance.borderWidth || 0}px`,
     borderColor: appearance.borderColor,
@@ -51,29 +52,31 @@ export function LinkCard({ link, onEdit, onDelete, appearance }: LinkCardProps) 
               <span>{link.url}</span>
             </p>
         </div>
-        <div className="absolute top-2 right-2 z-20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <Button variant="ghost" size="icon" className="h-9 w-9 cursor-grab bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Reorder link">
-                <GripVertical className="h-5 w-5" />
-            </Button>
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-9 w-9 bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Link options">
-                        <MoreVertical className="h-5 w-5" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={onEdit}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        <span>Edit</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive focus:bg-destructive/10">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Delete</span>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </div>
+        {isEditable && onEdit && onDelete && (
+            <div className="absolute top-2 right-2 z-20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <Button variant="ghost" size="icon" className="h-9 w-9 cursor-grab bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Reorder link">
+                    <GripVertical className="h-5 w-5" />
+                </Button>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-9 w-9 bg-black/30 hover:bg-black/50 text-white hover:text-white" aria-label="Link options">
+                            <MoreVertical className="h-5 w-5" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={onEdit}>
+                            <Edit className="mr-2 h-4 w-4" />
+                            <span>Edit</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        )}
     </Card>
   );
 }

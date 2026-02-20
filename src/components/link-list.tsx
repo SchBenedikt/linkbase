@@ -7,28 +7,32 @@ import { Button } from './ui/button';
 
 interface LinkListProps {
   links: Link[];
-  onAddLink: () => void;
-  onEditLink: (link: Link) => void;
-  onDeleteLink: (link: Link) => void;
+  onAddLink?: () => void;
+  onEditLink?: (link: Link) => void;
+  onDeleteLink?: (link: Link) => void;
   appearance: AppearanceSettings;
+  isEditable?: boolean;
 }
 
-export function LinkList({ links, onAddLink, onEditLink, onDeleteLink, appearance }: LinkListProps) {
+export function LinkList({ links, onAddLink, onEditLink, onDeleteLink, appearance, isEditable = false }: LinkListProps) {
   return (
     <div className="space-y-4">
       {links.map((link) => (
         <LinkCard
           key={link.id}
           link={link}
-          onEdit={() => onEditLink(link)}
-          onDelete={() => onDeleteLink(link)}
+          onEdit={onEditLink ? () => onEditLink(link) : undefined}
+          onDelete={onDeleteLink ? () => onDeleteLink(link) : undefined}
           appearance={appearance}
+          isEditable={isEditable}
         />
       ))}
-      <Button variant="outline" className="w-full h-16 border-dashed hover:border-solid hover:bg-accent/20 transition-all duration-300" onClick={onAddLink}>
-        <PlusCircle className="mr-2 h-5 w-5" />
-        Add New Link
-      </Button>
+      {isEditable && onAddLink && (
+        <Button variant="outline" className="w-full h-16 border-dashed hover:border-solid hover:bg-accent/20 transition-all duration-300" onClick={onAddLink}>
+            <PlusCircle className="mr-2 h-5 w-5" />
+            Add New Link
+        </Button>
+      )}
     </div>
   );
 }

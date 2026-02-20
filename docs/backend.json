@@ -4,234 +4,71 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Represents a registered user of the BioBloom application, primarily for authentication and access control. This entity stores minimal user identification data and links to detailed user profile information.",
+      "description": "Represents a registered user of the BioBloom application, primarily for authentication and access control. This entity stores minimal user identification data.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the User entity."
-        },
-        "email": {
-          "type": "string",
-          "description": "The user's email address, used for identification and communication.",
-          "format": "email"
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the user account was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the user account was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string", "description": "Unique identifier for the User entity (matches Firebase Auth UID)." }
       },
-      "required": [
-        "id",
-        "email",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id"]
     },
-    "UserProfile": {
+    "Page": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "UserProfile",
+      "title": "Page",
       "type": "object",
-      "description": "Contains personalized public profile details for a user, including display information, unique URL, and theme preferences for their BioBloom page.",
+      "description": "Represents a single, user-created 'Bento' page with all its content and appearance settings.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the UserProfile entity."
-        },
-        "userId": {
-          "type": "string",
-          "description": "Reference to the User entity this profile belongs to. (Relationship: User 1:1 UserProfile)"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "The public name displayed on the user's BioBloom profile."
-        },
-        "bio": {
-          "type": "string",
-          "description": "A short biography or description displayed on the user's profile."
-        },
-        "profileImageUrl": {
-          "type": "string",
-          "description": "URL to the user's profile picture, displayed on their BioBloom page.",
-          "format": "uri"
-        },
-        "uniqueProfileUrlSlug": {
-          "type": "string",
-          "description": "The unique, user-defined slug for their BioBloom profile URL (e.g., 'myprofile' in biobloom.me/myprofile)."
-        },
-        "selectedThemeId": {
-          "type": "string",
-          "description": "Reference to a predefined Theme entity chosen by the user. (Relationship: Theme 1:N UserProfile)"
-        },
-        "customPrimaryColor": {
-          "type": "string",
-          "description": "Optional custom primary color (hex code) for the profile, overriding the selected theme's primary color or defining a custom one. Applicable for Material You 3 dynamic coloring and AI suggestions."
-        },
-        "customBackgroundColor": {
-          "type": "string",
-          "description": "Optional custom background color (hex code) for the profile, overriding the selected theme's background color or defining a custom one. Applicable for Material You 3 dynamic coloring and AI suggestions."
-        },
-        "customAccentColor": {
-          "type": "string",
-          "description": "Optional custom accent color (hex code) for the profile, overriding the selected theme's accent color or defining a custom one. Applicable for Material You 3 dynamic coloring and AI suggestions."
-        },
-        "customHeadlineFont": {
-          "type": "string",
-          "description": "Optional custom headline font name for the profile, overriding the selected theme's headline font or defining a custom one. Applicable for Material You 3 dynamic fonts and AI suggestions."
-        },
-        "customBodyFont": {
-          "type": "string",
-          "description": "Optional custom body font name for the profile, overriding the selected theme's body font or defining a custom one. Applicable for Material You 3 dynamic fonts and AI suggestions."
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the user profile was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the user profile was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string", "description": "Unique identifier for the Page entity." },
+        "ownerId": { "type": "string", "description": "The UID of the user who owns this page." },
+        "slug": { "type": "string", "description": "The unique, user-defined URL slug for the page." },
+        "displayName": { "type": "string", "description": "The public name displayed on the page." },
+        "bio": { "type": "string", "description": "A short biography or description displayed on the page." },
+        "avatarUrl": { "type": "string", "format": "uri", "description": "URL to the user's profile picture for this page." },
+        "avatarHint": { "type": "string", "description": "AI hint for the avatar image." },
+        "backgroundImage": { "type": "string", "format": "uri" },
+        "backgroundColor": { "type": "string" },
+        "primaryColor": { "type": "string" },
+        "accentColor": { "type": "string" },
+        "foregroundColor": { "type": "string" },
+        "cardColor": { "type": "string" },
+        "cardForegroundColor": { "type": "string" },
+        "borderRadius": { "type": "number" },
+        "borderWidth": { "type": "number" },
+        "borderColor": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": [
-        "id",
-        "userId",
-        "displayName",
-        "uniqueProfileUrlSlug",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "ownerId", "slug", "displayName", "createdAt", "updatedAt"]
     },
     "Link": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Link",
       "type": "object",
-      "description": "Represents a single custom link added by a user to their BioBloom profile.",
+      "description": "Represents a single custom link on a user's Page.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Link entity."
-        },
-        "userProfileId": {
-          "type": "string",
-          "description": "Reference to the UserProfile this link belongs to. (Relationship: UserProfile 1:N Link)"
-        },
-        "title": {
-          "type": "string",
-          "description": "The display title for the link on the BioBloom page."
-        },
-        "url": {
-          "type": "string",
-          "description": "The target URL that the link points to.",
-          "format": "uri"
-        },
-        "thumbnailUrl": {
-          "type": "string",
-          "description": "Optional URL for a thumbnail image or icon associated with the link.",
-          "format": "uri"
-        },
-        "orderIndex": {
-          "type": "number",
-          "description": "An integer value defining the display order of this link on the user's profile."
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the link was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the link was last updated.",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "pageId": { "type": "string", "description": "Reference to the Page this link belongs to." },
+        "title": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "thumbnailUrl": { "type": "string", "format": "uri" },
+        "thumbnailHint": { "type": "string", "description": "AI hint for the thumbnail image." },
+        "orderIndex": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": [
-        "id",
-        "userProfileId",
-        "title",
-        "url",
-        "orderIndex",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["id", "pageId", "title", "url", "orderIndex", "createdAt", "updatedAt"]
     },
-    "Theme": {
+    "SlugLookup": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Theme",
+      "title": "SlugLookup",
       "type": "object",
-      "description": "Defines a predefined background theme with its associated color palette and typography for BioBloom profiles.",
+      "description": "A lookup document to map a unique URL slug to a Page ID for fast public lookups.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Theme entity."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the theme (e.g., 'Serene Blues', 'Vibrant Sunset')."
-        },
-        "description": {
-          "type": "string",
-          "description": "A brief description of the theme's aesthetic or mood."
-        },
-        "primaryColor": {
-          "type": "string",
-          "description": "The default primary color (hex code) for elements in this theme."
-        },
-        "backgroundColor": {
-          "type": "string",
-          "description": "The default background color (hex code) for this theme."
-        },
-        "accentColor": {
-          "type": "string",
-          "description": "The default accent color (hex code) for interactive elements in this theme."
-        },
-        "headlineFont": {
-          "type": "string",
-          "description": "The default font name for headlines in this theme (e.g., 'Poppins')."
-        },
-        "bodyFont": {
-          "type": "string",
-          "description": "The default font name for body text in this theme (e.g., 'Inter')."
-        },
-        "isSystemTheme": {
-          "type": "boolean",
-          "description": "Indicates whether this theme is a default, non-deletable system theme."
-        },
-        "createdAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the theme was created.",
-          "format": "date-time"
-        },
-        "updatedAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the theme was last updated.",
-          "format": "date-time"
-        }
+        "pageId": { "type": "string", "description": "The ID of the Page this slug points to." }
       },
-      "required": [
-        "id",
-        "name",
-        "primaryColor",
-        "backgroundColor",
-        "accentColor",
-        "headlineFont",
-        "bodyFont",
-        "isSystemTheme",
-        "createdAt",
-        "updatedAt"
-      ]
+      "required": ["pageId"]
     }
   },
   "auth": {
-    "providers": [
-      "password"
-    ]
+    "providers": ["password"]
   },
   "firestore": {
     "structure": [
@@ -239,103 +76,34 @@
         "path": "/users/{userId}",
         "definition": {
           "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores core authentication information for registered users. Document ID is the Firebase Authentication UID. This collection is private to the owning user.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/User" },
+          "description": "Stores core authentication information. Document ID is the Firebase Auth UID. Private to the user."
         }
       },
       {
-        "path": "/users/{userId}/profile",
+        "path": "/pages/{pageId}",
         "definition": {
-          "entityName": "UserProfile",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "Stores the personalized public profile details for a user. The document ID is 'profile' (a fixed string). The 'id' field within the UserProfile document will match the '{userId}' from the path, ensuring a 1:1 relationship. This collection is editable by the owning user and publicly readable via the `/profile_slug_lookup` collection.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user who owns this profile."
-            }
-          ]
+          "entityName": "Page",
+          "schema": { "$ref": "#/backend/entities/Page" },
+          "description": "Stores all data for a single Bento page. Publicly readable, but only writable by the owner."
         }
       },
       {
-        "path": "/users/{userId}/profile/links/{linkId}",
+        "path": "/pages/{pageId}/links/{linkId}",
         "definition": {
           "entityName": "Link",
-          "schema": {
-            "$ref": "#/backend/entities/Link"
-          },
-          "description": "Stores custom links added by a user to their BioBloom profile. This collection is deeply nested under the user's profile, ensuring direct ownership. The 'userProfileId' field within the Link document will match the '{userId}' of the parent profile, maintaining consistency. Editable by the owning user and publicly readable via the profile and '/profile_slug_lookup' lookup.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the user who owns these links."
-            },
-            {
-              "name": "linkId",
-              "description": "The unique identifier for a specific link."
-            }
-          ]
+          "schema": { "$ref": "#/backend/entities/Link" },
+          "description": "Stores links for a specific page. Publicly readable, writable by the page owner."
         }
       },
       {
-        "path": "/profile_slug_lookup/{uniqueProfileUrlSlug}",
+        "path": "/slug_lookups/{slug}",
         "definition": {
-          "entityName": "ProfileSlugLookup",
-          "schema": {
-            "$ref": "#/backend/entities/UserProfile"
-          },
-          "description": "A lookup collection for unique profile URL slugs. Each document's ID is the 'uniqueProfileUrlSlug' and its content includes the 'userId' of the owner. This collection is publicly readable to allow routing to user profiles, but only the owning user can create, update, or delete their specific slug entry (denormalized 'userId' in document for write authorization).",
-          "params": [
-            {
-              "name": "uniqueProfileUrlSlug",
-              "description": "The unique, user-defined slug for their BioBloom profile URL."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/themes/{themeId}",
-        "definition": {
-          "entityName": "Theme",
-          "schema": {
-            "$ref": "#/backend/entities/Theme"
-          },
-          "description": "Stores predefined system themes. This collection is globally readable by all users. Write, update, and delete operations are restricted to administrators.",
-          "params": [
-            {
-              "name": "themeId",
-              "description": "The unique identifier for a specific theme."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/roles_admin/{adminUid}",
-        "definition": {
-          "entityName": "AdminRole",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "A security-rules based access control collection. The existence of a document with a user's UID in this collection grants administrative privileges (e.g., for managing themes). Only administrators can create or delete documents in this collection, and users can only read their own entry to verify their admin status.",
-          "params": [
-            {
-              "name": "adminUid",
-              "description": "The Firebase Authentication UID of a user with administrative privileges."
-            }
-          ]
+          "entityName": "SlugLookup",
+          "schema": { "$ref": "#/backend/entities/SlugLookup" },
+          "description": "A public lookup table to map unique URL slugs to page IDs. Writable only by the page owner."
         }
       }
-    ],
-    "reasoning": "The Firestore structure is designed following the core principles of Authorization Independence, Structural Segregation, and DBAC, with a strong emphasis on QAPs and clear data predictability. \n\n1.  **Authorization Independence & Hierarchical Data:** User-specific data (User, UserProfile, Links) is organized under a hierarchical path `/users/{userId}/profile/links/{linkId}`. This structure inherently ensures authorization independence for these entities. A document at `/users/{userId}` (representing the User entity itself), `/users/{userId}/profile` (representing the UserProfile entity), or `/users/{userId}/profile/links/{linkId}` (representing a Link entity) is automatically secured by matching `request.auth.uid` directly to the `{userId}` wildcard in the path. This eliminates the need for `get()` calls in security rules to check ownership or parent data, simplifying rules and enabling atomic operations.\n\n2.  **Public Profile Access (QAPs) & Lookup Collection:** To address the requirement for publicly accessible user profiles via a unique URL slug (`biobloom.me/{uniqueProfileUrlSlug}`), a dedicated lookup collection `/profile_slug_lookup/{uniqueProfileUrlSlug}` is introduced. Each document in this collection serves as a public mapping from a unique slug to the owning `userId`. \n    *   For **public reads**, an anonymous user first queries `/profile_slug_lookup/{uniqueProfileUrlSlug}` to retrieve the `userId`. This is a direct `get()` operation, not a `list` that would violate QAP. \n    *   Once the `userId` is obtained, the frontend can then perform direct `get()` operations on `/users/{userId}/profile` and `list` operations on `/users/{userId}/profile/links` to fetch the profile and its associated links. Since these subsequent operations are scoped by a known `userId` (obtained from the lookup), they do not violate QAPs by filtering on data within the rules. \n    *   Writes to this lookup collection are secured by denormalizing the `userId` into the document itself and requiring `request.auth.uid` to match this `userId`, ensuring only the owner can manage their profile slug entry.\n\n3.  **Structural Segregation & Global Data:**\n    *   **Themes:** `/themes/{themeId}` is a top-level collection for predefined themes. These are globally readable by all users, ensuring QAP for `list` operations. Write access is restricted to administrators using a DBAC model, referencing the `/roles_admin/{adminUid}` collection, which contains documents whose existence grants admin privileges. This cleanly separates global, public data from user-owned data and admin-controlled data.\n    *   **Admin Roles:** `/roles_admin/{adminUid}` is a dedicated collection for defining administrative roles using the existence of a document with the user's UID as its ID. This is a robust DBAC implementation.\n\n4.  **Data Predictability:** Wildcards are semantically named (e.g., `{userId}`, `{linkId}`, `{uniqueProfileUrlSlug}`). Schema consistency is maintained with explicit `createdAt` and `updatedAt` fields. The `UserProfile.id` field will match the `userId` of its owner, ensuring a clear 1:1 relationship with the User entity and simplifying data consistency."
+    ]
   }
 }

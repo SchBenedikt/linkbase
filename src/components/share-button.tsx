@@ -4,11 +4,15 @@ import { Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
-export function ShareButton() {
+interface ShareButtonProps {
+  publicUrl: string;
+}
+
+export function ShareButton({ publicUrl }: ShareButtonProps) {
   const { toast } = useToast();
 
   const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
+    navigator.clipboard.writeText(publicUrl);
     toast({
       title: "Copied to clipboard!",
       description: "You can now share your BioBloom profile.",

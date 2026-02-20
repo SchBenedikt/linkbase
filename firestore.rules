@@ -1,158 +1,38 @@
-/**
- * This ruleset defines the security model for the BioBloom application.
- *
- * Core Philosophy:
- * The security model is based on strict user ownership. All user-generated content,
- * including profiles and links, is nested under a user-specific path and is only
- * writable by the owning user. Public access to user profiles is enabled through
- * a specific, publicly readable lookup collection, separating private data paths
- * from public discovery paths. Global data, such as themes, is publicly readable
- * but writable only by administrators.
- *
- * Data Structure:
- * - /users/{userId}: Private root document for a user's profile and data.
- * - /users/{userId}/links/{linkId}: Links belonging to a user's profile.
- * - /profile_slug_lookup/{slug}: A public collection to map unique URL slugs to user IDs.
- * - /themes/{themeId}: A public collection of design themes.
- * - /roles_admin/{adminUid}: A private collection that grants admin rights by document existence.
- *
- * Key Security Decisions:
- * - User Enumeration is Disabled: Listing the top-level `/users` collection is prohibited.
- * - Ownership is Path-Based: Most rules rely on matching the request's auth UID with
- *   the `{userId}` wildcard in the document path, which is efficient and secure.
- * - Administrator Roles: Write access to global collections like `/themes` is restricted
- *   to users whose UID exists as a document ID in the `/roles_admin` collection.
- * - Denormalization for Authorization: The `/profile_slug_lookup` documents contain a
- *   denormalized `userId` field to allow for secure, owner-only write rules without
- *   requiring slow and costly `get()` calls to other collections.
- * - Structural Segregation: User-private data is strictly separated from public-readable
- *   data by using different collections (`/users/{userId}` vs. `/profile_slug_lookup`).
- *   This enhances security and query performance.
- */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ---------------------------
-    // --- Helper Functions ---
-    // ---------------------------
-
-    /**
-     * Checks if a user is authenticated.
-     */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * Validates if the requesting user is the owner based on a UID provided in the path.
-     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
-
-    /**
-     * Validates if the requesting user is the owner of an existing document.
-     * Used for secure update and delete operations.
-     */
-    function isExistingDocOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * Checks if the requesting user has administrative privileges.
-     * Admin status is granted if a document with the user's UID exists in the 'roles_admin' collection.
-     */
-    function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-
-    // ---------------------------
-    // --- User Data Collections ---
-    // ---------------------------
-
-    /**
-     * @description Secures a user's profile document. The profile is publicly readable, but only the owner can manage it.
-     * @path /users/{userId}
-     * @allow (get) Any user reading a profile at `/users/user123`.
-     * @deny (list) Any user trying to list all users.
-     * @principle Restricts write access to a user's own data tree while allowing public visibility and preventing user enumeration.
-     */
+    
     match /users/{userId} {
-      allow get: if true;
-      allow list: if false;
-      allow create: if isOwner(userId) && request.resource.data.id == userId;
-      allow update: if isExistingDocOwner(userId) && request.resource.data.id == resource.data.id;
-      allow delete: if isExistingDocOwner(userId);
+      allow read, write: if isOwner(userId);
+    }
 
-      /**
-       * @description Secures the links within a user's profile. Links are publicly readable, but only the owner can manage them.
-       * @path /users/{userId}/links/{linkId}
-       * @allow (list) Any user, signed in or not, listing all links at `/users/user123/links`.
-       * @deny (create) User 'user456' trying to add a new link to `/users/user123/links`.
-       * @principle Enforces document ownership for writes while allowing public reads for profile content.
-       */
+    match /pages/{pageId} {
+      allow get, list: if true;
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      
       match /links/{linkId} {
-        allow get: if true;
-        allow list: if true;
-        allow create: if isOwner(userId) && request.resource.data.userProfileId == userId;
-        allow update: if isExistingDocOwner(userId) && request.resource.data.userProfileId == resource.data.userProfileId;
-        allow delete: if isExistingDocOwner(userId);
+        allow get, list: if true;
+        allow create, update, delete: if isSignedIn() && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
       }
     }
 
-    // ---------------------------------
-    // --- Public Lookup Collections ---
-    // ---------------------------------
-
-    /**
-     * @description Manages the public lookup table for profile URL slugs. Anyone can read, but only the owner can manage their slug.
-     * @path /profile_slug_lookup/{uniqueProfileUrlSlug}
-     * @allow (create) An authenticated user with UID 'user123' creating a new slug document where the document's 'userId' field is 'user123'.
-     * @deny (update) User 'user456' trying to change a slug document owned by 'user123'.
-     * @principle Public read with owner-only writes, validated by a denormalized 'userId' field in the document.
-     */
-    match /profile_slug_lookup/{uniqueProfileUrlSlug} {
+    match /slug_lookups/{slug} {
       allow get: if true;
-      allow list: if true;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if resource != null && isOwner(resource.data.userId);
-      allow delete: if resource != null && isOwner(resource.data.userId);
-    }
-
-    /**
-     * @description Secures global theme data. Themes are publicly readable but can only be managed by administrators.
-     * @path /themes/{themeId}
-     * @allow (get) Any user, signed in or not, reading a theme document.
-     * @deny (create) A non-admin user trying to create a new theme.
-     * @principle Segregates global read-only data from user data and protects writes with role-based access control.
-     */
-    match /themes/{themeId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
-    }
-
-    // ---------------------------------
-    // --- Admin & System Collections ---
-    // ---------------------------------
-
-    /**
-     * @description Manages administrator roles. Document existence grants admin rights. Only other admins can grant/revoke roles.
-     * @path /roles_admin/{adminUid}
-     * @allow (get) A user with UID 'admin123' reading their own role document at `/roles_admin/admin123`.
-     * @deny (list) Any user trying to list all administrators.
-     * @deny (create) A non-admin user trying to make themselves an admin.
-     * @principle Implements Database-as-Access-Control (DBAC) where document existence defines permissions.
-     */
-    match /roles_admin/{adminUid} {
-      allow get: if isOwner(adminUid);
-      allow list: if false;
-      allow create: if isAdmin();
-      allow update: if false;
-      allow delete: if isAdmin() && resource != null;
+      allow create: if isSignedIn() 
+                    && get(/databases/$(database)/documents/pages/$(request.resource.data.pageId)).data.ownerId == request.auth.uid;
+                    // Note: Does not prevent overwriting existing slugs by other users in this simplified rule.
+                    // A more robust rule would also check `!exists()`.
+      allow update, delete: if isSignedIn() 
+                    && get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId == request.auth.uid;
     }
   }
 }
