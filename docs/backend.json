@@ -72,7 +72,7 @@
         "title": { "type": "string" },
         "content": { "type": "string", "description": "The full content of the blog post, likely in Markdown." },
         "slug": { "type": "string", "description": "A unique slug for the post's URL." },
-        "status": { "type": "string", "enum": ["draft", "published"] },
+        "status": { "type": "string", "enum": ["draft", "published"], "description": "The current status of the post." },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
@@ -132,3 +132,8 @@
           "entityName": "SlugLookup",
           "schema": { "$ref": "#/backend/entities/SlugLookup" },
           "description": "A public lookup table to map unique URL slugs to page IDs. Writable only by the page owner."
+        }
+      }
+    ]
+  }
+}
