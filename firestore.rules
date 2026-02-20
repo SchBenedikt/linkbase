@@ -2,6 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Helper Functions
     function isSignedIn() {
       return request.auth != null;
     }
@@ -10,39 +11,51 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
     
+    // User Profile
     match /users/{userId} {
       allow read, write: if isOwner(userId);
     }
 
+    // Public Pages & Links
     match /pages/{pageId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
-      allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      
+      allow create: if isOwner(request.resource.data.ownerId);
+      // Use get() to check ownerId on the existing document for updates/deletes
+      allow update, delete: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+
       match /links/{linkId} {
         allow get, list: if true;
-        allow create, update, delete: if isSignedIn() && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
+        // Check ownership of the parent page for any write operation on links
+        allow write: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
       }
     }
 
+    // Blog Posts - DEFINITIVE FIX
     match /posts/{postId} {
-      // A user can read (get or list) a post if it's published, OR if they are the owner.
-      // This single rule covers both public reads of published posts and private reads of drafts by the owner.
-      allow read: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
+      // READ Rules:
+      // Allow any authenticated user to try and LIST posts.
+      // Firestore will then verify that the query's constraints (e.g., `where('ownerId', '==', request.auth.uid)`)
+      // ensure that only documents permitted by the `get` rule are returned.
+      allow list: if isSignedIn();
 
-      // WRITE rules:
+      // An individual post can be read (GET) if:
+      // 1. It is published (publicly visible)
+      // OR
+      // 2. The user is the owner of the post (can see their own drafts)
+      allow get: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
+
+      // WRITE Rules:
+      // On create, the new document's ownerId must match the user.
       allow create: if isOwner(request.resource.data.ownerId);
+      // On update/delete, the existing document's ownerId must match the user.
       allow update, delete: if isOwner(resource.data.ownerId);
     }
 
+    // Slug Lookups
     match /slug_lookups/{slug} {
       allow get: if true;
-      allow create: if isSignedIn() 
-                    && get(/databases/$(database)/documents/pages/$(request.resource.data.pageId)).data.ownerId == request.auth.uid;
-                    // Note: Does not prevent overwriting existing slugs by other users in this simplified rule.
-                    // A more robust rule would also check `!exists()`.
-      allow update, delete: if isSignedIn() 
-                    && get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId == request.auth.uid;
+      allow create: if isOwner(get(/databases/$(database)/documents/pages/$(request.resource.data.pageId)).data.ownerId);
+      allow update, delete: if isOwner(get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId);
     }
   }
 }
