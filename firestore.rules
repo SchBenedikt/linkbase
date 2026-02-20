@@ -10,9 +10,8 @@
  * but writable only by administrators.
  *
  * Data Structure:
- * - /users/{userId}: Private root document for a user.
- * - /users/{userId}/profile/{profileId}: User's public profile data.
- * - /users/{userId}/profile/links/{linkId}: Links belonging to a user's profile.
+ * - /users/{userId}: Private root document for a user's profile and data.
+ * - /users/{userId}/links/{linkId}: Links belonging to a user's profile.
  * - /profile_slug_lookup/{slug}: A public collection to map unique URL slugs to user IDs.
  * - /themes/{themeId}: A public collection of design themes.
  * - /roles_admin/{adminUid}: A private collection that grants admin rights by document existence.
@@ -73,48 +72,33 @@ service cloud.firestore {
     // ---------------------------
 
     /**
-     * @description Secures a user's private root document. Only the owner can manage it.
+     * @description Secures a user's profile document. The profile is publicly readable, but only the owner can manage it.
      * @path /users/{userId}
-     * @allow (create) An authenticated user with UID 'user123' creating their own document at `/users/user123`.
-     * @deny (get) User 'user456' trying to read the document at `/users/user123`.
-     * @principle Restricts access to a user's own data tree and prevents user enumeration.
+     * @allow (get) Any user reading a profile at `/users/user123`.
+     * @deny (list) Any user trying to list all users.
+     * @principle Restricts write access to a user's own data tree while allowing public visibility and preventing user enumeration.
      */
     match /users/{userId} {
-      allow get: if isOwner(userId);
+      allow get: if true;
       allow list: if false;
       allow create: if isOwner(userId) && request.resource.data.id == userId;
       allow update: if isExistingDocOwner(userId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingDocOwner(userId);
-    }
 
-    /**
-     * @description Secures a user's public profile documents. The profile is publicly readable, but only the owner can write to it.
-     * @path /users/{userId}/profile/{profileId}
-     * @allow (get) Any user, signed in or not, reading a profile at `/users/user123/profile/my_profile`.
-     * @deny (update) User 'user456' trying to update the profile at `/users/user123/profile/my_profile`.
-     * @principle Enforces document ownership for writes while allowing public reads for profile visibility.
-     */
-    match /users/{userId}/profile/{profileId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isOwner(userId) && request.resource.data.userId == userId;
-      allow update: if isExistingDocOwner(userId) && request.resource.data.userId == resource.data.userId;
-      allow delete: if isExistingDocOwner(userId);
-    }
-
-    /**
-     * @description Secures the links within a user's profile. Links are publicly readable, but only the owner can manage them.
-     * @path /users/{userId}/profile/links/{linkId}
-     * @allow (list) Any user, signed in or not, listing all links at `/users/user123/profile/links`.
-     * @deny (create) User 'user456' trying to add a new link to `/users/user123/profile/links`.
-     * @principle Enforces document ownership for writes while allowing public reads for profile content.
-     */
-    match /users/{userId}/profile/links/{linkId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isOwner(userId) && request.resource.data.userProfileId == userId;
-      allow update: if isExistingDocOwner(userId) && request.resource.data.userProfileId == resource.data.userProfileId;
-      allow delete: if isExistingDocOwner(userId);
+      /**
+       * @description Secures the links within a user's profile. Links are publicly readable, but only the owner can manage them.
+       * @path /users/{userId}/links/{linkId}
+       * @allow (list) Any user, signed in or not, listing all links at `/users/user123/links`.
+       * @deny (create) User 'user456' trying to add a new link to `/users/user123/links`.
+       * @principle Enforces document ownership for writes while allowing public reads for profile content.
+       */
+      match /links/{linkId} {
+        allow get: if true;
+        allow list: if true;
+        allow create: if isOwner(userId) && request.resource.data.userProfileId == userId;
+        allow update: if isExistingDocOwner(userId) && request.resource.data.userProfileId == resource.data.userProfileId;
+        allow delete: if isExistingDocOwner(userId);
+      }
     }
 
     // ---------------------------------
