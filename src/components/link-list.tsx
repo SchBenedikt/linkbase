@@ -18,6 +18,7 @@ import { BlogOverviewCard } from './blog-overview-card';
 // Sortable Item Wrapper
 function SortableLinkItem(props: {
   link: Link;
+  ownerId?: string;
   appearance: AppearanceSettings;
   onEdit?: (link: Link) => void;
   onDelete?: (link: Link) => void;
@@ -61,7 +62,7 @@ function SortableLinkItem(props: {
       CardComponent = <ArticleCard {...props} isEditable={true} dragHandleListeners={listeners} />;
       break;
     case 'blog-overview':
-      CardComponent = <BlogOverviewCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+      CardComponent = props.ownerId ? <BlogOverviewCard {...props} ownerId={props.ownerId} isEditable={true} dragHandleListeners={listeners} /> : null;
       break;
     default:
       CardComponent = <LinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
@@ -78,6 +79,7 @@ function SortableLinkItem(props: {
 
 interface LinkListProps {
   links: Link[];
+  ownerId?: string;
   onAddLink?: () => void;
   onEditLink?: (link: Link) => void;
   onDeleteLink?: (link: Link) => void;
@@ -88,6 +90,7 @@ interface LinkListProps {
 
 export function LinkList({
   links,
+  ownerId,
   onAddLink,
   onEditLink,
   onDeleteLink,
@@ -119,6 +122,7 @@ export function LinkList({
               <SortableLinkItem
                 key={link.id}
                 link={link}
+                ownerId={ownerId}
                 appearance={appearance}
                 onEdit={onEditLink ? () => onEditLink(link) : undefined}
                 onDelete={onDeleteLink ? () => onDeleteLink(link) : undefined}
@@ -173,7 +177,7 @@ export function LinkList({
                 CardComponent = <ArticleCard link={link} appearance={appearance} isEditable={false} />;
                 break;
             case 'blog-overview':
-                CardComponent = <BlogOverviewCard link={link} appearance={appearance} isEditable={false} />;
+                CardComponent = ownerId ? <BlogOverviewCard link={link} ownerId={ownerId} appearance={appearance} isEditable={false} /> : null;
                 break;
             default:
                 CardComponent = <LinkCard link={link} appearance={appearance} isEditable={false} />;

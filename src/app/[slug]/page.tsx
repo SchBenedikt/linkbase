@@ -148,6 +148,7 @@ export default function PublicPage() {
                     <div className="md:col-span-2">
                         <LinkList
                             links={links || []}
+                            ownerId={page?.ownerId}
                             appearance={appearance}
                             isEditable={false}
                         />

@@ -1,8 +1,9 @@
 'use client';
 
+import { useMemo } from 'react';
 import { GripVertical, MoreVertical, Trash2, Edit } from 'lucide-react';
 import Link from 'next/link';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 
 import type { Link as LinkType, AppearanceSettings, Post } from '@/lib/types';
@@ -13,6 +14,7 @@ import { Skeleton } from './ui/skeleton';
 
 interface BlogOverviewCardProps {
   link: LinkType;
+  ownerId: string;
   onEdit?: () => void;
   onDelete?: () => void;
   appearance: AppearanceSettings;
@@ -20,19 +22,31 @@ interface BlogOverviewCardProps {
   dragHandleListeners?: React.HTMLAttributes<any>;
 }
 
-export function BlogOverviewCard({ link, onEdit, onDelete, appearance, isEditable = false, dragHandleListeners }: BlogOverviewCardProps) {
+export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, isEditable = false, dragHandleListeners }: BlogOverviewCardProps) {
   const firestore = useFirestore();
+  
+  // Simplified query for all posts by the owner, avoiding composite index
   const postsQuery = useMemoFirebase(() =>
-    link.pageId ? query(
+    ownerId ? query(
         collection(firestore, 'posts'),
-        where('pageId', '==', link.pageId),
-        where('status', '==', 'published'),
-        orderBy('createdAt', 'desc'),
-        limit(5)
+        where('ownerId', '==', ownerId)
     ) : null,
-    [firestore, link.pageId]
+    [firestore, ownerId]
   );
-  const { data: posts, isLoading } = useCollection<Post>(postsQuery);
+  const { data: allPosts, isLoading } = useCollection<Post>(postsQuery);
+
+  // Client-side filtering and sorting
+  const posts = useMemo(() => {
+    if (!allPosts) return [];
+    return allPosts
+      .filter(p => p.status === 'published')
+      .sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+        return dateB - dateA; // Sort descending
+      })
+      .slice(0, 5);
+  }, [allPosts]);
 
   const cardStyle: React.CSSProperties = {
     borderWidth: `${appearance.borderWidth || 0}px`,
@@ -69,7 +83,7 @@ export function BlogOverviewCard({ link, onEdit, onDelete, appearance, isEditabl
                     <Skeleton className="h-5 w-2/3" />
                 </div>
             )}
-            {posts && posts.length > 0 && (
+            {posts && posts.length > 0 && !isLoading && (
                 <ul className="space-y-3">
                     {posts.map(post => (
                         <li key={post.id}>

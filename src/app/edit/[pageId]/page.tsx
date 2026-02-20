@@ -329,6 +329,7 @@ export default function EditPage() {
           <ProfileHeader page={page} onEdit={() => setSheetState({ view: 'editProfile', open: true })} isEditable={true} />
           <LinkList
             links={links || []}
+            ownerId={page?.ownerId}
             onAddLink={() => setSheetState({ view: 'addContent', open: true })}
             onEditLink={(link) => setSheetState({ view: 'editContent', open: true, content: link })}
             onDeleteLink={setLinkToDelete}
