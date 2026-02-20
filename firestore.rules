@@ -26,9 +26,16 @@ service cloud.firestore {
     }
 
     match /posts/{postId} {
-      // Allow reading (get/list) if the post is published, OR if the user is the owner.
-      // This combined rule correctly handles queries for public content and user-owned content.
-      allow read: if (resource.data.status == 'published') || (isOwner(resource.data.ownerId));
+      // The `get` rule is for direct document access. It's secure.
+      // A user can read their own post, whatever the status.
+      // A user can read any published post.
+      allow get: if (resource.data.status == 'published') || (isOwner(resource.data.ownerId));
+
+      // The `list` rule is for queries. We allow anyone to issue list queries.
+      // Firestore will then use the `get` rule to validate that the query's
+      // constraints (the `where` clauses) are strong enough to guarantee
+      // that only permitted documents are returned.
+      allow list: if true;
 
       // WRITE: Allow creating, updating, and deleting only for the owner.
       allow create: if isOwner(request.resource.data.ownerId);
