@@ -13,7 +13,7 @@ interface LinkCardProps {
 
 export function LinkCard({ link }: LinkCardProps) {
   return (
-    <Card className="group relative overflow-hidden transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-[1.02] bg-card">
+    <Card className="group relative overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-[1.03] bg-card">
         <a href={link.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
             <span className="sr-only">Visit {link.title}</span>
         </a>
@@ -26,12 +26,12 @@ export function LinkCard({ link }: LinkCardProps) {
                 sizes="(max-width: 640px) 100vw, 640px"
                 className="object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent" />
         </div>
-        <div className="relative flex flex-col justify-end h-40 p-4">
-            <h3 className="font-headline font-bold text-lg text-white drop-shadow-md">{link.title}</h3>
-            <p className="text-sm text-white/80 drop-shadow-sm flex items-center gap-1">
-              <ExternalLink className="h-3 w-3" />
+        <div className="relative flex flex-col justify-end h-48 p-5">
+            <h3 className="font-headline font-bold text-xl text-white drop-shadow-md">{link.title}</h3>
+            <p className="text-sm text-white/80 drop-shadow-sm flex items-center gap-1.5 mt-1">
+              <ExternalLink className="h-3.5 w-3.5" />
               <span>{link.url}</span>
             </p>
         </div>
