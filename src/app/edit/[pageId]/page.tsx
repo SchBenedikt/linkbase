@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { doc, collection, deleteDoc, setDoc } from 'firebase/firestore';
 
@@ -42,8 +43,7 @@ const initialAppearance: AppearanceSettings = {
 };
 
 export default function EditPage({ params }: { params: { pageId: string } }) {
-  const resolvedParams = use(Promise.resolve(params));
-  const { pageId } = resolvedParams;
+  const { pageId } = params;
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
@@ -230,7 +230,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
 
   if (isUserLoading || isPageLoading) {
     return (
-        <div className="min-h-screen bg-background p-8">
+        <div className="min-h-screen bg-[#f3f3f1] p-8">
             <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
                 <div className="w-full flex justify-end gap-2 mb-8">
                     <Skeleton className="h-10 w-24" />
@@ -250,7 +250,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
 
   if (!user || !page) {
       return (
-        <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="flex items-center justify-center min-h-screen bg-[#f3f3f1]">
             <p>Seite wird geladen oder Sie haben keine Berechtigung...</p>
         </div>
       )
@@ -292,7 +292,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
       </main>
 
       <Sheet open={sheetState.open} onOpenChange={(open) => !open && closeSheet()}>
-        <SheetContent>
+        <SheetContent className="bg-[#f3f3f1]">
           <SheetHeader>
             <SheetTitle>
                 {sheetState.open && sheetState.view === 'editProfile' && 'Edit your Page'}
@@ -309,7 +309,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
       </Sheet>
 
       <AlertDialog open={!!linkToDelete} onOpenChange={(open) => !open && setLinkToDelete(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-[#f3f3f1]">
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
