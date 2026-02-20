@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { GripVertical, MoreVertical, Trash2, Edit, ExternalLink } from 'lucide-react';
-import type { Link } from '@/lib/types';
+import type { Link, AppearanceSettings } from '@/lib/types';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from './ui/dropdown-menu';
@@ -11,11 +11,25 @@ interface LinkCardProps {
   link: Link;
   onEdit: () => void;
   onDelete: () => void;
+  appearance: AppearanceSettings;
 }
 
-export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
+export function LinkCard({ link, onEdit, onDelete, appearance }: LinkCardProps) {
+  const cardStyle: React.CSSProperties = {
+    borderWidth: `${appearance.borderWidth || 0}px`,
+    borderColor: appearance.borderColor,
+    borderStyle: appearance.borderWidth ? 'solid' : 'none',
+  };
+
+  if (!appearance.borderWidth) {
+      cardStyle.borderWidth = '0px';
+  }
+
   return (
-    <Card className="group relative overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-[1.03] bg-card">
+    <Card 
+        className="group relative overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-[1.03] bg-card"
+        style={cardStyle}
+    >
         <a href={link.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
             <span className="sr-only">Visit {link.title}</span>
         </a>

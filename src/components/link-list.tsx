@@ -1,7 +1,7 @@
 'use client';
 
 import { PlusCircle } from 'lucide-react';
-import type { Link } from '@/lib/types';
+import type { Link, AppearanceSettings } from '@/lib/types';
 import { LinkCard } from './link-card';
 import { Button } from './ui/button';
 
@@ -10,9 +10,10 @@ interface LinkListProps {
   onAddLink: () => void;
   onEditLink: (link: Link) => void;
   onDeleteLink: (link: Link) => void;
+  appearance: AppearanceSettings;
 }
 
-export function LinkList({ links, onAddLink, onEditLink, onDeleteLink }: LinkListProps) {
+export function LinkList({ links, onAddLink, onEditLink, onDeleteLink, appearance }: LinkListProps) {
   return (
     <div className="space-y-4">
       {links.map((link) => (
@@ -21,6 +22,7 @@ export function LinkList({ links, onAddLink, onEditLink, onDeleteLink }: LinkLis
           link={link}
           onEdit={() => onEditLink(link)}
           onDelete={() => onDeleteLink(link)}
+          appearance={appearance}
         />
       ))}
       <Button variant="outline" className="w-full h-16 border-dashed hover:border-solid hover:bg-accent/20 transition-all duration-300" onClick={onAddLink}>

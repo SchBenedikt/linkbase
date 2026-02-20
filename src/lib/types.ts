@@ -23,3 +23,16 @@ export type AITheme = {
   themeDescription: string;
   colorPalettes: ColorPalette[];
 };
+
+export type AppearanceSettings = {
+  backgroundImage?: string; // URL for image
+  backgroundColor?: string; // Fallback or solid color
+  primaryColor?: string;
+  accentColor?: string;
+  foregroundColor?: string; // Main text color
+  cardColor?: string;
+  cardForegroundColor?: string;
+  borderRadius?: number; // in rem
+  borderWidth?: number; // in px
+  borderColor?: string;
+};

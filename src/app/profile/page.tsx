@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { Profile, Link, AITheme } from '@/lib/types';
+import type { Profile, Link, AITheme, AppearanceSettings } from '@/lib/types';
 import { ProfileHeader } from '@/components/profile-header';
 import { LinkList } from '@/components/link-list';
 import { ThemeSwitcher } from '@/components/theme-switcher';
@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileEditor } from '@/components/profile-editor';
 import { LinkEditor } from '@/components/link-editor';
+import { hexToHsl, getContrastColor } from '@/lib/utils';
 
 const initialProfile: Profile = {
   name: 'Jamie Doe',
@@ -31,15 +32,31 @@ type SheetState =
   | { view: 'editLink'; open: true; link: Link }
   | { open: false };
 
+const initialAppearance: AppearanceSettings = {
+  backgroundImage: '',
+  backgroundColor: '#f0f0f0',
+  primaryColor: '#6366f1',
+  accentColor: '#ec4899',
+  foregroundColor: '#111827',
+  cardColor: '#ffffff',
+  cardForegroundColor: '#111827',
+  borderRadius: 1.25,
+  borderWidth: 0,
+  borderColor: '#e5e7eb',
+};
+
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile>(initialProfile);
   const [links, setLinks] = useState<Link[]>(initialLinks);
-  const [themeStyle, setThemeStyle] = useState<React.CSSProperties>({});
   
-  // This is to avoid hydration mismatch for browser-specific APIs
+  const [dynamicStyles, setDynamicStyles] = useState<React.CSSProperties>({});
+  const [appearance, setAppearance] = useState<AppearanceSettings>(initialAppearance);
+  
   const [isClient, setIsClient] = useState(false);
   useEffect(() => {
     setIsClient(true);
+    handleAppearanceSave(initialAppearance);
   }, []);
 
   const [sheetState, setSheetState] = useState<SheetState>({ open: false });
@@ -54,11 +71,9 @@ export default function ProfilePage() {
 
   const handleSaveLink = (data: { title: string; url: string }) => {
     if (sheetState.open && sheetState.view === 'editLink') {
-      // Update existing link
       const updatedLink = { ...sheetState.link, ...data };
       setLinks(links.map((l) => (l.id === updatedLink.id ? updatedLink : l)));
     } else {
-      // Add new link
       const randomImage = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)];
       const newLink: Link = {
         id: Date.now().toString(),
@@ -78,49 +93,31 @@ export default function ProfilePage() {
     }
   };
 
+  const generateStylesFromAppearance = (settings: AppearanceSettings): React.CSSProperties => {
+    const styles: React.CSSProperties = {
+        '--radius': `${settings.borderRadius ?? 1.25}rem`,
+        '--background': hexToHsl(settings.backgroundColor),
+        '--foreground': hexToHsl(settings.foregroundColor),
+        '--card': hexToHsl(settings.cardColor),
+        '--card-foreground': hexToHsl(settings.cardForegroundColor),
+        '--popover': hexToHsl(settings.cardColor),
+        '--popover-foreground': hexToHsl(settings.cardForegroundColor),
+        '--primary': hexToHsl(settings.primaryColor),
+        '--primary-foreground': getContrastColor(settings.primaryColor),
+        '--accent': hexToHsl(settings.accentColor),
+        '--accent-foreground': getContrastColor(settings.accentColor),
+        '--border': hexToHsl(settings.borderColor),
+        '--input': hexToHsl(settings.backgroundColor),
+        '--ring': hexToHsl(settings.primaryColor),
+    };
+    return styles;
+  }
 
-  const hexToHsl = (H: string | undefined): string => {
-    if (!H) return '0 0% 0%';
-    let r = 0, g = 0, b = 0;
-    if (H.length == 4) {
-      r = Number("0x" + H[1] + H[1]);
-      g = Number("0x" + H[2] + H[2]);
-      b = Number("0x" + H[3] + H[3]);
-    } else if (H.length == 7) {
-      r = Number("0x" + H[1] + H[2]);
-      g = Number("0x" + H[3] + H[4]);
-      b = Number("0x" + H[5] + H[6]);
-    }
-    r /= 255; g /= 255; b /= 255;
-    let cmin = Math.min(r,g,b), cmax = Math.max(r,g,b), delta = cmax - cmin, h = 0, s = 0, l = 0;
-    if (delta == 0) h = 0;
-    else if (cmax == r) h = ((g - b) / delta) % 6;
-    else if (cmax == g) h = (b - r) / delta + 2;
-    else h = (r - g) / delta + 4;
-    h = Math.round(h * 60);
-    if (h < 0) h += 360;
-    l = (cmax + cmin) / 2;
-    s = delta == 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
-    s = +(s * 100).toFixed(1);
-    l = +(l * 100).toFixed(1);
-    return `${h} ${s}% ${l}%`;
+  const handleAppearanceSave = (settings: AppearanceSettings) => {
+    setAppearance(settings);
+    setDynamicStyles(generateStylesFromAppearance(settings));
   };
 
-  const getContrastColor = (H: string | undefined): string => {
-    if (!H) return '0 0% 98%';
-    let r = 0, g = 0, b = 0;
-    if (H.length == 4) {
-      r = Number("0x" + H[1] + H[1]);
-      g = Number("0x" + H[2] + H[2]);
-      b = Number("0x" + H[3] + H[3]);
-    } else if (H.length == 7) {
-      r = Number("0x" + H[1] + H[2]);
-      g = Number("0x" + H[3] + H[4]);
-      b = Number("0x" + H[5] + H[6]);
-    }
-    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return (yiq >= 128) ? '240 10% 3.9%' : '0 0% 98%';
-  };
 
   const handleThemeApply = (theme: AITheme) => {
     const primaryPalette = theme.colorPalettes.find(p => p.name.toLowerCase().includes('primary')) || theme.colorPalettes[0];
@@ -128,24 +125,17 @@ export default function ProfilePage() {
     const backgroundPalette = theme.colorPalettes.find(p => p.name.toLowerCase().includes('background')) || theme.colorPalettes[2] || accentPalette;
     
     if (primaryPalette && accentPalette && backgroundPalette) {
-      const newBackground = backgroundPalette.colors[0];
-      const newCard = backgroundPalette.colors[1] || newBackground;
-
-      setThemeStyle({
-        '--background': hexToHsl(newBackground),
-        '--foreground': getContrastColor(newBackground),
-        '--card': hexToHsl(newCard),
-        '--card-foreground': getContrastColor(newCard),
-        '--popover': hexToHsl(newCard),
-        '--popover-foreground': getContrastColor(newCard),
-        '--primary': hexToHsl(primaryPalette.colors[0]),
-        '--primary-foreground': getContrastColor(primaryPalette.colors[0]),
-        '--accent': hexToHsl(accentPalette.colors[0]),
-        '--accent-foreground': getContrastColor(accentPalette.colors[0]),
-        '--border': hexToHsl(backgroundPalette.colors[2] || newCard),
-        '--input': hexToHsl(backgroundPalette.colors[2] || newCard),
-        '--ring': hexToHsl(primaryPalette.colors[0]),
-      });
+      const newAppearance: AppearanceSettings = {
+        ...appearance,
+        backgroundColor: backgroundPalette.colors[0],
+        cardColor: backgroundPalette.colors[1] || backgroundPalette.colors[0],
+        borderColor: backgroundPalette.colors[2] || backgroundPalette.colors[1],
+        primaryColor: primaryPalette.colors[0],
+        accentColor: accentPalette.colors[0],
+        foregroundColor: getContrastColor(backgroundPalette.colors[0]),
+        cardForegroundColor: getContrastColor(backgroundPalette.colors[1] || backgroundPalette.colors[0]),
+      };
+      handleAppearanceSave(newAppearance);
     }
   };
 
@@ -181,13 +171,25 @@ export default function ProfilePage() {
      }
   }
 
+  const mainStyle: React.CSSProperties = {};
+  if (appearance.backgroundImage) {
+      mainStyle.backgroundImage = `url(${appearance.backgroundImage})`;
+      mainStyle.backgroundSize = 'cover';
+      mainStyle.backgroundPosition = 'center';
+      mainStyle.backgroundAttachment = 'fixed';
+  }
+
   return (
-    <div style={themeStyle as React.CSSProperties}>
-      <main className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 bg-background">
+    <div style={dynamicStyles as React.CSSProperties}>
+      <main className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
         <div className="w-full max-w-2xl mx-auto">
           <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
             {isClient && <ShareButton />}
-            <ThemeSwitcher onThemeApply={handleThemeApply} />
+            <ThemeSwitcher 
+              onThemeApply={handleThemeApply}
+              onAppearanceSave={handleAppearanceSave}
+              initialAppearance={appearance}
+            />
           </div>
           <ProfileHeader profile={profile} onEdit={() => setSheetState({ view: 'editProfile', open: true })} />
           <LinkList
@@ -195,6 +197,7 @@ export default function ProfilePage() {
             onAddLink={() => setSheetState({ view: 'addLink', open: true })}
             onEditLink={(link) => setSheetState({ view: 'editLink', open: true, link })}
             onDeleteLink={setLinkToDelete}
+            appearance={appearance}
           />
         </div>
         <footer className="w-full max-w-2xl mx-auto mt-12 mb-6 text-center">
