@@ -8,13 +8,10 @@ import type { Profile } from '@/lib/types';
 
 interface ProfileHeaderProps {
   profile: Profile;
-  setProfile: (profile: Profile) => void;
+  onEdit: () => void;
 }
 
-export function ProfileHeader({ profile }: ProfileHeaderProps) {
-  // In a real app, this would open a dialog to edit the profile
-  const handleEditClick = () => {};
-
+export function ProfileHeader({ profile, onEdit }: ProfileHeaderProps) {
   return (
     <header className="flex flex-col items-center text-center py-10 md:py-16">
       <div className="relative mb-6">
@@ -22,23 +19,23 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
           <AvatarImage src={profile.avatarUrl} alt={profile.name} data-ai-hint={profile.avatarHint} />
           <AvatarFallback>{profile.name.charAt(0)}</AvatarFallback>
         </Avatar>
-        <Button variant="outline" size="icon" className="absolute bottom-0 right-0 rounded-full h-9 w-9 bg-background hover:bg-secondary" onClick={handleEditClick}>
+        <Button variant="outline" size="icon" className="absolute bottom-0 right-0 rounded-full h-9 w-9 bg-background hover:bg-secondary" onClick={onEdit}>
             <Edit className="h-4 w-4" />
-            <span className="sr-only">Edit Profile Picture</span>
+            <span className="sr-only">Edit Profile</span>
         </Button>
       </div>
       <div className="relative group flex items-center gap-2">
         <h1 className="font-headline text-5xl md:text-6xl font-bold text-foreground">{profile.name}</h1>
-        <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={handleEditClick}>
+        <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={onEdit}>
             <Edit className="h-5 w-5" />
-            <span className="sr-only">Edit Name</span>
+            <span className="sr-only">Edit Profile</span>
         </Button>
       </div>
       <div className="relative group flex items-center gap-2 mt-3">
         <p className="max-w-md text-lg text-muted-foreground">{profile.bio}</p>
-        <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={handleEditClick}>
+        <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={onEdit}>
             <Edit className="h-4 w-4" />
-            <span className="sr-only">Edit Bio</span>
+            <span className="sr-only">Edit Profile</span>
         </Button>
       </div>
     </header>

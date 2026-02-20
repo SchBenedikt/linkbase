@@ -9,9 +9,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 
 interface LinkCardProps {
   link: Link;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-export function LinkCard({ link }: LinkCardProps) {
+export function LinkCard({ link, onEdit, onDelete }: LinkCardProps) {
   return (
     <Card className="group relative overflow-hidden transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-[1.03] bg-card">
         <a href={link.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
@@ -46,12 +48,12 @@ export function LinkCard({ link }: LinkCardProps) {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={onEdit}>
                         <Edit className="mr-2 h-4 w-4" />
                         <span>Edit</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                    <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive focus:bg-destructive/10">
                         <Trash2 className="mr-2 h-4 w-4" />
                         <span>Delete</span>
                     </DropdownMenuItem>

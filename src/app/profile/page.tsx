@@ -7,6 +7,10 @@ import { LinkList } from '@/components/link-list';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { ShareButton } from '@/components/share-button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { ProfileEditor } from '@/components/profile-editor';
+import { LinkEditor } from '@/components/link-editor';
 
 const initialProfile: Profile = {
   name: 'Jamie Doe',
@@ -21,6 +25,12 @@ const initialLinks: Link[] = [
   { id: '3', title: 'Latest Adventure', url: '#', thumbnailUrl: PlaceHolderImages.find(p => p.id === 'link-thumb-3')?.imageUrl || '', thumbnailHint: PlaceHolderImages.find(p => p.id === 'link-thumb-3')?.imageHint || '' },
 ];
 
+type SheetState = 
+  | { view: 'editProfile'; open: true }
+  | { view: 'addLink'; open: true }
+  | { view: 'editLink'; open: true; link: Link }
+  | { open: false };
+
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile>(initialProfile);
   const [links, setLinks] = useState<Link[]>(initialLinks);
@@ -31,6 +41,43 @@ export default function ProfilePage() {
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const [sheetState, setSheetState] = useState<SheetState>({ open: false });
+  const [linkToDelete, setLinkToDelete] = useState<Link | null>(null);
+
+  const closeSheet = () => setSheetState({ open: false });
+
+  const handleSaveProfile = (data: { name: string; bio?: string }) => {
+    setProfile({ ...profile, ...data });
+    closeSheet();
+  };
+
+  const handleSaveLink = (data: { title: string; url: string }) => {
+    if (sheetState.open && sheetState.view === 'editLink') {
+      // Update existing link
+      const updatedLink = { ...sheetState.link, ...data };
+      setLinks(links.map((l) => (l.id === updatedLink.id ? updatedLink : l)));
+    } else {
+      // Add new link
+      const randomImage = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)];
+      const newLink: Link = {
+        id: Date.now().toString(),
+        ...data,
+        thumbnailUrl: randomImage.imageUrl,
+        thumbnailHint: randomImage.imageHint,
+      };
+      setLinks([newLink, ...links]);
+    }
+    closeSheet();
+  };
+  
+  const confirmDeleteLink = () => {
+    if (linkToDelete) {
+      setLinks(links.filter((l) => l.id !== linkToDelete.id));
+      setLinkToDelete(null);
+    }
+  };
+
 
   const hexToHsl = (H: string | undefined): string => {
     if (!H) return '0 0% 0%';
@@ -102,6 +149,38 @@ export default function ProfilePage() {
     }
   };
 
+  const renderSheetContent = () => {
+    if (!sheetState.open) return null;
+    switch (sheetState.view) {
+      case 'editProfile':
+        return <ProfileEditor profile={profile} onSave={handleSaveProfile} onCancel={closeSheet} />;
+      case 'addLink':
+        return <LinkEditor onSave={handleSaveLink} onCancel={closeSheet} />;
+      case 'editLink':
+        return <LinkEditor link={sheetState.link} onSave={handleSaveLink} onCancel={closeSheet} />;
+      default:
+        return null;
+    }
+  };
+
+  const getSheetTitle = () => {
+     if (!sheetState.open) return '';
+     switch (sheetState.view) {
+        case 'editProfile': return 'Edit your Profile';
+        case 'addLink': return 'Add a new Link';
+        case 'editLink': return 'Edit your Link';
+     }
+  }
+
+  const getSheetDescription = () => {
+    if (!sheetState.open) return '';
+     switch (sheetState.view) {
+        case 'editProfile': return "Update your name and bio. Click save when you're done.";
+        case 'addLink': return "Add a new link to your profile. Click save when you're done.";
+        case 'editLink': return "Update your link details. Click save when you're done.";
+     }
+  }
+
   return (
     <div style={themeStyle as React.CSSProperties}>
       <main className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 bg-background">
@@ -110,8 +189,13 @@ export default function ProfilePage() {
             {isClient && <ShareButton />}
             <ThemeSwitcher onThemeApply={handleThemeApply} />
           </div>
-          <ProfileHeader profile={profile} setProfile={setProfile} />
-          <LinkList links={links} setLinks={setLinks} />
+          <ProfileHeader profile={profile} onEdit={() => setSheetState({ view: 'editProfile', open: true })} />
+          <LinkList
+            links={links}
+            onAddLink={() => setSheetState({ view: 'addLink', open: true })}
+            onEditLink={(link) => setSheetState({ view: 'editLink', open: true, link })}
+            onDeleteLink={setLinkToDelete}
+          />
         </div>
         <footer className="w-full max-w-2xl mx-auto mt-12 mb-6 text-center">
             <p className="text-sm text-muted-foreground">
@@ -119,6 +203,31 @@ export default function ProfilePage() {
             </p>
         </footer>
       </main>
+
+      <Sheet open={sheetState.open} onOpenChange={(open) => !open && closeSheet()}>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>{getSheetTitle()}</SheetTitle>
+            <SheetDescription>{getSheetDescription()}</SheetDescription>
+          </SheetHeader>
+          <div className="py-4">{renderSheetContent()}</div>
+        </SheetContent>
+      </Sheet>
+
+      <AlertDialog open={!!linkToDelete} onOpenChange={(open) => !open && setLinkToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the link titled "{linkToDelete?.title}".
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setLinkToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={confirmDeleteLink}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
