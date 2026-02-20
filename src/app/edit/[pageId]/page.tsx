@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { doc, collection, writeBatch } from 'firebase/firestore';
 import { z } from 'zod';
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
@@ -49,8 +49,9 @@ const linkEditorSchema = z.object({
   rowSpan: z.number().min(1).max(2).default(1),
 });
 
-export default function EditPage({ params }: { params: { pageId: string } }) {
-  const { pageId } = params;
+export default function EditPage() {
+  const params = useParams();
+  const pageId = params.pageId as string;
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
