@@ -90,9 +90,9 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="bg-accent text-primary pt-32 pb-16 px-4">
-            <div className="container mx-auto grid md:grid-cols-3 gap-8 items-center">
-                 <div className="md:col-span-2 flex flex-col gap-6 items-start text-left">
+        <section className="bg-accent text-primary min-h-screen flex items-center pt-24 pb-16 px-4">
+            <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
+                 <div className="flex flex-col gap-6 items-start text-left">
                      <h1 className="font-headline text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tighter leading-tight">
                         One link in bio, made for you.
                     </h1>
@@ -152,7 +152,7 @@ export default function LandingPage() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-primary text-primary-foreground rounded-3xl border-none shadow-none">
+              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-primary text-primary-foreground rounded-3xl border-none">
                 <div>
                   <div className="p-2 bg-white/10 rounded-full w-fit mb-4">
                     <Palette className="h-6 w-6" />
@@ -164,7 +164,7 @@ export default function LandingPage() {
                   Start designing <MoveRight className="h-4 w-4" />
                 </Link>
               </Card>
-              <Card className="p-8 flex flex-col justify-between bg-accent text-accent-foreground rounded-3xl border-none shadow-none">
+              <Card className="p-8 flex flex-col justify-between bg-accent text-accent-foreground rounded-3xl border-none">
                 <div>
                   <div className="p-2 bg-black/10 rounded-full w-fit mb-4">
                     <Sparkles className="h-6 w-6" />
@@ -173,7 +173,7 @@ export default function LandingPage() {
                   <p className="text-accent-foreground/80">Describe your style and our AI will generate stunning color palettes and theme suggestions.</p>
                 </div>
               </Card>
-              <Card className="p-8 flex flex-col justify-between bg-secondary text-secondary-foreground rounded-3xl border-none shadow-none">
+              <Card className="p-8 flex flex-col justify-between bg-secondary text-secondary-foreground rounded-3xl border-none">
                  <div>
                    <div className="p-2 bg-black/10 rounded-full w-fit mb-4">
                       <LinkIcon className="h-6 w-6" />
@@ -182,7 +182,7 @@ export default function LandingPage() {
                   <p className="text-secondary-foreground/80">From social media to projects to shops - present everything that makes you you in one central place.</p>
                 </div>
               </Card>
-              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-destructive text-destructive-foreground rounded-3xl border-none shadow-none">
+              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-destructive text-destructive-foreground rounded-3xl border-none">
                 <div>
                   <div className="p-2 bg-white/10 rounded-full w-fit mb-4">
                      <BarChart3 className="h-6 w-6" />
