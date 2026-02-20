@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
@@ -10,13 +10,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Feather } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
   const auth = useAuth();
   const { user, isUserLoading } = useUser();
+  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -71,7 +72,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
-        <div className="hidden lg:flex flex-col items-center justify-center p-12 bg-[#ff9312] text-[#4c2f05]">
+       <div className="hidden lg:flex flex-col items-center justify-center p-12 bg-secondary text-secondary-foreground">
             <div className="mx-auto w-[400px] space-y-6">
                 <Link href="/" className="font-headline font-bold text-4xl">
                     BioBloom*
@@ -83,7 +84,7 @@ export default function LoginPage() {
         </div>
         <div className="flex items-center justify-center p-6 sm:p-12 bg-background">
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
-                <Link href="/" className="font-headline font-bold text-3xl lg:hidden mb-8 block text-center">
+                <Link href="/" className="font-headline font-bold text-3xl lg:hidden mb-8 block text-center text-primary">
                     BioBloom*
                 </Link>
                 <TabsList className="grid w-full grid-cols-2">

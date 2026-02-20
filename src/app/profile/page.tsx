@@ -134,7 +134,7 @@ export default function DashboardPage() {
                 {pages && pages.length > 0 ? (
                     <div className="grid gap-6">
                         {pages.map((page) => (
-                            <Card key={page.id} className="shadow-lg hover:shadow-xl transition-shadow">
+                            <Card key={page.id} className="shadow-none border">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle className="text-2xl font-bold">{page.displayName}</CardTitle>
                                     <LinkIcon className="h-6 w-6 text-muted-foreground" />
