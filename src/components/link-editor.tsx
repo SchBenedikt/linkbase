@@ -51,6 +51,15 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
       return;
     }
     
+    // Don't fetch for Spotify, as it will be an embed
+    if (/open\.spotify\.com/.test(url)) {
+        toast({
+            title: 'Spotify Link Detected',
+            description: "The link will be displayed as an interactive music embed.",
+        });
+        return;
+    }
+
     setIsFetchingTitle(true);
     try {
       const result = await getWebsiteTitle(url);

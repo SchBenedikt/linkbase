@@ -18,6 +18,7 @@ interface SpotifyLinkCardProps {
 }
 
 export function SpotifyLinkCard({ link, onEdit, onDelete, isEditable = false, appearance, dragHandleListeners }: SpotifyLinkCardProps) {
+    // Regex to find track ID from various Spotify URL formats
     const match = link.url.match(/track\/([a-zA-Z0-9]+)/);
     const trackId = match ? match[1] : null;
 
