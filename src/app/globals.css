@@ -8,25 +8,25 @@ body {
 
 @layer base {
   :root {
-    --background: 220 40% 98%;
-    --foreground: 220 10% 10%;
-    --card: 220 30% 100%;
-    --card-foreground: 220 10% 10%;
-    --popover: 220 30% 100%;
-    --popover-foreground: 220 10% 10%;
-    --primary: 265 90% 60%; /* Vibrant Purple */
-    --primary-foreground: 265 90% 98%;
-    --secondary: 220 20% 92%;
-    --secondary-foreground: 220 10% 10%;
-    --muted: 220 20% 92%;
-    --muted-foreground: 220 5% 45%;
-    --accent: 335 95% 62%; /* Vibrant Pink */
-    --accent-foreground: 335 95% 98%;
+    --background: 84 78% 51%; /* Vibrant Lime Green */
+    --foreground: 240 10% 3.9%; /* Almost Black */
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 84 70% 35%; /* Darker Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 84 60% 85%;
+    --secondary-foreground: 240 10% 3.9%;
+    --muted: 84 50% 92%;
+    --muted-foreground: 240 5% 45%;
+    --accent: 221 83% 53%; /* Bright Blue */
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 220 20% 88%;
-    --input: 220 20% 90%;
-    --ring: 265 90% 60%;
+    --input: 0 0% 100%;
+    --ring: 84 70% 35%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -35,25 +35,25 @@ body {
     --radius: 1.25rem;
   }
   .dark {
-    --background: 240 15% 8%;
-    --foreground: 240 5% 96%;
-    --card: 240 12% 12%;
-    --card-foreground: 240 5% 96%;
-    --popover: 240 12% 12%;
-    --popover-foreground: 240 5% 96%;
-    --primary: 265 90% 70%;
-    --primary-foreground: 265 90% 12%;
-    --secondary: 240 8% 22%;
-    --secondary-foreground: 240 5% 96%;
-    --muted: 240 8% 22%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 5% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 5% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 84 78% 51%;
+    --primary-foreground: 240 10% 3.9%;
+    --secondary: 240 4% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 15%;
     --muted-foreground: 240 5% 65%;
-    --accent: 335 95% 72%;
-    --accent-foreground: 335 95% 12%;
+    --accent: 221 83% 53%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 8% 22%;
-    --input: 240 8% 25%;
-    --ring: 265 90% 70%;
+    --border: 240 4% 15%;
+    --input: 240 4% 12%;
+    --ring: 84 78% 51%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -74,8 +74,8 @@ body {
 @layer utilities {
   .bg-grid-pattern {
     background-image:
-      linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
+      linear-gradient(to right, hsl(var(--foreground), 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground), 0.1) 1px, transparent 1px);
     background-size: 4rem 4rem;
   }
 }
