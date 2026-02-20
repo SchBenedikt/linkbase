@@ -19,8 +19,8 @@ export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeade
   const avatarHint = page.avatarHint || '';
   
   return (
-    <header className="flex flex-col items-center text-center py-10 md:py-16">
-      <div className="relative mb-6 mx-auto">
+    <header className="flex flex-col items-start text-left py-10 md:py-8">
+      <div className="relative mb-6">
         <Avatar className="w-28 h-28 border-4 border-background ring-4 ring-primary shadow-lg">
           <AvatarImage src={avatarUrl} alt={displayName} data-ai-hint={avatarHint} />
           <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
