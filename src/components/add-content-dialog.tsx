@@ -2,30 +2,54 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link as LinkIcon, Music, Youtube } from 'lucide-react';
+import { Link as LinkIcon, Music, Youtube, BookText } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
+import { TextEditor, textSchema } from './text-editor';
 import type { z } from 'zod';
+import type { Link } from '@/lib/types';
+
+
+type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema>) & { type: Link['type'] };
 
 interface AddContentDialogProps {
-  onSave: (data: z.infer<typeof linkSchema>) => void;
+  onSave: (data: ContentFormData) => void;
   onCancel: () => void;
+  contentToEdit?: Link | null;
 }
 
-export function AddContentDialog({ onSave, onCancel }: AddContentDialogProps) {
-  const [contentType, setContentType] = useState<'link' | 'spotify' | 'youtube' | null>(null);
+export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContentDialogProps) {
+  const [contentType, setContentType] = useState<'link' | 'spotify' | 'youtube' | 'text' | null>(contentToEdit?.type || null);
 
   const handleBack = () => setContentType(null);
+  
+  const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema>, type: Link['type']) => {
+    onSave({ ...data, type });
+  };
 
+  // If we are editing, jump straight to the editor
+  if (contentType && contentToEdit) {
+     if (contentToEdit.type === 'text') {
+        return <TextEditor onSave={(data) => handleSave(data, 'text')} onCancel={onCancel} content={contentToEdit} />;
+    }
+    return <LinkEditor onSave={(data) => handleSave(data, contentToEdit.type)} onCancel={onCancel} mode={contentToEdit.type} link={contentToEdit} />;
+  }
+
+  // If we are adding new content, show the correct editor after selection
   if (contentType) {
+    if (contentType === 'text') {
+        return <TextEditor onSave={(data) => handleSave(data, 'text')} onCancel={handleBack} />;
+    }
+    // link, spotify, youtube
     return (
       <LinkEditor
-        onSave={onSave}
+        onSave={(data) => handleSave(data, contentType)}
         onCancel={handleBack}
         mode={contentType}
       />
     );
   }
 
+  // Initial view: show content type options
   return (
     <div className="flex flex-col gap-4 pt-4">
       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('link')}>
@@ -33,6 +57,13 @@ export function AddContentDialog({ onSave, onCancel }: AddContentDialogProps) {
         <div className="text-left">
             <p>Standard Link</p>
             <p className="text-sm font-normal text-muted-foreground">Add a link to any website.</p>
+        </div>
+      </Button>
+       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('text')}>
+        <BookText className="mr-4 h-8 w-8" />
+        <div className="text-left">
+            <p>Text Block</p>
+            <p className="text-sm font-normal text-muted-foreground">Add a title and some text.</p>
         </div>
       </Button>
       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('spotify')}>

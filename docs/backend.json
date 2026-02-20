@@ -42,19 +42,21 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Link",
       "type": "object",
-      "description": "Represents a single custom link on a user's Page.",
+      "description": "Represents a single custom link or content block on a user's Page.",
       "properties": {
         "id": { "type": "string" },
         "pageId": { "type": "string", "description": "Reference to the Page this link belongs to." },
         "title": { "type": "string" },
+        "orderIndex": { "type": "number" },
+        "type": { "type": "string", "enum": ["link", "text", "spotify", "youtube"], "description": "The type of content block." },
         "url": { "type": "string", "format": "uri" },
         "thumbnailUrl": { "type": "string", "format": "uri" },
         "thumbnailHint": { "type": "string", "description": "AI hint for the thumbnail image." },
-        "orderIndex": { "type": "number" },
+        "content": { "type": "string", "description": "Content for text-based cards." },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "pageId", "title", "url", "orderIndex", "createdAt", "updatedAt"]
+      "required": ["id", "pageId", "title", "orderIndex", "type", "createdAt", "updatedAt"]
     },
     "SlugLookup": {
       "$schema": "http://json-schema.org/draft-07/schema#",

@@ -11,6 +11,7 @@ import { LinkCard } from './link-card';
 import { Button } from './ui/button';
 import { SpotifyLinkCard } from './spotify-link-card';
 import { YoutubeLinkCard } from './youtube-link-card';
+import { TextCard } from './text-card';
 
 // Sortable Item Wrapper
 function SortableLinkItem(props: {
@@ -34,18 +35,31 @@ function SortableLinkItem(props: {
     gridRow: `span ${props.link.rowSpan || 1}`,
   };
 
-  const isSpotifyTrack = /open\.spotify\.com\/.*\/track\//.test(props.link.url);
-  const isYoutubeVideo = /(?:youtube\.com|youtu\.be)/.test(props.link.url);
-
-  let CardComponent: React.ReactNode;
-  if (isSpotifyTrack) {
-     CardComponent = <SpotifyLinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
-  } else if (isYoutubeVideo) {
-    CardComponent = <YoutubeLinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
-  } else {
-    CardComponent = <LinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+  const { type, url } = props.link;
+  let componentType = type;
+  // Backwards compatibility for old data that doesn't have the `type` field
+  if (!componentType && url) {
+    if (/spotify/.test(url)) componentType = 'spotify';
+    else if (/youtube/.test(url)) componentType = 'youtube';
+    else componentType = 'link';
   }
 
+  let CardComponent: React.ReactNode;
+  switch (componentType) {
+    case 'text':
+      CardComponent = <TextCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+      break;
+    case 'spotify':
+      CardComponent = <SpotifyLinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+      break;
+    case 'youtube':
+      CardComponent = <YoutubeLinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+      break;
+    default:
+      CardComponent = <LinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+      break;
+  }
+  
   return (
     <div ref={setNodeRef} style={style} {...attributes}>
       {CardComponent}
@@ -110,7 +124,7 @@ export function LinkList({
                 style={{ gridRow: 'span 1', gridColumn: 'span 1' }}
               >
                 <PlusCircle className="h-8 w-8 mb-2" />
-                Add New Link
+                Add Content
               </Button>
             )}
           </div>
@@ -123,8 +137,13 @@ export function LinkList({
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[10rem] gap-4">
       {sortedLinks.map((link) => {
-        const isSpotifyTrack = /open\.spotify\.com\/.*\/track\//.test(link.url);
-        const isYoutubeVideo = /(?:youtube\.com|youtu\.be)/.test(link.url);
+        const { type, url } = link;
+        let componentType = type;
+        if (!componentType && url) { // Backwards compatibility
+            if (/spotify/.test(url)) componentType = 'spotify';
+            else if (/youtube/.test(url)) componentType = 'youtube';
+            else componentType = 'link';
+        }
 
         const style: React.CSSProperties = {
             gridColumn: `span ${link.colSpan || 1}`,
@@ -132,12 +151,19 @@ export function LinkList({
         };
         
         let CardComponent: React.ReactNode;
-        if (isSpotifyTrack) {
-            CardComponent = <SpotifyLinkCard link={link} appearance={appearance} isEditable={false} />;
-        } else if (isYoutubeVideo) {
-            CardComponent = <YoutubeLinkCard link={link} appearance={appearance} isEditable={false} />;
-        } else {
-            CardComponent = <LinkCard link={link} appearance={appearance} isEditable={false} />;
+        switch(componentType) {
+            case 'text':
+                CardComponent = <TextCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'spotify':
+                CardComponent = <SpotifyLinkCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'youtube':
+                CardComponent = <YoutubeLinkCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            default:
+                CardComponent = <LinkCard link={link} appearance={appearance} isEditable={false} />;
+                break;
         }
 
         return (

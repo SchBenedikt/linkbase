@@ -14,22 +14,24 @@ import { Loader2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export const linkSchema = z.object({
-  title: z.string().min(1, 'Title is required').optional(),
+  title: z.string().min(1, 'Title is required'),
   url: z.string().url('Please enter a valid URL'),
   thumbnailUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
   colSpan: z.number().min(1).max(4).default(1),
   rowSpan: z.number().min(1).max(2).default(1),
 });
 
+type LinkEditorFormData = z.infer<typeof linkSchema>;
+
 interface LinkEditorProps {
-  link?: Link | null; // if null, it's a new link
-  onSave: (data: z.infer<typeof linkSchema>) => void;
+  link?: Link | null;
+  onSave: (data: LinkEditorFormData) => void;
   onCancel: () => void;
   mode?: 'link' | 'spotify' | 'youtube';
 }
 
 export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditorProps) {
-  const form = useForm<z.infer<typeof linkSchema>>({
+  const form = useForm<LinkEditorFormData>({
     resolver: zodResolver(linkSchema),
     defaultValues: {
       title: link?.title || '',
@@ -107,22 +109,21 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
     }
   };
 
-  const onSubmit = (data: z.infer<typeof linkSchema>) => {
-    let finalTitle = data.title;
+  const onSubmit = (data: LinkEditorFormData) => {
+    let finalData = { ...data };
     if (!link && !data.title) {
-        if (mode === 'spotify') finalTitle = 'Spotify Track';
-        else if (mode === 'youtube') finalTitle = 'YouTube Video';
-        else finalTitle = 'Untitled Link';
+        if (mode === 'spotify') finalData.title = 'Spotify Track';
+        else if (mode === 'youtube') finalData.title = 'YouTube Video';
+        else finalData.title = 'Untitled Link';
     }
-    onSave({ ...data, title: finalTitle });
+    onSave(finalData);
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-1">
         {mode === 'link' && (
-          <>
-            <FormField
+          <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
@@ -134,23 +135,9 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
                 <FormMessage />
                 </FormItem>
             )}
-            />
-            <FormField
-              control={form.control}
-              name="thumbnailUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Thumbnail URL</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://images.unsplash.com/..." {...field} />
-                  </FormControl>
-                  <FormDescription>Optional. Will be fetched automatically for many sites.</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
+          />
         )}
+        
         <FormField
           control={form.control}
           name="url"
@@ -181,6 +168,23 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
             </FormItem>
           )}
         />
+        
+        {mode === 'link' && (
+            <FormField
+              control={form.control}
+              name="thumbnailUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Thumbnail URL</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://images.unsplash.com/..." {...field} />
+                  </FormControl>
+                  <FormDescription>Optional. Fetched automatically for many sites.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        )}
 
         <div className="grid grid-cols-2 gap-4">
             <FormField

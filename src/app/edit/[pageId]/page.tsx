@@ -17,7 +17,6 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileEditor, profileSchema } from '@/components/profile-editor';
 import { AddContentDialog } from '@/components/add-content-dialog';
-import { LinkEditor, linkSchema as linkEditorSchema } from '@/components/link-editor';
 import { hexToHsl, getContrastColor } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserNav } from '@/components/user-nav';
@@ -26,8 +25,8 @@ import Link from 'next/link';
 
 type SheetState = 
   | { view: 'editProfile'; open: true }
-  | { view: 'addLink'; open: true }
-  | { view: 'editLink'; open: true; link: LinkType }
+  | { view: 'addContent'; open: true }
+  | { view: 'editContent'; open: true; content: LinkType }
   | { open: false };
 
 const initialAppearance: AppearanceSettings = {
@@ -119,29 +118,49 @@ export default function EditPage() {
     closeSheet();
   };
 
-  const handleSaveLink = (data: z.infer<typeof linkEditorSchema>) => {
+  const handleSaveContent = (data: Partial<LinkType> & { type: LinkType['type'] }) => {
     if (!linksRef || !pageId) return;
-    if (sheetState.open && sheetState.view === 'editLink') {
-      const linkRef = doc(linksRef, sheetState.link.id);
+
+    if (sheetState.open && sheetState.view === 'editContent') {
+      const contentToUpdate = sheetState.content;
+      const updatedData = { ...contentToUpdate, ...data };
+      setLinksData(links => links!.map(l => l.id === contentToUpdate.id ? updatedData : l));
+      const linkRef = doc(linksRef, contentToUpdate.id);
       setDocumentNonBlocking(linkRef, data, { merge: true });
     } else {
-      const randomImage = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)];
-      const newLinkData = {
-        ...data,
-        thumbnailUrl: data.thumbnailUrl || randomImage.imageUrl,
-        thumbnailHint: data.thumbnailUrl ? 'custom image' : randomImage.imageHint,
+      const tempId = crypto.randomUUID();
+      const newContent: LinkType = {
+        id: tempId,
         pageId: pageId,
-        orderIndex: (links?.length || 0) + 1,
+        orderIndex: links?.length || 0,
+        title: data.title || 'Untitled',
+        type: data.type,
+        ...data,
       };
-      addDocumentNonBlocking(linksRef, newLinkData);
+
+      if (newContent.type === 'link' && !newContent.thumbnailUrl) {
+        const randomImage = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)];
+        newContent.thumbnailUrl = randomImage.imageUrl;
+        newContent.thumbnailHint = randomImage.imageHint;
+      }
+      
+      setLinksData(prev => [...(prev || []), newContent]);
+      
+      const { id, ...dataToSave } = newContent;
+      
+      addDocumentNonBlocking(linksRef, dataToSave).then(docRef => {
+        if (docRef) {
+          setLinksData(prev => prev!.map(l => l.id === tempId ? { ...l, id: docRef.id } : l));
+        }
+      });
     }
     closeSheet();
   };
   
   const confirmDeleteLink = () => {
     if (linkToDelete && linksRef) {
-      const linkRef = doc(linksRef, linkToDelete.id);
-      deleteDocumentNonBlocking(linkRef);
+      deleteDocumentNonBlocking(doc(linksRef, linkToDelete.id));
+      setLinksData(prev => prev!.filter(l => l.id !== linkToDelete.id));
       setLinkToDelete(null);
     }
   };
@@ -152,23 +171,24 @@ export default function EditPage() {
     const oldIndex = links.findIndex(l => l.id === activeId);
     const newIndex = links.findIndex(l => l.id === overId);
 
+    if (oldIndex === -1 || newIndex === -1) return;
+
     const newLinksOrder = arrayMove(links, oldIndex, newIndex);
     
-    // Optimistically update UI
     setLinksData(newLinksOrder);
 
-    // Update orderIndex in Firestore
     const batch = writeBatch(firestore);
     newLinksOrder.forEach((link, index) => {
-        const linkRef = doc(linksRef, link.id);
-        batch.update(linkRef, { orderIndex: index });
+        if (link.orderIndex !== index) {
+            const linkRef = doc(linksRef, link.id);
+            batch.update(linkRef, { orderIndex: index });
+        }
     });
 
     try {
         await batch.commit();
     } catch(e) {
         console.error("Failed to reorder links", e);
-        // Optionally revert UI state
         setLinksData(links);
     }
   };
@@ -239,10 +259,10 @@ export default function EditPage() {
     switch (sheetState.view) {
       case 'editProfile':
         return <ProfileEditor page={page} onSave={handleSaveProfile} onCancel={closeSheet} />;
-      case 'addLink':
-        return <AddContentDialog onSave={handleSaveLink} onCancel={closeSheet} />;
-      case 'editLink':
-        return <LinkEditor link={sheetState.link} onSave={handleSaveLink} onCancel={closeSheet} />;
+      case 'addContent':
+        return <AddContentDialog onSave={handleSaveContent} onCancel={closeSheet} />;
+      case 'editContent':
+        return <AddContentDialog onSave={handleSaveContent} onCancel={closeSheet} contentToEdit={sheetState.content} />;
       default:
         return null;
     }
@@ -298,7 +318,7 @@ export default function EditPage() {
             </Button>
           </div>
           <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
-            <ShareButton publicUrl={`${window.location.origin}/${page.slug}`} />
+            {page.slug && <ShareButton publicUrl={`${window.location.origin}/${page.slug}`} />}
             <ThemeSwitcher 
               onThemeApply={handleThemeApply}
               onAppearanceSave={handleAppearanceSave}
@@ -309,8 +329,8 @@ export default function EditPage() {
           <ProfileHeader page={page} onEdit={() => setSheetState({ view: 'editProfile', open: true })} isEditable={true} />
           <LinkList
             links={links || []}
-            onAddLink={() => setSheetState({ view: 'addLink', open: true })}
-            onEditLink={(link) => setSheetState({ view: 'editLink', open: true, link })}
+            onAddLink={() => setSheetState({ view: 'addContent', open: true })}
+            onEditLink={(link) => setSheetState({ view: 'editContent', open: true, content: link })}
             onDeleteLink={setLinkToDelete}
             onDragEnd={handleDragEnd}
             appearance={appearance}
@@ -329,13 +349,13 @@ export default function EditPage() {
           <SheetHeader>
             <SheetTitle>
                 {sheetState.open && sheetState.view === 'editProfile' && 'Edit your Page'}
-                {sheetState.open && sheetState.view === 'addLink' && 'Add new content'}
-                {sheetState.open && sheetState.view === 'editLink' && 'Edit your Link'}
+                {sheetState.open && sheetState.view === 'addContent' && 'Add new content'}
+                {sheetState.open && sheetState.view === 'editContent' && 'Edit your Content'}
             </SheetTitle>
             <SheetDescription>
                 {sheetState.open && sheetState.view === 'editProfile' && "Update your page details. Click save when you're done."}
-                {sheetState.open && sheetState.view === 'addLink' && "Select the type of content you want to add to your page."}
-                {sheetState.open && sheetState.view === 'editLink' && "Update your link details. Click save when you're done."}
+                {sheetState.open && sheetState.view === 'addContent' && "Select the type of content you want to add to your page."}
+                {sheetState.open && sheetState.view === 'editContent' && "Update your content's details. Click save when you're done."}
             </SheetDescription>
           </SheetHeader>
           <div className="py-4">{renderSheetContent()}</div>
@@ -347,7 +367,7 @@ export default function EditPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the link titled "{linkToDelete?.title}".
+              This action cannot be undone. This will permanently delete this content block.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

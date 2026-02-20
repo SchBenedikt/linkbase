@@ -1,13 +1,15 @@
 export type Link = {
   id: string;
-  title: string;
-  url: string;
-  thumbnailUrl: string;
-  thumbnailHint: string;
-  orderIndex: number;
   pageId: string;
+  orderIndex: number;
+  title: string;
+  type: 'link' | 'text' | 'spotify' | 'youtube';
   colSpan?: number;
   rowSpan?: number;
+  content?: string; // For text cards
+  url?: string; // For link-based cards
+  thumbnailUrl?: string;
+  thumbnailHint?: string;
 };
 
 export type Page = {
