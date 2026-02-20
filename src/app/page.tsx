@@ -115,13 +115,13 @@ export default function LandingPage() {
                  </div>
                  <div className="hidden md:block relative h-96">
                     {heroImage1 && (
-                        <div className="absolute top-0 right-0 w-64 h-72 rounded-3xl overflow-hidden transform rotate-6 translate-x-8 transition-transform duration-300 ease-in-out hover:scale-105 hover:rotate-3">
-                             <Image src={heroImage1.imageUrl} alt={heroImage1.description} data-ai-hint={heroImage1.imageHint} fill sizes="256px" className="object-cover"/>
+                        <div className="absolute -top-8 right-0 w-72 h-80 rounded-3xl overflow-hidden transform rotate-12 transition-transform duration-300 ease-in-out hover:scale-105 hover:rotate-6">
+                             <Image src={heroImage1.imageUrl} alt={heroImage1.description} data-ai-hint={heroImage1.imageHint} fill sizes="288px" className="object-cover"/>
                         </div>
                     )}
                     {heroImage2 && (
-                        <div className="absolute bottom-0 left-0 w-48 h-56 rounded-3xl overflow-hidden transform -rotate-8 -translate-y-4 transition-transform duration-300 ease-in-out hover:scale-105 hover:-rotate-3">
-                            <Image src={heroImage2.imageUrl} alt={heroImage2.description} data-ai-hint={heroImage2.imageHint} fill sizes="192px" className="object-cover"/>
+                        <div className="absolute bottom-0 right-20 w-64 h-72 rounded-3xl overflow-hidden transform -rotate-8 transition-transform duration-300 ease-in-out hover:scale-105 hover:-rotate-3">
+                            <Image src={heroImage2.imageUrl} alt={heroImage2.description} data-ai-hint={heroImage2.imageHint} fill sizes="256px" className="object-cover"/>
                         </div>
                     )}
                  </div>
@@ -158,7 +158,7 @@ export default function LandingPage() {
                     <Palette className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Design without limits</h3>
-                  <p className="text-primary-foreground/80 mb-4">Customize colors, fonts, backgrounds, borders, and more. Or let our AI create unique themes for you.</p>
+                  <p className="text-primary-foreground/80 mb-4">Take full control of your page's appearance. Fine-tune every detail from colors, fonts, and backgrounds to borders and corner radiuses. Not a designer? No problem. Describe your desired aesthetic and let our AI generate stunning, unique themes for you in seconds.</p>
                 </div>
                 <Link href="/login" className="font-semibold inline-flex items-center gap-2 group">
                   Start designing <MoveRight className="h-4 w-4" />
@@ -170,7 +170,7 @@ export default function LandingPage() {
                     <Sparkles className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">AI-powered Magic</h3>
-                  <p className="text-accent-foreground/80">Describe your style and our AI will generate stunning color palettes and theme suggestions.</p>
+                  <p className="text-accent-foreground/80">Go beyond simple templates. Our generative AI understands your creative vision. Just type in a few keywords—like 'dystopian brutalism' or 'serene coastal vibe'—and watch as it crafts bespoke color palettes and complete theme suggestions just for you.</p>
                 </div>
               </Card>
               <Card className="p-8 flex flex-col justify-between bg-secondary text-secondary-foreground rounded-3xl border-none">
@@ -179,7 +179,7 @@ export default function LandingPage() {
                       <LinkIcon className="h-6 w-6" />
                    </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">All your links</h3>
-                  <p className="text-secondary-foreground/80">From social media to projects to shops - present everything that makes you you in one central place.</p>
+                  <p className="text-secondary-foreground/80">Your central hub for everything you do. Link to your social profiles, your latest project, your online shop, your blog, or even your favorite Spotify track. BioBloom creates a seamless experience for your audience to explore your world.</p>
                 </div>
               </Card>
               <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-destructive text-destructive-foreground rounded-3xl border-none">
@@ -188,7 +188,7 @@ export default function LandingPage() {
                      <BarChart3 className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Detailed Analytics</h3>
-                  <p className="text-destructive-foreground/80">Understand your audience. Find out which of your content resonates best and optimize your presence.</p>
+                  <p className="text-destructive-foreground/80">Knowledge is power. Our upcoming analytics suite will give you deep insights into your audience. Understand which links get the most clicks, where your visitors are coming from, and what content truly resonates. Optimize your page for maximum impact.</p>
                 </div>
                 <Link href="/login" className="font-semibold inline-flex items-center gap-2 group">
                   Get insights <MoveRight className="h-4 w-4" />
@@ -198,6 +198,42 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* How It Works Section */}
+        <section className="py-16 sm:py-24 bg-background text-foreground">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-3xl mx-auto mb-16">
+              <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
+                Get started in minutes
+              </h2>
+              <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
+                Creating your own BioBloom page is simple and intuitive.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="flex flex-col items-center">
+                <div className="flex items-center justify-center h-20 w-20 rounded-full bg-primary text-primary-foreground mb-6">
+                  <span className="font-headline text-4xl font-bold">1</span>
+                </div>
+                <h3 className="font-headline text-2xl font-bold mb-2">Create your Account</h3>
+                <p className="text-muted-foreground">Sign up for free in seconds. No credit card required. All you need is an email to get started on your creative journey.</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="flex items-center justify-center h-20 w-20 rounded-full bg-secondary text-secondary-foreground mb-6">
+                  <span className="font-headline text-4xl font-bold">2</span>
+                </div>
+                <h3 className="font-headline text-2xl font-bold mb-2">Design your Page</h3>
+                <p className="text-muted-foreground">Add your links, upload your avatar, and customize the design. Use our powerful editor or let our AI do the magic for you.</p>
+              </div>
+              <div className="flex flex-col items-center">
+                <div className="flex items-center justify-center h-20 w-20 rounded-full bg-destructive text-destructive-foreground mb-6">
+                   <span className="font-headline text-4xl font-bold">3</span>
+                </div>
+                <h3 className="font-headline text-2xl font-bold mb-2">Share your Link</h3>
+                <p className="text-muted-foreground">Your unique biobloom.co link is ready. Share it in your social media bios, email signatures, or anywhere you want.</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Testimonials Section */}
         <section className="py-16 sm:py-24 bg-background">
