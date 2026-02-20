@@ -11,10 +11,10 @@ export default function ContactPage() {
       </header>
       <main className="flex-1 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold">Kontakt</h1>
-          <p className="mt-4 text-lg text-muted-foreground">Diese Seite ist in Arbeit.</p>
+          <h1 className="text-4xl font-bold">Contact</h1>
+          <p className="mt-4 text-lg text-muted-foreground">This page is under construction.</p>
            <Button asChild className="mt-8">
-              <Link href="/">Zurück zur Startseite</Link>
+              <Link href="/">Back to Home</Link>
             </Button>
         </div>
       </main>

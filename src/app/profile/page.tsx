@@ -29,18 +29,18 @@ export default function DashboardPage() {
 
     const handleCreateNewPage = async () => {
         if (!user) return;
-        const slug = `seite-${Math.random().toString(36).substring(2, 9)}`;
+        const slug = `page-${Math.random().toString(36).substring(2, 9)}`;
         const newPageData = {
             ownerId: user.uid,
             slug: slug,
-            displayName: 'Unbenannte Seite',
-            bio: 'Füge hier eine Beschreibung hinzu.',
-            avatarUrl: '',
-            avatarHint: '',
+            displayName: 'Untitled Page',
+            bio: 'Add a description here.',
+            avatarUrl: 'https://picsum.photos/seed/avatar/200',
+            avatarHint: 'placeholder',
             backgroundColor: '#ffffff',
             foregroundColor: '#111827',
             primaryColor: '#6366f1',
-            accentColor: '#ec4899',
+            accentColor: '#d2e822',
             cardColor: '#ffffff',
             cardForegroundColor: '#111827',
             borderRadius: 1.25,
@@ -124,10 +124,10 @@ export default function DashboardPage() {
             </header>
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-bold tracking-tight">Ihre Seiten</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">Your Pages</h2>
                     <Button onClick={handleCreateNewPage}>
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Neue Seite erstellen
+                        Create New Page
                     </Button>
                 </div>
 
@@ -145,17 +145,17 @@ export default function DashboardPage() {
                                     </Link>
                                 </CardDescription>
                                 <CardFooter className="flex justify-between items-center">
-                                    <p className="text-sm text-muted-foreground truncate pr-4">{page.bio || 'Keine Beschreibung.'}</p>
+                                    <p className="text-sm text-muted-foreground truncate pr-4">{page.bio || 'No description.'}</p>
                                     <div className="flex items-center gap-2 flex-shrink-0">
                                         <Button asChild>
                                             <Link href={`/edit/${page.id}`}>
                                                 <Edit className="mr-2 h-4 w-4" />
-                                                Bearbeiten
+                                                Edit
                                             </Link>
                                         </Button>
                                         <Button variant="destructive" onClick={() => setPageToDelete(page)}>
                                             <Trash2 className="mr-2 h-4 w-4" />
-                                            Löschen
+                                            Delete
                                         </Button>
                                     </div>
                                 </CardFooter>
@@ -164,11 +164,11 @@ export default function DashboardPage() {
                     </div>
                 ) : (
                     <div className="text-center py-16 border-2 border-dashed rounded-lg">
-                        <h3 className="text-xl font-semibold">Noch keine Seiten erstellt</h3>
-                        <p className="text-muted-foreground mt-2 mb-4">Starten Sie, indem Sie Ihre erste BioBloom-Seite erstellen.</p>
+                        <h3 className="text-xl font-semibold">No pages created yet</h3>
+                        <p className="text-muted-foreground mt-2 mb-4">Get started by creating your first BioBloom page.</p>
                         <Button onClick={handleCreateNewPage}>
                             <PlusCircle className="mr-2 h-4 w-4" />
-                            Erste Seite erstellen
+                            Create First Page
                         </Button>
                     </div>
                 )}
@@ -176,14 +176,14 @@ export default function DashboardPage() {
             <AlertDialog open={!!pageToDelete} onOpenChange={(open) => !open && setPageToDelete(null)}>
                 <AlertDialogContent className="bg-[#f3f3f1]">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Sind Sie absolut sicher?</AlertDialogTitle>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Diese Aktion kann nicht rückgängig gemacht werden. Dies wird die Seite "{pageToDelete?.displayName}" und alle zugehörigen Links dauerhaft löschen.
+                      This action cannot be undone. This will permanently delete the page "{pageToDelete?.displayName}" and all associated links.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setPageToDelete(null)}>Abbrechen</AlertDialogCancel>
-                    <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDelete}>Löschen</AlertDialogAction>
+                    <AlertDialogCancel onClick={() => setPageToDelete(null)}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDelete}>Delete</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

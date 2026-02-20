@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { generateTheme } from '@/lib/actions';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ function SubmitButton() {
 
 export function AiThemeGenerator({ onThemeApply }: AiThemeGeneratorProps) {
   const initialState = { error: '', data: null };
-  const [state, dispatch] = useFormState(generateTheme, initialState);
+  const [state, dispatch] = useActionState(generateTheme, initialState);
   
   const aiTheme: AITheme | null = state.data;
 

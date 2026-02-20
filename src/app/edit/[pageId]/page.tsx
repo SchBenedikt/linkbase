@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { doc, collection, deleteDoc, setDoc } from 'firebase/firestore';
-
+import { z } from 'zod';
 import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, setDocumentNonBlocking, addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
 import type { Page, Link as LinkType, AITheme, AppearanceSettings } from '@/lib/types';
 
@@ -15,7 +15,7 @@ import { ShareButton } from '@/components/share-button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { ProfileEditor } from '@/components/profile-editor';
+import { ProfileEditor, profileSchema } from '@/components/profile-editor';
 import { LinkEditor } from '@/components/link-editor';
 import { hexToHsl, getContrastColor } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -33,7 +33,7 @@ const initialAppearance: AppearanceSettings = {
   backgroundImage: '',
   backgroundColor: '#f0f0f0',
   primaryColor: '#6366f1',
-  accentColor: '#ec4899',
+  accentColor: '#d2e822',
   foregroundColor: '#111827',
   cardColor: '#ffffff',
   cardForegroundColor: '#111827',
@@ -96,7 +96,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
 
   const closeSheet = () => setSheetState({ open: false });
 
-  const handleSaveProfile = async (data: { displayName: string; bio?: string; slug: string }) => {
+  const handleSaveProfile = async (data: z.infer<typeof profileSchema>) => {
     if (!pageRef || !page) return;
 
     const oldSlug = page.slug;
@@ -251,7 +251,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
   if (!user || !page) {
       return (
         <div className="flex items-center justify-center min-h-screen bg-[#f3f3f1]">
-            <p>Seite wird geladen oder Sie haben keine Berechtigung...</p>
+            <p>Loading page or you do not have permission...</p>
         </div>
       )
   }
@@ -262,7 +262,7 @@ export default function EditPage({ params }: { params: { pageId: string } }) {
         <div className="w-full max-w-2xl mx-auto">
           <div className="fixed top-4 left-4 z-50">
             <Button variant="outline" asChild>
-              <Link href="/profile">&larr; Zurück zum Dashboard</Link>
+              <Link href="/profile">&larr; Back to Dashboard</Link>
             </Button>
           </div>
           <div className="fixed top-4 right-4 flex items-center gap-2 z-50">

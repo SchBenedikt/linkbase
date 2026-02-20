@@ -28,10 +28,10 @@ import {
 
 // Schemas
 const emailSchema = z.object({
-  email: z.string().email('Ungültige E-Mail-Adresse.'),
+  email: z.string().email('Invalid email address.'),
 });
 const passwordSchema = z.object({
-  newPassword: z.string().min(6, 'Das Passwort muss mindestens 6 Zeichen lang sein.'),
+  newPassword: z.string().min(6, 'Password must be at least 6 characters long.'),
 });
 
 export default function SettingsPage() {
@@ -64,13 +64,13 @@ export default function SettingsPage() {
     setLoading('email');
     try {
       await updateEmail(user, email);
-      toast({ title: 'Erfolg!', description: 'Ihre E-Mail-Adresse wurde aktualisiert.' });
+      toast({ title: 'Success!', description: 'Your email address has been updated.' });
       emailForm.reset({ email });
     } catch (error: any) {
       if (error.code === 'auth/requires-recent-login') {
         setReauthAction({ type: 'email', value: email });
       } else {
-        toast({ variant: 'destructive', title: 'Fehler', description: error.message });
+        toast({ variant: 'destructive', title: 'Error', description: error.message });
       }
     } finally {
       setLoading('');
@@ -82,13 +82,13 @@ export default function SettingsPage() {
     setLoading('password');
     try {
       await updatePassword(user, newPassword);
-      toast({ title: 'Erfolg!', description: 'Ihr Passwort wurde geändert.' });
+      toast({ title: 'Success!', description: 'Your password has been changed.' });
       passwordForm.reset();
     } catch (error: any) {
       if (error.code === 'auth/requires-recent-login') {
         setReauthAction({ type: 'password', value: newPassword });
       } else {
-        toast({ variant: 'destructive', title: 'Fehler', description: error.message });
+        toast({ variant: 'destructive', title: 'Error', description: error.message });
       }
     } finally {
       setLoading('');
@@ -108,7 +108,7 @@ export default function SettingsPage() {
         await handleUpdatePassword({ newPassword: reauthAction.value });
       }
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Authentifizierungsfehler', description: 'Das eingegebene Passwort ist falsch.' });
+      toast({ variant: 'destructive', title: 'Authentication Error', description: 'The password you entered is incorrect.' });
     } finally {
       setReauthAction(null);
       setCurrentPassword('');
@@ -128,7 +128,7 @@ export default function SettingsPage() {
         <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                 <h1 className="font-headline text-2xl font-bold text-foreground">
-                    Einstellungen
+                    Settings
                 </h1>
                 <UserNav />
             </div>
@@ -136,12 +136,12 @@ export default function SettingsPage() {
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="max-w-2xl mx-auto space-y-8">
                 <Button variant="outline" asChild>
-                    <Link href="/profile">&larr; Zurück zum Dashboard</Link>
+                    <Link href="/profile">&larr; Back to Dashboard</Link>
                 </Button>
                 <Card className="border-0 shadow-none bg-transparent">
                     <CardHeader>
-                        <CardTitle>E-Mail-Adresse ändern</CardTitle>
-                        <CardDescription>Aktualisieren Sie die mit Ihrem Konto verknüpfte E-Mail-Adresse.</CardDescription>
+                        <CardTitle>Change Email Address</CardTitle>
+                        <CardDescription>Update the email address associated with your account.</CardDescription>
                     </CardHeader>
                     <Form {...emailForm}>
                         <form onSubmit={emailForm.handleSubmit(handleUpdateEmail)}>
@@ -151,7 +151,7 @@ export default function SettingsPage() {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>Neue E-Mail</FormLabel>
+                                    <FormLabel>New Email</FormLabel>
                                     <FormControl>
                                         <Input type="email" {...field} className="bg-card" />
                                     </FormControl>
@@ -163,7 +163,7 @@ export default function SettingsPage() {
                             <CardFooter>
                                 <Button type="submit" disabled={loading === 'email'}>
                                 {loading === 'email' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                E-Mail speichern
+                                Save Email
                                 </Button>
                             </CardFooter>
                         </form>
@@ -172,8 +172,8 @@ export default function SettingsPage() {
                 
                 <Card className="border-0 shadow-none bg-transparent">
                     <CardHeader>
-                        <CardTitle>Passwort ändern</CardTitle>
-                        <CardDescription>Wählen Sie ein starkes, neues Passwort, um Ihr Konto zu schützen.</CardDescription>
+                        <CardTitle>Change Password</CardTitle>
+                        <CardDescription>Choose a strong, new password to protect your account.</CardDescription>
                     </CardHeader>
                     <Form {...passwordForm}>
                         <form onSubmit={passwordForm.handleSubmit(handleUpdatePassword)}>
@@ -183,7 +183,7 @@ export default function SettingsPage() {
                                 name="newPassword"
                                 render={({ field }) => (
                                     <FormItem>
-                                    <FormLabel>Neues Passwort</FormLabel>
+                                    <FormLabel>New Password</FormLabel>
                                     <FormControl>
                                         <Input type="password" {...field} className="bg-card" />
                                     </FormControl>
@@ -195,7 +195,7 @@ export default function SettingsPage() {
                             <CardFooter>
                                 <Button type="submit" disabled={loading === 'password'}>
                                 {loading === 'password' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Passwort speichern
+                                Save Password
                                 </Button>
                             </CardFooter>
                         </form>
@@ -207,13 +207,13 @@ export default function SettingsPage() {
         <AlertDialog open={!!reauthAction} onOpenChange={(open) => !open && setReauthAction(null)}>
             <AlertDialogContent className="bg-[#f3f3f1]">
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Bitte erneut authentifizieren</AlertDialogTitle>
+                    <AlertDialogTitle>Please Re-authenticate</AlertDialogTitle>
                     <AlertDialogDescription>
-                        Aus Sicherheitsgründen müssen Sie Ihr aktuelles Passwort eingeben, um fortzufahren.
+                        For your security, please enter your current password to continue.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <div className="space-y-2 py-2">
-                    <Label htmlFor="current-password">Aktuelles Passwort</Label>
+                    <Label htmlFor="current-password">Current Password</Label>
                     <Input
                         id="current-password"
                         type="password"
@@ -223,8 +223,8 @@ export default function SettingsPage() {
                     />
                 </div>
                 <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setReauthAction(null)}>Abbrechen</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleReauthenticate}>Bestätigen</AlertDialogAction>
+                    <AlertDialogCancel onClick={() => setReauthAction(null)}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleReauthenticate}>Confirm</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

@@ -20,7 +20,7 @@ export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeade
   
   return (
     <header className="flex flex-col items-center text-center py-10 md:py-16">
-      <div className="relative mb-6">
+      <div className="relative mb-6 mx-auto">
         <Avatar className="w-28 h-28 border-4 border-background ring-4 ring-primary shadow-lg">
           <AvatarImage src={avatarUrl} alt={displayName} data-ai-hint={avatarHint} />
           <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>

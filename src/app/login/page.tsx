@@ -33,8 +33,8 @@ export default function LoginPage() {
     if (!email || password.length < 6) {
       toast({
         variant: 'destructive',
-        title: 'Fehler',
-        description: 'Bitte geben Sie eine gültige E-Mail und ein Passwort mit mindestens 6 Zeichen ein.',
+        title: 'Error',
+        description: 'Please enter a valid email and a password with at least 6 characters.',
       });
       return;
     }
@@ -49,12 +49,12 @@ export default function LoginPage() {
     } catch (error: any) {
       console.error(error);
       const errorMessage = 
-        error.code === 'auth/email-already-in-use' ? 'Diese E-Mail-Adresse wird bereits verwendet.'
-        : error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' ? 'Ungültige Anmeldeinformationen.'
-        : 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.';
+        error.code === 'auth/email-already-in-use' ? 'This email address is already in use.'
+        : error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' ? 'Invalid login credentials.'
+        : 'An error occurred. Please try again.';
       toast({
         variant: 'destructive',
-        title: 'Authentifizierungsfehler',
+        title: 'Authentication Error',
         description: errorMessage,
       });
     } finally {
@@ -78,7 +78,7 @@ export default function LoginPage() {
                     BioBloom*
                 </Link>
                 <p className="text-xl">
-                    Alles, was du bist, an einem einzigen Ort. Erstelle deine persönliche Seite in wenigen Minuten.
+                    Everything you are, in one simple link. Create your personal page in minutes.
                 </p>
             </div>
         </div>
@@ -88,28 +88,28 @@ export default function LoginPage() {
                     BioBloom*
                 </Link>
                 <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Anmelden</TabsTrigger>
-                <TabsTrigger value="signup">Registrieren</TabsTrigger>
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
                 </TabsList>
                 
                 <Card className="mt-4 bg-transparent border-0 shadow-none">
                 <form onSubmit={(e) => { e.preventDefault(); handleAuthAction(); }}>
                     <CardHeader>
-                    <CardTitle>{activeTab === 'login' ? 'Willkommen zurück' : 'Konto erstellen'}</CardTitle>
+                    <CardTitle>{activeTab === 'login' ? 'Welcome back' : 'Create an account'}</CardTitle>
                     <CardDescription>
                         {activeTab === 'login' 
-                        ? 'Melden Sie sich bei Ihrem Konto an, um fortzufahren.' 
-                        : 'Erstellen Sie ein neues Konto, um loszulegen.'
+                        ? 'Log in to your account to continue.' 
+                        : 'Create a new account to get started.'
                         }
                     </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="email">E-Mail</Label>
-                        <Input id="email" type="email" placeholder="m@beispiel.de" value={email} onChange={(e) => setEmail(e.target.value)} required className="bg-card" />
+                        <Label htmlFor="email">Email</Label>
+                        <Input id="email" type="email" placeholder="m@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="bg-card" />
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="password">Passwort</Label>
+                        <Label htmlFor="password">Password</Label>
                         <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="bg-card" />
                     </div>
                     </CardContent>
@@ -117,8 +117,8 @@ export default function LoginPage() {
                     <Button type="submit" className="w-full" disabled={loading}>
                         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         {loading 
-                        ? (activeTab === 'login' ? 'Wird angemeldet...' : 'Wird erstellt...')
-                        : (activeTab === 'login' ? 'Anmelden' : 'Konto erstellen')
+                        ? (activeTab === 'login' ? 'Logging in...' : 'Creating account...')
+                        : (activeTab === 'login' ? 'Login' : 'Create Account')
                         }
                     </Button>
                     </CardFooter>

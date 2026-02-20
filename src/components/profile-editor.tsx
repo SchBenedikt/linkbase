@@ -9,10 +9,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { Page } from '@/lib/types';
 
-const profileSchema = z.object({
+export const profileSchema = z.object({
   displayName: z.string().min(1, 'Name is required'),
   bio: z.string().max(160, 'Bio cannot be longer than 160 characters.').optional(),
   slug: z.string().min(3, 'Slug must be at least 3 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens.'),
+  avatarUrl: z.string().url('Please enter a valid image URL').optional().or(z.literal('')),
 });
 
 interface ProfileEditorProps {
@@ -28,6 +29,7 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
       displayName: page.displayName || '',
       bio: page.bio || '',
       slug: page.slug || '',
+      avatarUrl: page.avatarUrl || '',
     },
   });
 
@@ -42,6 +44,19 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="avatarUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Avatar URL</FormLabel>
+              <FormControl>
+                <Input placeholder="https://images.unsplash.com/..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

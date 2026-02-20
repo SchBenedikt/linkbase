@@ -69,13 +69,13 @@ export function UserNav() {
         <DropdownMenuItem asChild>
           <Link href="/profile/settings">
             <Settings className="mr-2 h-4 w-4" />
-            <span>Einstellungen</span>
+            <span>Settings</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
-          <span>Abmelden</span>
+          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

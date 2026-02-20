@@ -14,7 +14,7 @@ const initialAppearance: AppearanceSettings = {
     backgroundImage: '',
     backgroundColor: '#f0f0f0',
     primaryColor: '#6366f1',
-    accentColor: '#ec4899',
+    accentColor: '#d2e822',
     foregroundColor: '#111827',
     cardColor: '#ffffff',
     cardForegroundColor: '#111827',
@@ -46,7 +46,7 @@ export default function PublicPage({ params }: { params: { slug: string } }) {
                 const slugSnap = await getDoc(slugRef);
 
                 if (!slugSnap.exists()) {
-                    setError('Seite nicht gefunden.');
+                    setError('Page not found.');
                     return;
                 }
 
@@ -91,14 +91,14 @@ export default function PublicPage({ params }: { params: { slug: string } }) {
                     });
 
                 } else {
-                    setError('Seitendaten nicht gefunden.');
+                    setError('Page data not found.');
                 }
                 
                 setLinks(linksSnap.docs.map(d => ({ id: d.id, ...d.data() } as LinkType)));
 
             } catch (e) {
                 console.error(e);
-                setError('Seite konnte nicht geladen werden.');
+                setError('Could not load page.');
             } finally {
                 setLoading(false);
             }
@@ -134,7 +134,7 @@ export default function PublicPage({ params }: { params: { slug: string } }) {
     }
     
     if (!page) {
-        return <div className="flex items-center justify-center min-h-screen"><h1>Seite wird geladen...</h1></div>;
+        return <div className="flex items-center justify-center min-h-screen"><h1>Loading page...</h1></div>;
     }
 
     return (
