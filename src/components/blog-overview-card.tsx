@@ -109,3 +109,7 @@ export function BlogOverviewCard({ link, onEdit, onDelete, appearance, isEditabl
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+        )}
+    </Card>
+  );
+}
