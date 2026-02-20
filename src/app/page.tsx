@@ -48,6 +48,10 @@ export default function LandingPage() {
   const { user, isUserLoading } = useUser();
   const heroImage1 = PlaceHolderImages.find(p => p.id === 'hero-1');
   const heroImage2 = PlaceHolderImages.find(p => p.id === 'hero-2');
+  const testimonial1 = PlaceHolderImages.find(p => p.id === 'testimonial-1');
+  const testimonial2 = PlaceHolderImages.find(p => p.id === 'testimonial-2');
+  const testimonial3 = PlaceHolderImages.find(p => p.id === 'testimonial-3');
+
 
   const renderAuthButtons = () => {
     if (isUserLoading) {
@@ -158,7 +162,7 @@ export default function LandingPage() {
                     <Palette className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Design without limits</h3>
-                  <p className="text-primary-foreground/80 mb-4">Take full control of your page's appearance. Fine-tune every detail from colors, fonts, and backgrounds to borders and corner radiuses. Not a designer? No problem. Describe your desired aesthetic and let our AI generate stunning, unique themes for you in seconds.</p>
+                  <p className="text-primary-foreground/80 mb-4">Take full control of your page's appearance. Fine-tune every detail from colors and backgrounds to borders and corner radiuses.</p>
                 </div>
                 <Link href="/login" className="font-semibold inline-flex items-center gap-2 group">
                   Start designing <MoveRight className="h-4 w-4" />
@@ -170,7 +174,7 @@ export default function LandingPage() {
                     <Sparkles className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">AI-powered Magic</h3>
-                  <p className="text-accent-foreground/80">Go beyond simple templates. Our generative AI understands your creative vision. Just type in a few keywords—like 'dystopian brutalism' or 'serene coastal vibe'—and watch as it crafts bespoke color palettes and complete theme suggestions just for you.</p>
+                  <p className="text-accent-foreground/80">Describe your desired aesthetic and let our AI generate stunning, unique themes for you in seconds.</p>
                 </div>
               </Card>
               <Card className="p-8 flex flex-col justify-between bg-secondary text-secondary-foreground rounded-3xl border-none">
@@ -179,7 +183,7 @@ export default function LandingPage() {
                       <LinkIcon className="h-6 w-6" />
                    </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">All your links</h3>
-                  <p className="text-secondary-foreground/80">Your central hub for everything you do. Link to your social profiles, your latest project, your online shop, your blog, or even your favorite Spotify track. BioBloom creates a seamless experience for your audience to explore your world.</p>
+                  <p className="text-secondary-foreground/80">Your central hub for everything you do. Link to your social profiles, your latest project, your online shop, or even embed a Spotify track.</p>
                 </div>
               </Card>
               <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-destructive text-destructive-foreground rounded-3xl border-none">
@@ -188,7 +192,7 @@ export default function LandingPage() {
                      <BarChart3 className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Detailed Analytics</h3>
-                  <p className="text-destructive-foreground/80">Knowledge is power. Our upcoming analytics suite will give you deep insights into your audience. Understand which links get the most clicks, where your visitors are coming from, and what content truly resonates. Optimize your page for maximum impact.</p>
+                  <p className="text-destructive-foreground/80">Our upcoming analytics suite will give you deep insights into your audience. Understand which links get the most clicks and what content truly resonates.</p>
                 </div>
                 <Link href="/login" className="font-semibold inline-flex items-center gap-2 group">
                   Get insights <MoveRight className="h-4 w-4" />
@@ -251,10 +255,10 @@ export default function LandingPage() {
                         <CardContent className="p-0">
                             <p className="text-foreground mb-6">"Finally a platform that gives me the creative freedom I need. The customization options are insane!"</p>
                             <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarImage src="https://picsum.photos/seed/test1/40/40" alt="Anna L." />
+                                {testimonial1 && <Avatar>
+                                    <AvatarImage src={testimonial1.imageUrl} alt="Anna L." />
                                     <AvatarFallback>AL</AvatarFallback>
-                                </Avatar>
+                                </Avatar>}
                                 <div>
                                     <p className="font-semibold">Anna L.</p>
                                     <p className="text-sm text-muted-foreground">Designer & Illustrator</p>
@@ -266,10 +270,10 @@ export default function LandingPage() {
                         <CardContent className="p-0">
                             <p className="text-foreground mb-6">"Setup was a breeze. Within 10 minutes my page was online and looked fantastic."</p>
                             <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarImage src="https://picsum.photos/seed/test2/40/40" alt="Marco B." />
+                                {testimonial2 && <Avatar>
+                                    <AvatarImage src={testimonial2.imageUrl} alt="Marco B." />
                                     <AvatarFallback>MB</AvatarFallback>
-                                </Avatar>
+                                </Avatar>}
                                 <div>
                                     <p className="font-semibold">Marco B.</p>
                                     <p className="text-sm text-muted-foreground">Musician & Producer</p>
@@ -281,10 +285,10 @@ export default function LandingPage() {
                         <CardContent className="p-0">
                             <p className="text-foreground mb-6">"BioBloom exceeded my expectations. It's not just a 'link-in-bio', it's my digital business card."</p>
                             <div className="flex items-center gap-3">
-                                <Avatar>
-                                    <AvatarImage src="https://picsum.photos/seed/test3/40/40" alt="Clara S." />
+                                {testimonial3 && <Avatar>
+                                    <AvatarImage src={testimonial3.imageUrl} alt="Clara S." />
                                     <AvatarFallback>CS</AvatarFallback>
-                                </Avatar>
+                                </Avatar>}
                                 <div>
                                     <p className="font-semibold">Clara S.</p>
                                     <p className="text-sm text-muted-foreground">Food Blogger</p>
