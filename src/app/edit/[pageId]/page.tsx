@@ -279,7 +279,7 @@ export default function EditPage() {
   if (isUserLoading || isPageLoading) {
     return (
         <div className="min-h-screen bg-[#f3f3f1] p-8">
-            <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
+            <div className="w-full max-w-6xl mx-auto flex flex-col items-center">
                 <div className="w-full flex justify-end gap-2 mb-8">
                     <Skeleton className="h-10 w-24" />
                     <Skeleton className="h-10 w-24" />
@@ -311,7 +311,7 @@ export default function EditPage() {
   return (
     <div style={dynamicStyles as React.CSSProperties}>
       <main className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
-        <div className="w-full max-w-4xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto">
           <div className="fixed top-4 left-4 z-50">
             <Button variant="outline" asChild>
               <Link href="/profile">&larr; Back to Dashboard</Link>
@@ -337,7 +337,7 @@ export default function EditPage() {
             isEditable={true}
           />
         </div>
-        <footer className="w-full max-w-4xl mx-auto mt-12 mb-6 text-center">
+        <footer className="w-full max-w-6xl mx-auto mt-12 mb-6 text-center">
             <p className="text-sm text-muted-foreground">
                 Powered by <span className="font-semibold text-primary">BioBloom</span>
             </p>

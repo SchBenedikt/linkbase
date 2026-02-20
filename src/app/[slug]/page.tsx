@@ -119,7 +119,7 @@ export default function PublicPage() {
     if (loading) {
         return (
             <div className="min-h-screen bg-background p-8">
-                <div className="w-full max-w-2xl mx-auto flex flex-col items-center">
+                <div className="w-full max-w-4xl mx-auto flex flex-col items-center">
                     <Skeleton className="w-28 h-28 rounded-full mb-6" />
                     <Skeleton className="h-12 w-64 mb-4" />
                     <Skeleton className="h-6 w-96 mb-10" />
@@ -141,7 +141,7 @@ export default function PublicPage() {
     return (
         <div style={dynamicStyles}>
              <main className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
-                <div className="w-full max-w-2xl mx-auto">
+                <div className="w-full max-w-4xl mx-auto">
                     <ProfileHeader page={page} isEditable={false} />
                     <LinkList
                         links={links || []}
@@ -149,7 +149,7 @@ export default function PublicPage() {
                         isEditable={false}
                     />
                 </div>
-                <footer className="w-full max-w-2xl mx-auto mt-12 mb-6 text-center">
+                <footer className="w-full max-w-4xl mx-auto mt-12 mb-6 text-center">
                     <a href="/" className="text-sm text-muted-foreground hover:text-primary font-semibold">
                         Powered by BioBloom
                     </a>
