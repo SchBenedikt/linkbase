@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link as LinkIcon, Music, Youtube, BookText, Newspaper } from 'lucide-react';
+import { Link as LinkIcon, Music, Youtube, BookText, Newspaper, Rss } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
 import { ArticleEditor, articleSchema } from './article-editor';
@@ -10,7 +10,7 @@ import type { z } from 'zod';
 import type { Link } from '@/lib/types';
 
 
-type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema>) & { type: Link['type'] };
+type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | { title: string }) & { type: Link['type'] };
 
 interface AddContentDialogProps {
   onSave: (data: ContentFormData) => void;
@@ -19,12 +19,21 @@ interface AddContentDialogProps {
 }
 
 export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContentDialogProps) {
-  const [contentType, setContentType] = useState<'link' | 'spotify' | 'youtube' | 'text' | 'article' | null>(contentToEdit?.type || null);
+  const [contentType, setContentType] = useState<Link['type'] | null>(contentToEdit?.type || null);
 
   const handleBack = () => setContentType(null);
   
   const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema>, type: Link['type']) => {
     onSave({ ...data, type });
+  };
+  
+  const handleBlogOverviewSave = () => {
+    onSave({
+      type: 'blog-overview',
+      title: 'Blog Posts',
+      colSpan: 4,
+      rowSpan: 2,
+    });
   };
 
   // If we are editing, jump straight to the editor
@@ -35,7 +44,16 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentToEdit.type === 'article') {
         return <ArticleEditor onSave={(data) => handleSave(data, 'article')} onCancel={onCancel} article={contentToEdit} />;
     }
-    return <LinkEditor onSave={(data) => handleSave(data, contentToEdit.type)} onCancel={onCancel} mode={contentToEdit.type} link={contentToEdit} />;
+    if (contentToEdit.type === 'blog-overview') {
+      // Blog overview doesn't have an editor for now, just show a message.
+      return (
+        <div className="text-center p-4 space-y-4">
+          <p>This card automatically displays your latest blog posts. Configuration options will be available soon.</p>
+          <Button onClick={onCancel}>Close</Button>
+        </div>
+      )
+    }
+    return <LinkEditor onSave={(data) => handleSave(data, contentToEdit.type)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube'} link={contentToEdit} />;
   }
 
   // If we are adding new content, show the correct editor after selection
@@ -51,7 +69,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
       <LinkEditor
         onSave={(data) => handleSave(data, contentType)}
         onCancel={handleBack}
-        mode={contentType}
+        mode={contentType as 'link' | 'spotify' | 'youtube'}
       />
     );
   }
@@ -73,11 +91,18 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
             <p className="text-sm font-normal text-muted-foreground">Add a title and some text.</p>
         </div>
       </Button>
-      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('article')}>
+       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('article')}>
         <Newspaper className="mr-4 h-8 w-8" />
         <div className="text-left">
             <p>Article Link</p>
             <p className="text-sm font-normal text-muted-foreground">Feature an article with metadata.</p>
+        </div>
+      </Button>
+      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={handleBlogOverviewSave}>
+        <Rss className="mr-4 h-8 w-8" />
+        <div className="text-left">
+            <p>Blog Overview</p>
+            <p className="text-sm font-normal text-muted-foreground">Display your latest posts.</p>
         </div>
       </Button>
       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('spotify')}>

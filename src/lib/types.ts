@@ -3,7 +3,7 @@ export type Link = {
   pageId: string;
   orderIndex: number;
   title: string;
-  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article';
+  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview';
   colSpan?: number;
   rowSpan?: number;
   content?: string; // For text cards
@@ -38,6 +38,18 @@ export type Page = {
   borderColor?: string;
 };
 
+export type Post = {
+  id: string;
+  pageId: string;
+  ownerId: string;
+  title: string;
+  content: string;
+  slug: string;
+  status: 'draft' | 'published';
+  createdAt: any;
+  updatedAt: any;
+};
+
 export type SlugLookup = {
   pageId: string;
 };
@@ -61,7 +73,4 @@ export type AppearanceSettings = {
   foregroundColor?: string; // Main text color
   cardColor?: string;
   cardForegroundColor?: string;
-  borderRadius?: number; // in rem
-  borderWidth?: number; // in px
-  borderColor?: string;
-};
+  

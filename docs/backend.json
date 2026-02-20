@@ -48,7 +48,7 @@
         "pageId": { "type": "string", "description": "Reference to the Page this link belongs to." },
         "title": { "type": "string" },
         "orderIndex": { "type": "number" },
-        "type": { "type": "string", "enum": ["link", "text", "spotify", "youtube", "article"], "description": "The type of content block." },
+        "type": { "type": "string", "enum": ["link", "text", "spotify", "youtube", "article", "blog-overview"], "description": "The type of content block." },
         "url": { "type": "string", "format": "uri" },
         "thumbnailUrl": { "type": "string", "format": "uri" },
         "thumbnailHint": { "type": "string", "description": "AI hint for the thumbnail image." },
@@ -60,6 +60,23 @@
         "updatedAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "pageId", "title", "orderIndex", "type", "createdAt", "updatedAt"]
+    },
+    "Post": {
+      "title": "Post",
+      "type": "object",
+      "description": "Represents a single blog post written by a user.",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier for the Post entity." },
+        "pageId": { "type": "string", "description": "The ID of the Page this post is associated with." },
+        "ownerId": { "type": "string", "description": "The UID of the user who owns this post." },
+        "title": { "type": "string" },
+        "content": { "type": "string", "description": "The full content of the blog post, likely in Markdown." },
+        "slug": { "type": "string", "description": "A unique slug for the post's URL." },
+        "status": { "type": "string", "enum": ["draft", "published"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "pageId", "ownerId", "title", "content", "slug", "status", "createdAt", "updatedAt"]
     },
     "SlugLookup": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -102,13 +119,16 @@
         }
       },
       {
+        "path": "/posts/{postId}",
+        "definition": {
+          "entityName": "Post",
+          "schema": { "$ref": "#/backend/entities/Post" },
+          "description": "Stores all data for a single blog post. Publicly readable if published, but only writable by the owner."
+        }
+      },
+      {
         "path": "/slug_lookups/{slug}",
         "definition": {
           "entityName": "SlugLookup",
           "schema": { "$ref": "#/backend/entities/SlugLookup" },
           "description": "A public lookup table to map unique URL slugs to page IDs. Writable only by the page owner."
-        }
-      }
-    ]
-  }
-}
