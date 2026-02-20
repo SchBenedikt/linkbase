@@ -34,10 +34,12 @@ service cloud.firestore {
         // This is secure because it checks the document's actual data.
         allow get: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
 
-        // LIST Rule: A query on the collection is allowed if the user is signed in.
-        // Firestore then verifies that the query's constraints (e.g., `where('ownerId', '==', request.auth.uid)`)
-        // ensure that only documents permitted by the `get` rule are returned. This two-step check is crucial.
-        allow list: if isSignedIn();
+        // LIST Rule: A query on the collection is allowed.
+        // For public queries (unauthenticated), Firestore will verify that the query's constraints 
+        // (e.g., `where('status', '==', 'published')`) ensure that only documents permitted 
+        // by the `get` rule are returned.
+        // For private queries (e.g., by owner), Firestore verifies those constraints too.
+        allow list: if true;
 
         // WRITE Rules:
         // On create, the new document's ownerId must match the user.

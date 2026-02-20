@@ -25,26 +25,28 @@ interface BlogOverviewCardProps {
 export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, isEditable = false, dragHandleListeners }: BlogOverviewCardProps) {
   const firestore = useFirestore();
   
+  // Fetch all published posts. This avoids needing a composite index on (ownerId, status).
   const postsQuery = useMemoFirebase(() =>
-    ownerId ? query(
+    firestore ? query(
         collection(firestore, 'posts'),
-        where('ownerId', '==', ownerId)
+        where('status', '==', 'published')
     ) : null,
-    [firestore, ownerId]
+    [firestore]
   );
-  const { data: allPosts, isLoading } = useCollection<Post>(postsQuery);
+  const { data: allPublishedPosts, isLoading } = useCollection<Post>(postsQuery);
 
+  // On the client, filter by ownerId, sort by date, and take the top 5.
   const posts = useMemo(() => {
-    if (!allPosts) return [];
-    return allPosts
-      .filter(p => p.status === 'published')
+    if (!allPublishedPosts || !ownerId) return [];
+    return allPublishedPosts
+      .filter(p => p.ownerId === ownerId)
       .sort((a, b) => {
         const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
         const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
         return dateB - dateA; // Sort descending
       })
       .slice(0, 5);
-  }, [allPosts]);
+  }, [allPublishedPosts, ownerId]);
 
   const cardStyle: React.CSSProperties = {
     borderWidth: `${appearance.borderWidth || 0}px`,
