@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -41,6 +41,18 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
       rowSpan: link?.rowSpan || (mode === 'youtube' ? 2 : 1),
     },
   });
+  
+  useEffect(() => {
+    // For non-link types, we don't show the title field, but it's required by the schema.
+    // So, we'll pre-fill it with a default value to pass validation.
+    // The user doesn't need to see or edit this.
+    if (mode === 'spotify' && !form.getValues('title')) {
+      form.setValue('title', 'Spotify Track');
+    }
+    if (mode === 'youtube' && !form.getValues('title')) {
+      form.setValue('title', 'YouTube Video');
+    }
+  }, [mode, form]);
 
   const { toast } = useToast();
   const [isFetchingMeta, setIsFetchingMeta] = useState(false);
@@ -110,13 +122,7 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
   };
 
   const onSubmit = (data: LinkEditorFormData) => {
-    let finalData = { ...data };
-    if (!link && !data.title) {
-        if (mode === 'spotify') finalData.title = 'Spotify Track';
-        else if (mode === 'youtube') finalData.title = 'YouTube Video';
-        else finalData.title = 'Untitled Link';
-    }
-    onSave(finalData);
+    onSave(data);
   };
 
   return (

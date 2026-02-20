@@ -9,12 +9,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { Link } from '@/lib/types';
 import { Slider } from './ui/slider';
+import { Switch } from './ui/switch';
 
 export const textSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   content: z.string().optional(),
   colSpan: z.number().min(1).max(4).default(1),
   rowSpan: z.number().min(1).max(2).default(1),
+  hasTransparentBackground: z.boolean().optional(),
 });
 
 type TextEditorFormData = z.infer<typeof textSchema>;
@@ -33,6 +35,7 @@ export function TextEditor({ content, onSave, onCancel }: TextEditorProps) {
       content: content?.content || '',
       colSpan: content?.colSpan || 1,
       rowSpan: content?.rowSpan || 1,
+      hasTransparentBackground: content?.hasTransparentBackground || false,
     },
   });
 
@@ -66,6 +69,27 @@ export function TextEditor({ content, onSave, onCancel }: TextEditorProps) {
           )}
         />
         
+        <FormField
+          control={form.control}
+          name="hasTransparentBackground"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+              <div className="space-y-0.5">
+                <FormLabel>Transparent Background</FormLabel>
+                <FormDescription>
+                  Make the card background see-through.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}

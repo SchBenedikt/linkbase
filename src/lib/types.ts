@@ -10,6 +10,7 @@ export type Link = {
   url?: string; // For link-based cards
   thumbnailUrl?: string;
   thumbnailHint?: string;
+  hasTransparentBackground?: boolean;
 };
 
 export type Page = {

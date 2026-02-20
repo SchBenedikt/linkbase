@@ -2,9 +2,10 @@
 
 import { GripVertical, MoreVertical, Trash2, Edit } from 'lucide-react';
 import type { Link, AppearanceSettings } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from './ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 interface TextCardProps {
   link: Link;
@@ -16,27 +17,28 @@ interface TextCardProps {
 }
 
 export function TextCard({ link, onEdit, onDelete, appearance, isEditable = false, dragHandleListeners }: TextCardProps) {
-  const cardStyle: React.CSSProperties = {
+  const isTransparent = link.hasTransparentBackground;
+  
+  const cardStyle: React.CSSProperties = !isTransparent ? {
     borderWidth: `${appearance.borderWidth || 0}px`,
     borderColor: appearance.borderColor,
     borderStyle: appearance.borderWidth ? 'solid' : 'none',
-  };
-
-  if (!appearance.borderWidth) {
-      cardStyle.borderWidth = '0px';
-  }
+  } : {};
 
   const textStyle: React.CSSProperties = {
-      color: appearance.cardForegroundColor || '#FFFFFF'
+      color: isTransparent ? appearance.foregroundColor : appearance.cardForegroundColor
   };
   
   return (
     <Card 
-        className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card flex flex-col w-full h-full p-5"
+        className={cn(
+          "group relative transition-all duration-300 ease-in-out flex flex-col w-full h-full p-5",
+          isTransparent ? "bg-transparent shadow-none border-none" : "bg-card overflow-hidden"
+        )}
         style={cardStyle}
     >
         <h3 className="font-headline font-bold text-xl mb-2" style={textStyle}>{link.title}</h3>
-        <p className="text-sm flex-grow" style={textStyle}>
+        <p className="text-sm flex-grow whitespace-pre-wrap" style={textStyle}>
           {link.content}
         </p>
 
