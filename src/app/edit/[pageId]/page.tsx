@@ -16,6 +16,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileEditor, profileSchema } from '@/components/profile-editor';
+import { AddContentDialog } from '@/components/add-content-dialog';
 import { LinkEditor } from '@/components/link-editor';
 import { hexToHsl, getContrastColor } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -250,7 +251,7 @@ export default function EditPage() {
       case 'editProfile':
         return <ProfileEditor page={page} onSave={handleSaveProfile} onCancel={closeSheet} />;
       case 'addLink':
-        return <LinkEditor onSave={handleSaveLink} onCancel={closeSheet} />;
+        return <AddContentDialog onSave={handleSaveLink} onCancel={closeSheet} />;
       case 'editLink':
         return <LinkEditor link={sheetState.link} onSave={handleSaveLink} onCancel={closeSheet} />;
       default:
@@ -339,12 +340,13 @@ export default function EditPage() {
           <SheetHeader>
             <SheetTitle>
                 {sheetState.open && sheetState.view === 'editProfile' && 'Edit your Page'}
-                {sheetState.open && sheetState.view === 'addLink' && 'Add a new Link'}
+                {sheetState.open && sheetState.view === 'addLink' && 'Add new content'}
                 {sheetState.open && sheetState.view === 'editLink' && 'Edit your Link'}
             </SheetTitle>
             <SheetDescription>
                 {sheetState.open && sheetState.view === 'editProfile' && "Update your page details. Click save when you're done."}
-                {sheetState.open && (sheetState.view === 'addLink' || sheetState.view === 'editLink') && "Update your link details. Click save when you're done."}
+                {sheetState.open && sheetState.view === 'addLink' && "Select the type of content you want to add to your page."}
+                {sheetState.open && sheetState.view === 'editLink' && "Update your link details. Click save when you're done."}
             </SheetDescription>
           </SheetHeader>
           <div className="py-4">{renderSheetContent()}</div>

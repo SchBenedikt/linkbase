@@ -13,8 +13,8 @@ import { getWebsiteMeta } from '@/lib/actions';
 import { Loader2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const linkSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
+export const linkSchema = z.object({
+  title: z.string().min(1, 'Title is required').optional(),
   url: z.string().url('Please enter a valid URL'),
   colSpan: z.number().min(1).max(4).default(1),
   rowSpan: z.number().min(1).max(2).default(1),
@@ -24,15 +24,16 @@ interface LinkEditorProps {
   link?: Link | null; // if null, it's a new link
   onSave: (data: z.infer<typeof linkSchema>, thumbnailUrl?: string) => void;
   onCancel: () => void;
+  mode?: 'link' | 'spotify';
 }
 
-export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
+export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditorProps) {
   const form = useForm<z.infer<typeof linkSchema>>({
     resolver: zodResolver(linkSchema),
     defaultValues: {
       title: link?.title || '',
       url: link?.url || '',
-      colSpan: link?.colSpan || 1,
+      colSpan: link?.colSpan || (mode === 'spotify' ? 4 : 1),
       rowSpan: link?.rowSpan || 1,
     },
   });
@@ -106,25 +107,35 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
   };
 
   const onSubmit = (data: z.infer<typeof linkSchema>) => {
-    onSave(data, fetchedThumbnailUrl);
+     // If it's a new spotify link, and title is empty, give it a default.
+    if (mode === 'spotify' && !link && !data.title) {
+        data.title = 'Spotify Track';
+    }
+    const finalData = {
+        ...data,
+        title: data.title || (mode === 'link' ? 'Untitled Link' : 'Spotify Track'),
+    }
+    onSave(finalData, fetchedThumbnailUrl);
   };
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 p-1">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {mode === 'link' && (
+            <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                    <Input {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        )}
         <FormField
           control={form.control}
           name="url"
@@ -133,13 +144,20 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
               <FormLabel>URL</FormLabel>
               <div className="flex items-center gap-2">
                 <FormControl>
-                  <Input placeholder="https://example.com" {...field} />
+                  <Input placeholder={mode === 'spotify' ? "https://open.spotify.com/track/..." : "https://example.com"} {...field} />
                 </FormControl>
-                <Button type="button" variant="outline" size="icon" onClick={handleFetchMeta} disabled={isFetchingMeta} aria-label="Fetch website metadata">
-                  {isFetchingMeta ? <Loader2 className="animate-spin" /> : <Sparkles />}
-                </Button>
+                {mode === 'link' && (
+                    <Button type="button" variant="outline" size="icon" onClick={handleFetchMeta} disabled={isFetchingMeta} aria-label="Fetch website metadata">
+                    {isFetchingMeta ? <Loader2 className="animate-spin" /> : <Sparkles />}
+                    </Button>
+                )}
               </div>
-              <FormDescription>Enter a URL and click the magic button to fetch its title and image.</FormDescription>
+              <FormDescription>
+                {mode === 'link' 
+                  ? "Enter a URL and click the magic button to fetch its title and image."
+                  : "Paste the URL of the Spotify track you want to embed."
+                }
+                </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -186,9 +204,9 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
-            Cancel
+            {link ? 'Cancel' : 'Back'}
           </Button>
-          <Button type="submit">Save Link</Button>
+          <Button type="submit">Save</Button>
         </div>
       </form>
     </Form>
