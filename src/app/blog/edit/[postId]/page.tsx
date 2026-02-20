@@ -199,31 +199,36 @@ export default function PostEditorPage() {
                         </div>
 
                         <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
-                             <Card>
+                           <Card>
                                 <CardHeader>
-                                    <CardTitle>Post Settings</CardTitle>
-                                    <CardDescription>Configure visibility and metadata.</CardDescription>
+                                    <CardTitle>Publishing</CardTitle>
+                                    <CardDescription>Manage your post's visibility and organization.</CardDescription>
                                 </CardHeader>
-                                <CardContent className="space-y-4">
-                                     <div>
+                                <CardContent className="grid gap-6">
+                                    <div className="grid gap-3">
                                         <FormLabel>Status</FormLabel>
-                                        <Badge variant={post?.status === 'published' ? 'default' : 'secondary'} className="capitalize text-sm mt-2">
-                                            {post?.status || 'draft'}
-                                        </Badge>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant={post?.status === 'published' ? 'default' : 'secondary'} className="capitalize text-sm">
+                                                {post?.status || 'draft'}
+                                            </Badge>
+                                            <p className="text-sm text-muted-foreground">
+                                                {post?.status === 'published' ? 'Visible on your public blog.' : 'Saved as a private draft.'}
+                                            </p>
+                                        </div>
                                     </div>
                                     <FormField
                                         control={form.control}
                                         name="category"
                                         render={({ field }) => (
-                                            <FormItem>
-                                            <FormLabel>Category</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="e.g. Technology" {...field} />
-                                            </FormControl>
-                                            <FormDescription>
-                                                Assign a category to your post.
-                                            </FormDescription>
-                                            <FormMessage />
+                                            <FormItem className="grid gap-3">
+                                                <FormLabel>Category</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="e.g. Technology" {...field} />
+                                                </FormControl>
+                                                <FormDescription>
+                                                    Group this post with similar content.
+                                                </FormDescription>
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
