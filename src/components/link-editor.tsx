@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,6 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { Link } from '@/lib/types';
 import { Slider } from './ui/slider';
+import { getWebsiteTitle } from '@/lib/actions';
+import { Loader2, Sparkles } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const linkSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -33,6 +37,52 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
     },
   });
 
+  const { toast } = useToast();
+  const [isFetchingTitle, setIsFetchingTitle] = useState(false);
+
+  const handleFetchTitle = async () => {
+    const url = form.getValues('url');
+    if (!url) {
+      toast({
+        variant: 'destructive',
+        title: 'URL is missing',
+        description: 'Please enter a URL to fetch its title.',
+      });
+      return;
+    }
+    
+    setIsFetchingTitle(true);
+    try {
+      const result = await getWebsiteTitle(url);
+      if (result.title) {
+        form.setValue('title', result.title, { shouldValidate: true });
+        toast({
+          title: 'Title fetched successfully!',
+        });
+      } else if (result.error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error fetching title',
+          description: result.error,
+        });
+      } else {
+        toast({
+            variant: 'destructive',
+            title: 'No title found',
+            description: 'We could not find a title for this URL.',
+        });
+      }
+    } catch(e: any) {
+        toast({
+            variant: 'destructive',
+            title: 'An unexpected error occurred',
+            description: e.message || 'Could not fetch title.',
+        });
+    } finally {
+      setIsFetchingTitle(false);
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSave)} className="space-y-6 p-1">
@@ -55,9 +105,15 @@ export function LinkEditor({ link, onSave, onCancel }: LinkEditorProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>URL</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com" {...field} />
-              </FormControl>
+              <div className="flex items-center gap-2">
+                <FormControl>
+                  <Input placeholder="https://example.com" {...field} />
+                </FormControl>
+                <Button type="button" variant="outline" size="icon" onClick={handleFetchTitle} disabled={isFetchingTitle} aria-label="Fetch website title">
+                  {isFetchingTitle ? <Loader2 className="animate-spin" /> : <Sparkles />}
+                </Button>
+              </div>
+              <FormDescription>Enter a URL and click the magic button to fetch its title.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
