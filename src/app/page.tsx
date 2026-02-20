@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Palette, Link as LinkIcon, LayoutTemplate, MousePointerClick } from 'lucide-react';
+import { Palette, Link as LinkIcon, Sparkles, BarChart3, MoveRight } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { UserNav } from '@/components/user-nav';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export default function LandingPage() {
   const creatorImage1 = PlaceHolderImages.find(p => p.id === 'landing-creator-1');
@@ -53,6 +55,7 @@ export default function LandingPage() {
       </header>
 
       <main className="flex-1">
+        {/* Hero Section */}
         <section className="flex items-center px-4 pt-28 pb-16">
           <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="flex flex-col gap-6 text-center md:text-left items-center md:items-start">
@@ -117,69 +120,125 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* New Bento Grid Section */}
         <section className="py-16 sm:py-24 bg-secondary/50">
           <div className="container mx-auto px-4">
-            <div className="text-center max-w-3xl mx-auto">
+            <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
-                Entfessle deine Kreativität
+                Eine Leinwand für deine digitale Welt
               </h2>
               <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
-                BioBloom gibt dir die Werkzeuge, um eine wunderschöne und leistungsstarke "Link-in-Bio"-Seite zu erstellen, die wirklich dir gehört.
+                BioBloom bietet dir alle Werkzeuge, um eine Seite zu gestalten, die so einzigartig ist wie du. Flexibel, leistungsstark und wunderschön.
               </p>
             </div>
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-card p-6 rounded-2xl shadow-sm hover:shadow-xl transition-shadow">
-                <Palette className="h-8 w-8 text-primary mb-4" />
-                <h3 className="font-headline text-xl font-bold mb-2">Anpassbare Themen</h3>
-                <p className="text-muted-foreground">Gestalte ein Profil, das wirklich zu dir passt. Wähle aus unzähligen Farben, Schriftarten und Layouts.</p>
-              </div>
-              <div className="bg-card p-6 rounded-2xl shadow-sm hover:shadow-xl transition-shadow">
-                <LinkIcon className="h-8 w-8 text-primary mb-4" />
-                <h3 className="font-headline text-xl font-bold mb-2">Unbegrenzte Links</h3>
-                <p className="text-muted-foreground">Teile all deine Inhalte an einem Ort. Von deinem neuesten Video bis zu deinem Online-Shop.</p>
-              </div>
-              <div className="bg-card p-6 rounded-2xl shadow-sm hover:shadow-xl transition-shadow">
-                <LayoutTemplate className="h-8 w-8 text-primary mb-4" />
-                <h3 className="font-headline text-xl font-bold mb-2">Wunderschöne Vorlagen</h3>
-                <p className="text-muted-foreground">Starte schnell mit professionell gestalteten Vorlagen, die für jeden Stil geeignet sind.</p>
-              </div>
-              <div className="bg-card p-6 rounded-2xl shadow-sm hover:shadow-xl transition-shadow">
-                <MousePointerClick className="h-8 w-8 text-primary mb-4" />
-                <h3 className="font-headline text-xl font-bold mb-2">Detaillierte Analysen</h3>
-                <p className="text-muted-foreground">Verstehe dein Publikum besser mit Einblicken in deine Klicks und Besucher.</p>
-              </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-card shadow-lg hover:shadow-xl transition-shadow">
+                <div>
+                  <div className="p-2 bg-primary/10 rounded-full w-fit mb-4">
+                    <Palette className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="font-headline text-2xl font-bold mb-2">Design ohne Grenzen</h3>
+                  <p className="text-muted-foreground mb-4">Passe Farben, Schriftarten, Hintergründe, Ränder und mehr an. Oder lass unsere KI einzigartige Themes für dich erstellen.</p>
+                </div>
+                <Link href="/login" className="font-semibold text-primary inline-flex items-center gap-2 group">
+                  Jetzt gestalten <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Card>
+              <Card className="p-8 flex flex-col justify-between bg-card shadow-lg hover:shadow-xl transition-shadow">
+                <div>
+                  <div className="p-2 bg-accent/10 rounded-full w-fit mb-4">
+                    <Sparkles className="h-6 w-6 text-accent" />
+                  </div>
+                  <h3 className="font-headline text-2xl font-bold mb-2">KI-gestützte Magie</h3>
+                  <p className="text-muted-foreground">Beschreibe deinen Stil und unsere KI generiert atemberaubende Farbpaletten und Theme-Vorschläge.</p>
+                </div>
+              </Card>
+              <Card className="p-8 flex flex-col justify-between bg-card shadow-lg hover:shadow-xl transition-shadow">
+                 <div>
+                   <div className="p-2 bg-chart-1/10 rounded-full w-fit mb-4">
+                      <LinkIcon className="h-6 w-6 text-chart-1" />
+                   </div>
+                  <h3 className="font-headline text-2xl font-bold mb-2">Alle deine Links</h3>
+                  <p className="text-muted-foreground">Von Social Media über Projekte bis hin zu Shops – präsentiere alles, was dich ausmacht, an einem zentralen Ort.</p>
+                </div>
+              </Card>
+              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-card shadow-lg hover:shadow-xl transition-shadow">
+                <div>
+                  <div className="p-2 bg-chart-2/10 rounded-full w-fit mb-4">
+                     <BarChart3 className="h-6 w-6 text-chart-2" />
+                  </div>
+                  <h3 className="font-headline text-2xl font-bold mb-2">Detaillierte Analysen</h3>
+                  <p className="text-muted-foreground">Verstehe dein Publikum. Finde heraus, welche deiner Inhalte am besten ankommen, und optimiere deine Präsenz.</p>
+                </div>
+                <Link href="/login" className="font-semibold text-primary inline-flex items-center gap-2 group">
+                  Einblicke erhalten <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Card>
             </div>
           </div>
         </section>
 
+
+        {/* Testimonials Section */}
         <section className="py-16 sm:py-24">
-          <div className="container mx-auto px-4">
-            <div className="text-center max-w-3xl mx-auto">
-              <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
-                In 3 einfachen Schritten zu deinem BioBloom
-              </h2>
-              <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
-                Deine neue Online-Heimat ist nur wenige Klicks entfernt.
-              </p>
+            <div className="container mx-auto px-4">
+                <div className="text-center max-w-3xl mx-auto mb-16">
+                    <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
+                        Von Creatorn für Creator.
+                    </h2>
+                    <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
+                        Tausende vertrauen bereits auf BioBloom, um ihre digitale Identität zu bündeln und zu teilen.
+                    </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <Card className="bg-card p-6 rounded-2xl shadow-sm">
+                        <CardContent className="p-0">
+                            <p className="text-foreground mb-6">"Endlich eine Plattform, die mir die kreative Freiheit gibt, die ich brauche. Die Anpassungsmöglichkeiten sind der Wahnsinn!"</p>
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    <AvatarImage src="https://picsum.photos/seed/test1/40/40" alt="Anna L." />
+                                    <AvatarFallback>AL</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold">Anna L.</p>
+                                    <p className="text-sm text-muted-foreground">Designerin & Illustratorin</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-card p-6 rounded-2xl shadow-sm">
+                        <CardContent className="p-0">
+                            <p className="text-foreground mb-6">"Die Einrichtung war ein Kinderspiel. Innerhalb von 10 Minuten war meine Seite online und sah fantastisch aus."</p>
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    <AvatarImage src="https://picsum.photos/seed/test2/40/40" alt="Marco B." />
+                                    <AvatarFallback>MB</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold">Marco B.</p>
+                                    <p className="text-sm text-muted-foreground">Musiker & Produzent</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-card p-6 rounded-2xl shadow-sm">
+                        <CardContent className="p-0">
+                            <p className="text-foreground mb-6">"BioBloom hat meine Erwartungen übertroffen. Es ist nicht nur ein 'Link-in-Bio', es ist meine digitale Visitenkarte."</p>
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                    <AvatarImage src="https://picsum.photos/seed/test3/40/40" alt="Clara S." />
+                                    <AvatarFallback>CS</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-semibold">Clara S.</p>
+                                    <p className="text-sm text-muted-foreground">Food-Bloggerin</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
-            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-headline text-3xl font-bold mb-6">1</div>
-                <h3 className="font-headline text-2xl font-bold mb-2">Profil erstellen</h3>
-                <p className="text-muted-foreground max-w-xs">Registriere dich kostenlos und wähle deinen einzigartigen biobloom.co-Link.</p>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-headline text-3xl font-bold mb-6">2</div>
-                <h3 className="font-headline text-2xl font-bold mb-2">Links hinzufügen</h3>
-                <p className="text-muted-foreground max-w-xs">Füge Links zu deinen sozialen Netzwerken, Projekten, Shops und mehr hinzu.</p>
-              </div>
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-headline text-3xl font-bold mb-6">3</div>
-                <h3 className="font-headline text-2xl font-bold mb-2">Design anpassen</h3>
-                <p className="text-muted-foreground max-w-xs">Personalisiere das Aussehen deines Profils, um deine Marke widerzuspiegeln.</p>
-              </div>
-            </div>
-          </div>
         </section>
         
         <section className="py-16 sm:py-24 bg-grid-pattern">
@@ -205,7 +264,7 @@ export default function LandingPage() {
                 BioBloom*
             </Link>
             <nav className="flex gap-4 sm:gap-6 text-sm font-medium">
-                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Über uns</Link>
+                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Features</Link>
                 <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Preise</Link>
                 <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">Kontakt</Link>
             </nav>
