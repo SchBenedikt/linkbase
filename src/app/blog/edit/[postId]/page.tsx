@@ -1,17 +1,14 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter, useParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, addDoc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { UserNav } from '@/components/user-nav';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ArrowLeft } from 'lucide-react';
@@ -134,7 +131,26 @@ export default function PostEditorPage() {
                             Back to Blog
                         </Link>
                     </Button>
-                    <UserNav />
+                    <div className="flex items-center gap-4">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            disabled={isSaving || isPublishing}
+                            onClick={form.handleSubmit(onSaveDraft)}
+                        >
+                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isNewPost ? 'Save Draft' : 'Save Changes'}
+                        </Button>
+                        <Button
+                            type="button"
+                            disabled={isSaving || isPublishing}
+                            onClick={form.handleSubmit(onPublish)}
+                        >
+                            {isPublishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {post?.status === 'published' ? 'Update Post' : 'Publish'}
+                        </Button>
+                        <UserNav />
+                    </div>
                 </div>
             </header>
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -144,7 +160,7 @@ export default function PostEditorPage() {
                             <Textarea
                                 placeholder="Post Title"
                                 {...form.register('title')}
-                                className="text-4xl font-extrabold border-0 shadow-none resize-none p-0 focus-visible:ring-0"
+                                className="text-4xl font-extrabold border-0 shadow-none resize-none p-0 focus-visible:ring-0 bg-transparent"
                             />
                             {form.formState.errors.title && <p className="text-destructive mt-2">{form.formState.errors.title.message}</p>}
                         </div>
@@ -152,28 +168,9 @@ export default function PostEditorPage() {
                             <Textarea
                                 placeholder="Write your story..."
                                 {...form.register('content')}
-                                className="text-lg border-0 shadow-none resize-none p-0 h-96 focus-visible:ring-0"
+                                className="text-lg border-0 shadow-none resize-none p-0 h-96 focus-visible:ring-0 bg-transparent"
                             />
                              {form.formState.errors.content && <p className="text-destructive mt-2">{form.formState.errors.content.message}</p>}
-                        </div>
-                         <div className="flex items-center justify-end gap-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                disabled={isSaving || isPublishing}
-                                onClick={form.handleSubmit(onSaveDraft)}
-                            >
-                                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {isNewPost ? 'Save Draft' : 'Save Changes'}
-                            </Button>
-                            <Button
-                                type="button"
-                                disabled={isSaving || isPublishing}
-                                onClick={form.handleSubmit(onPublish)}
-                            >
-                                {isPublishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {post?.status === 'published' ? 'Update Post' : 'Publish'}
-                            </Button>
                         </div>
                     </div>
                 </form>
