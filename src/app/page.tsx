@@ -116,12 +116,12 @@ export default function LandingPage() {
                  <div className="hidden md:block relative h-96">
                     {heroImage1 && (
                         <div className="absolute -top-8 right-0 w-72 h-80 rounded-3xl overflow-hidden transform rotate-12 transition-transform duration-300 ease-in-out hover:scale-105 hover:rotate-6">
-                             <Image src={heroImage1.imageUrl} alt={heroImage1.description} data-ai-hint={heroImage1.imageHint} fill sizes="288px" className="object-cover"/>
+                             <Image src={heroImage1.imageUrl} alt={heroImage1.description} data-ai-hint={heroImage1.imageHint} fill sizes="288px" className="object-cover" priority />
                         </div>
                     )}
                     {heroImage2 && (
                         <div className="absolute bottom-0 right-20 w-64 h-72 rounded-3xl overflow-hidden transform -rotate-8 transition-transform duration-300 ease-in-out hover:scale-105 hover:-rotate-3">
-                            <Image src={heroImage2.imageUrl} alt={heroImage2.description} data-ai-hint={heroImage2.imageHint} fill sizes="256px" className="object-cover"/>
+                            <Image src={heroImage2.imageUrl} alt={heroImage2.description} data-ai-hint={heroImage2.imageHint} fill sizes="256px" className="object-cover" priority />
                         </div>
                     )}
                  </div>

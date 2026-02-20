@@ -24,7 +24,7 @@ const initialAppearance: AppearanceSettings = {
 };
 
 export default function PublicPage({ params }: { params: { slug: string } }) {
-    const resolvedParams = use(params);
+    const resolvedParams = use(Promise.resolve(params));
     const { slug } = resolvedParams;
     // We can't use the useFirestore hook here as this component isn't inside the provider tree by default.
     // So we initialize a temporary instance. This is safe.
