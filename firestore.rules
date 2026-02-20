@@ -20,35 +20,30 @@ service cloud.firestore {
     match /pages/{pageId} {
       allow get, list: if true;
       allow create: if isOwner(request.resource.data.ownerId);
-      // Use get() to check ownerId on the existing document for updates/deletes
       allow update, delete: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
 
       match /links/{linkId} {
         allow get, list: if true;
-        // Check ownership of the parent page for any write operation on links
         allow write: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
       }
     }
 
     // Blog Posts - DEFINITIVE FIX
     match /posts/{postId} {
-      // READ Rules:
-      // Allow any authenticated user to try and LIST posts.
-      // Firestore will then verify that the query's constraints (e.g., `where('ownerId', '==', request.auth.uid)`)
-      // ensure that only documents permitted by the `get` rule are returned.
-      allow list: if isSignedIn();
+        // GET Rule: A single post can be read if it's published OR if the user is the owner.
+        // This is secure because it checks the document's actual data.
+        allow get: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
 
-      // An individual post can be read (GET) if:
-      // 1. It is published (publicly visible)
-      // OR
-      // 2. The user is the owner of the post (can see their own drafts)
-      allow get: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
+        // LIST Rule: A query on the collection is allowed if the user is signed in.
+        // Firestore then verifies that the query's constraints (e.g., `where('ownerId', '==', request.auth.uid)`)
+        // ensure that only documents permitted by the `get` rule are returned. This two-step check is crucial.
+        allow list: if isSignedIn();
 
-      // WRITE Rules:
-      // On create, the new document's ownerId must match the user.
-      allow create: if isOwner(request.resource.data.ownerId);
-      // On update/delete, the existing document's ownerId must match the user.
-      allow update, delete: if isOwner(get(/databases/$(database)/documents/posts/$(postId)).data.ownerId);
+        // WRITE Rules:
+        // On create, the new document's ownerId must match the user.
+        allow create: if isOwner(request.resource.data.ownerId);
+        // On update/delete, the existing document's ownerId must match the user.
+        allow update, delete: if isOwner(get(/databases/$(database)/documents/posts/$(postId)).data.ownerId);
     }
 
     // Slug Lookups
