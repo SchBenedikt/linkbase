@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default function PostPage() {
     const params = useParams();
@@ -96,6 +97,7 @@ export default function PostPage() {
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <article className="max-w-4xl mx-auto">
                     <header className="mb-8 text-center border-b pb-8">
+                        {post.category && <Badge className="mb-4">{post.category}</Badge>}
                         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-foreground">
                             {post.title}
                         </h1>

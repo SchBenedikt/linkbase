@@ -8,11 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import type { Link } from '@/lib/types';
 import { Slider } from './ui/slider';
+import { Switch } from './ui/switch';
 
 export const blogOverviewSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   colSpan: z.number().min(1).max(4).default(4),
   rowSpan: z.number().min(1).max(2).default(2),
+  showCreationDate: z.boolean().default(true),
 });
 
 type BlogOverviewEditorFormData = z.infer<typeof blogOverviewSchema>;
@@ -30,6 +32,7 @@ export function BlogOverviewEditor({ content, onSave, onCancel }: BlogOverviewEd
       title: content?.title || 'Blog Posts',
       colSpan: content?.colSpan || 4,
       rowSpan: content?.rowSpan || 2,
+      showCreationDate: content?.showCreationDate !== false,
     },
   });
 
@@ -50,6 +53,27 @@ export function BlogOverviewEditor({ content, onSave, onCancel }: BlogOverviewEd
           )}
         />
         
+        <FormField
+          control={form.control}
+          name="showCreationDate"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+              <div className="space-y-0.5">
+                <FormLabel>Show Date</FormLabel>
+                <FormDescription>
+                  Display the creation date for each post.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
         <div className="grid grid-cols-2 gap-4">
             <FormField
             control={form.control}

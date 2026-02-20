@@ -15,6 +15,8 @@ export type Link = {
   excerpt?: string;
   readingTime?: string;
   publicationDate?: string;
+  // New field for blog overview
+  showCreationDate?: boolean;
 };
 
 export type Page = {
@@ -46,6 +48,7 @@ export type Post = {
   content: string;
   slug: string;
   status: 'draft' | 'published';
+  category?: string;
   createdAt: any;
   updatedAt: any;
 };
@@ -73,4 +76,7 @@ export type AppearanceSettings = {
   foregroundColor?: string; // Main text color
   cardColor?: string;
   cardForegroundColor?: string;
-  
+  borderRadius?: number;
+  borderWidth?: number;
+  borderColor?: string;
+};

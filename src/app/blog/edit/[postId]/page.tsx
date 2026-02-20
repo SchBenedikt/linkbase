@@ -9,15 +9,20 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, addDoc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { UserNav } from '@/components/user-nav';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ArrowLeft } from 'lucide-react';
 import type { Post } from '@/lib/types';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 const postSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   content: z.string().min(1, 'Content is required.'),
+  category: z.string().optional(),
 });
 
 type PostFormData = z.infer<typeof postSchema>;
@@ -46,6 +51,7 @@ export default function PostEditorPage() {
         defaultValues: {
             title: '',
             content: '',
+            category: '',
         },
     });
 
@@ -54,6 +60,7 @@ export default function PostEditorPage() {
             form.reset({
                 title: post.title,
                 content: post.content,
+                category: post.category || '',
             });
         }
     }, [post, form]);
@@ -122,59 +129,110 @@ export default function PostEditorPage() {
     }
     
     return (
-        <div className="min-h-screen bg-[#f3f3f1]">
-            <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-                     <Button variant="outline" size="sm" asChild>
-                        <Link href="/blog">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Blog
-                        </Link>
-                    </Button>
-                    <div className="flex items-center gap-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            disabled={isSaving || isPublishing}
-                            onClick={form.handleSubmit(onSaveDraft)}
-                        >
-                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isNewPost ? 'Save Draft' : 'Save Changes'}
+        <Form {...form}>
+            <div className="min-h-screen bg-[#f3f3f1]">
+                <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href="/blog">
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Back to Blog
+                            </Link>
                         </Button>
-                        <Button
-                            type="button"
-                            disabled={isSaving || isPublishing}
-                            onClick={form.handleSubmit(onPublish)}
-                        >
-                            {isPublishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {post?.status === 'published' ? 'Update Post' : 'Publish'}
-                        </Button>
-                        <UserNav />
-                    </div>
-                </div>
-            </header>
-            <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <form>
-                    <div className="max-w-4xl mx-auto">
-                        <div className="mb-8">
-                            <Textarea
-                                placeholder="Post Title"
-                                {...form.register('title')}
-                                className="text-4xl font-extrabold border-0 shadow-none resize-none p-0 focus-visible:ring-0 bg-transparent"
-                            />
-                            {form.formState.errors.title && <p className="text-destructive mt-2">{form.formState.errors.title.message}</p>}
-                        </div>
-                        <div className="mb-8">
-                            <Textarea
-                                placeholder="Write your story..."
-                                {...form.register('content')}
-                                className="text-lg border-0 shadow-none resize-none p-0 h-96 focus-visible:ring-0 bg-transparent"
-                            />
-                             {form.formState.errors.content && <p className="text-destructive mt-2">{form.formState.errors.content.message}</p>}
+                        <div className="flex items-center gap-4">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                disabled={isSaving || isPublishing}
+                                onClick={form.handleSubmit(onSaveDraft)}
+                            >
+                                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isNewPost ? 'Save Draft' : 'Save Changes'}
+                            </Button>
+                            <Button
+                                type="button"
+                                disabled={isSaving || isPublishing}
+                                onClick={form.handleSubmit(onPublish)}
+                            >
+                                {isPublishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {post?.status === 'published' ? 'Update Post' : 'Publish'}
+                            </Button>
+                            <UserNav />
                         </div>
                     </div>
-                </form>
-            </main>
-        </div>
+                </header>
+                <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <form className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                        <div className="lg:col-span-2 space-y-8">
+                             <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Post Title"
+                                            {...field}
+                                            className="text-4xl font-extrabold border-0 shadow-none resize-none p-0 focus-visible:ring-0 bg-transparent"
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="pl-1" />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="content"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Write your story..."
+                                            {...field}
+                                            className="text-lg border-0 shadow-none resize-none p-0 h-96 focus-visible:ring-0 bg-transparent"
+                                        />
+                                    </FormControl>
+                                    <FormMessage className="pl-1" />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
+                             <Card>
+                                <CardHeader>
+                                    <CardTitle>Post Settings</CardTitle>
+                                    <CardDescription>Configure visibility and metadata.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                     <div>
+                                        <FormLabel>Status</FormLabel>
+                                        <Badge variant={post?.status === 'published' ? 'default' : 'secondary'} className="capitalize text-sm mt-2">
+                                            {post?.status || 'draft'}
+                                        </Badge>
+                                    </div>
+                                    <FormField
+                                        control={form.control}
+                                        name="category"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormLabel>Category</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="e.g. Technology" {...field} />
+                                            </FormControl>
+                                            <FormDescription>
+                                                Assign a category to your post.
+                                            </FormDescription>
+                                            <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </form>
+                </main>
+            </div>
+        </Form>
     );
 }
