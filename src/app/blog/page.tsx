@@ -19,15 +19,27 @@ export default function BlogDashboardPage() {
     const firestore = useFirestore();
     const router = useRouter();
 
-    // Single query for all posts by the user, sorted by creation date.
-    // This query is simple enough that it doesn't require a custom composite index.
+    // Query for all posts by the user, but without ordering.
+    // Ordering on one field while filtering on another requires a composite index.
+    // By removing orderBy, we avoid this requirement. Sorting will be done on the client.
     const postsQuery = useMemoFirebase(() =>
-        user ? query(collection(firestore, 'posts'), where('ownerId', '==', user.uid), orderBy('createdAt', 'desc')) : null,
+        user ? query(collection(firestore, 'posts'), where('ownerId', '==', user.uid)) : null,
         [user, firestore]
     );
 
     // Fetch all posts (drafts and published) with one hook.
-    const { data: posts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
+    const { data: unsortedPosts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
+    
+    // Sort the fetched posts on the client-side.
+    const posts = useMemo(() => {
+        if (!unsortedPosts) return [];
+        return [...unsortedPosts].sort((a, b) => {
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+            return dateB - dateA; // Sort descending
+        });
+    }, [unsortedPosts]);
+
 
     if (isUserLoading || arePostsLoading) {
         return (
