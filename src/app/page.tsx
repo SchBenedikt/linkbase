@@ -1,13 +1,45 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Palette, Link as LinkIcon, LayoutTemplate, MousePointerClick } from 'lucide-react';
+import { useUser } from '@/firebase';
+import { UserNav } from '@/components/user-nav';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function LandingPage() {
   const creatorImage1 = PlaceHolderImages.find(p => p.id === 'landing-creator-1');
   const creatorImage2 = PlaceHolderImages.find(p => p.id === 'landing-creator-2');
+  const { user, isUserLoading } = useUser();
+
+  const renderAuthButtons = () => {
+    if (isUserLoading) {
+        return <Skeleton className="h-10 w-24 rounded-full" />;
+    }
+    if (user) {
+        return (
+            <div className="flex items-center gap-2">
+                <Button variant="outline" asChild className="rounded-full hidden sm:flex">
+                    <Link href="/profile">Dashboard</Link>
+                </Button>
+                <UserNav />
+            </div>
+        );
+    }
+    return (
+        <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild className="rounded-full">
+                <Link href="/login">Anmelden</Link>
+            </Button>
+            <Button asChild className="rounded-full bg-foreground text-background hover:bg-foreground/80">
+                <Link href="/login">Kostenlos registrieren</Link>
+            </Button>
+        </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -16,14 +48,7 @@ export default function LandingPage() {
           <Link href="/" className="font-headline font-bold text-xl pl-4">
             BioBloom*
           </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild className="rounded-full">
-              <Link href="/profile">Anmelden</Link>
-            </Button>
-            <Button asChild className="rounded-full bg-foreground text-background hover:bg-foreground/80">
-              <Link href="/profile">Kostenlos registrieren</Link>
-            </Button>
-          </div>
+          {renderAuthButtons()}
         </nav>
       </header>
 
@@ -47,8 +72,8 @@ export default function LandingPage() {
                     className="w-full h-14 rounded-full pl-32 pr-4 text-base"
                   />
                 </div>
-                <Button size="lg" className="h-14 rounded-full text-base font-bold w-full sm:w-auto px-8 bg-primary text-primary-foreground">
-                  Kostenlos loslegen
+                <Button asChild size="lg" className="h-14 rounded-full text-base font-bold w-full sm:w-auto px-8 bg-primary text-primary-foreground">
+                    <Link href="/login">Kostenlos loslegen</Link>
                 </Button>
               </form>
             </div>
@@ -167,7 +192,7 @@ export default function LandingPage() {
                 </p>
                 <div className="mt-8">
                     <Button size="lg" asChild className="h-14 rounded-full text-base font-bold px-8 bg-primary text-primary-foreground">
-                        <Link href="/profile">Jetzt kostenlos starten</Link>
+                        <Link href="/login">Jetzt kostenlos starten</Link>
                     </Button>
                 </div>
             </div>

@@ -7,15 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import type { Profile } from '@/lib/types';
+import type { UserProfile } from '@/lib/types';
 
 const profileSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  displayName: z.string().min(1, 'Name is required'),
   bio: z.string().max(160, 'Bio cannot be longer than 160 characters.').optional(),
 });
 
 interface ProfileEditorProps {
-  profile: Profile;
+  profile: Partial<UserProfile>;
   onSave: (data: z.infer<typeof profileSchema>) => void;
   onCancel: () => void;
 }
@@ -24,8 +24,8 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: profile.name,
-      bio: profile.bio,
+      displayName: profile.displayName || '',
+      bio: profile.bio || '',
     },
   });
 
@@ -34,7 +34,7 @@ export function ProfileEditor({ profile, onSave, onCancel }: ProfileEditorProps)
       <form onSubmit={form.handleSubmit(onSave)} className="space-y-6 p-1">
         <FormField
           control={form.control}
-          name="name"
+          name="displayName"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>

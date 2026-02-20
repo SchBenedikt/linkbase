@@ -4,13 +4,26 @@ export type Link = {
   url: string;
   thumbnailUrl: string;
   thumbnailHint: string;
+  orderIndex: number;
 };
 
-export type Profile = {
-  name: string;
+export type UserProfile = {
+  id: string; // Same as user.uid
+  displayName: string;
   bio: string;
   avatarUrl: string;
   avatarHint: string;
+  // Appearance settings can be part of the profile
+  backgroundImage?: string;
+  backgroundColor?: string;
+  primaryColor?: string;
+  accentColor?: string;
+  foregroundColor?: string;
+  cardColor?: string;
+  cardForegroundColor?: string;
+  borderRadius?: number;
+  borderWidth?: number;
+  borderColor?: string;
 };
 
 export type ColorPalette = {
