@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
@@ -9,8 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, Feather } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -63,58 +63,68 @@ export default function LoginPage() {
   
   if (isUserLoading || user) {
       return (
-        <div className="flex items-center justify-center min-h-screen bg-[#f3f3f1]">
+        <div className="flex items-center justify-center min-h-screen bg-background">
             <Loader2 className="h-16 w-16 animate-spin text-primary" />
         </div>
       )
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#f3f3f1] p-4">
-        <div className="absolute top-4 left-4">
-             <Button variant="ghost" asChild>
-                <Link href="/">&larr; Zurück zur Startseite</Link>
-            </Button>
+    <div className="min-h-screen w-full lg:grid lg:grid-cols-2">
+        <div className="hidden lg:flex flex-col items-center justify-center p-12 bg-[#ff9312] text-[#4c2f05]">
+            <div className="mx-auto w-[400px] space-y-6">
+                <Link href="/" className="font-headline font-bold text-4xl">
+                    BioBloom*
+                </Link>
+                <p className="text-xl">
+                    Alles, was du bist, an einem einzigen Ort. Erstelle deine persönliche Seite in wenigen Minuten.
+                </p>
+            </div>
         </div>
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Anmelden</TabsTrigger>
-          <TabsTrigger value="signup">Registrieren</TabsTrigger>
-        </TabsList>
-        
-        <Card className="mt-4">
-          <form onSubmit={(e) => { e.preventDefault(); handleAuthAction(); }}>
-            <CardHeader>
-              <CardTitle>{activeTab === 'login' ? 'Anmelden' : 'Registrieren'}</CardTitle>
-              <CardDescription>
-                {activeTab === 'login' 
-                  ? 'Melden Sie sich bei Ihrem Konto an, um fortzufahren.' 
-                  : 'Erstellen Sie ein neues Konto, um loszulegen.'
-                }
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">E-Mail</Label>
-                <Input id="email" type="email" placeholder="m@beispiel.de" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Passwort</Label>
-                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {loading 
-                  ? (activeTab === 'login' ? 'Wird angemeldet...' : 'Wird erstellt...')
-                  : (activeTab === 'login' ? 'Anmelden' : 'Konto erstellen')
-                }
-              </Button>
-            </CardFooter>
-          </form>
-        </Card>
-      </Tabs>
+        <div className="flex items-center justify-center p-6 sm:p-12 bg-background">
+             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
+                <Link href="/" className="font-headline font-bold text-3xl lg:hidden mb-8 block text-center">
+                    BioBloom*
+                </Link>
+                <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Anmelden</TabsTrigger>
+                <TabsTrigger value="signup">Registrieren</TabsTrigger>
+                </TabsList>
+                
+                <Card className="mt-4 bg-transparent border-0 shadow-none">
+                <form onSubmit={(e) => { e.preventDefault(); handleAuthAction(); }}>
+                    <CardHeader>
+                    <CardTitle>{activeTab === 'login' ? 'Willkommen zurück' : 'Konto erstellen'}</CardTitle>
+                    <CardDescription>
+                        {activeTab === 'login' 
+                        ? 'Melden Sie sich bei Ihrem Konto an, um fortzufahren.' 
+                        : 'Erstellen Sie ein neues Konto, um loszulegen.'
+                        }
+                    </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="email">E-Mail</Label>
+                        <Input id="email" type="email" placeholder="m@beispiel.de" value={email} onChange={(e) => setEmail(e.target.value)} required className="bg-card" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="password">Passwort</Label>
+                        <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="bg-card" />
+                    </div>
+                    </CardContent>
+                    <CardFooter>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {loading 
+                        ? (activeTab === 'login' ? 'Wird angemeldet...' : 'Wird erstellt...')
+                        : (activeTab === 'login' ? 'Anmelden' : 'Konto erstellen')
+                        }
+                    </Button>
+                    </CardFooter>
+                </form>
+                </Card>
+            </Tabs>
+        </div>
     </div>
   );
 }

@@ -25,16 +25,16 @@
       "imageHint": "vibrant landscape"
     },
     {
-      "id": "landing-creator-1",
-      "description": "Image of a lettering artist and illustrator.",
-      "imageUrl": "https://images.unsplash.com/photo-1730206562928-0efd62560435?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8YXJ0aXN0JTIwaWxsdXN0cmF0b3J8ZW58MHx8fHwxNzcxNTc3OTM1fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "artist illustrator"
+      "id": "hero-1",
+      "description": "Abstract colorful geometric shapes",
+      "imageUrl": "https://images.unsplash.com/photo-1604079628040-94301bb21b91?w=400&q=80",
+      "imageHint": "abstract shapes"
     },
     {
-      "id": "landing-creator-2",
-      "description": "Image of founders of a small business.",
-      "imageUrl": "https://images.unsplash.com/photo-1681949101473-9aea8b928a55?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmb3VuZGVycyUyMGJ1c2luZXNzfGVufDB8fHx8MTc3MTU3NzkzNXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "founders business"
+      "id": "hero-2",
+      "description": "A person working on a laptop with stickers",
+      "imageUrl": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400&q=80",
+      "imageHint": "creative workspace"
     },
     {
       "id": "marquee-1",
