@@ -26,7 +26,14 @@ service cloud.firestore {
     }
 
     match /posts/{postId} {
-      allow read: if resource.data.status == 'published' || (isSignedIn() && resource.data.ownerId == request.auth.uid);
+      // GET: Allow reading a single post if it's published, or if the user is the owner.
+      allow get: if resource.data.status == 'published' || (isSignedIn() && resource.data.ownerId == request.auth.uid);
+
+      // LIST: Allow queries to be attempted. The `get` rule above will then be
+      //       checked for each document in the potential result set.
+      allow list: if true;
+
+      // WRITE: Allow creating, updating, and deleting only for the owner.
       allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
       allow update, delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     }
