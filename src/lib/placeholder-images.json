@@ -1,3 +1,28 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "profile-avatar",
+      "description": "A placeholder avatar for a user profile.",
+      "imageUrl": "https://images.unsplash.com/photo-1593628525442-f94a810619e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwb3J0cmFpdCUyMHBlcnNvbnxlbnwwfHx8fDE3NzE1MTg5NDd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "portrait person"
+    },
+    {
+      "id": "link-thumb-1",
+      "description": "Thumbnail for a portfolio link.",
+      "imageUrl": "https://images.unsplash.com/photo-1676018526208-0c80014f8a50?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMGRlc2lnbnxlbnwwfHx8fDE3NzE0OTkzNzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract design"
+    },
+    {
+      "id": "link-thumb-2",
+      "description": "Thumbnail for a social media link.",
+      "imageUrl": "https://images.unsplash.com/photo-1762330463580-9bfa9645b0f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx0ZWNobm9sb2d5JTIwc29jaWFsfGVufDB8fHx8MTc3MTU3NzE4MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "technology social"
+    },
+    {
+      "id": "link-thumb-3",
+      "description": "Thumbnail for a project link.",
+      "imageUrl": "https://images.unsplash.com/photo-1615118265620-d8decf628275?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxuYXR1cmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzcxNTE5MzU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "nature landscape"
+    }
+  ]
 }
