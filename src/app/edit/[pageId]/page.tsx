@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { doc, collection, deleteDoc, setDoc } from 'firebase/firestore';
 
@@ -42,7 +42,8 @@ const initialAppearance: AppearanceSettings = {
 };
 
 export default function EditPage({ params }: { params: { pageId: string } }) {
-  const { pageId } = params;
+  const resolvedParams = use(Promise.resolve(params));
+  const { pageId } = resolvedParams;
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
