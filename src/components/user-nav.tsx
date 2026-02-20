@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useUser, useAuth } from '@/firebase';
-import { LogOut, LayoutDashboard } from 'lucide-react';
+import { LogOut, LayoutDashboard, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
 import Link from 'next/link';
@@ -64,6 +64,12 @@ export function UserNav() {
           <Link href="/profile">
             <LayoutDashboard className="mr-2 h-4 w-4" />
             <span>Dashboard</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/profile/settings">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Einstellungen</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

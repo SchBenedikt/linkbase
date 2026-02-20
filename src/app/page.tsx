@@ -284,9 +284,9 @@ export default function LandingPage() {
                 BioBloom*
             </Link>
             <nav className="flex gap-4 sm:gap-6 text-sm font-medium">
-                <Link href="#" className="text-muted-foreground hover:text-foreground">Features</Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">Preise</Link>
-                <Link href="#" className="text-muted-foreground hover:text-foreground">Kontakt</Link>
+                <Link href="/features" className="text-muted-foreground hover:text-foreground">Features</Link>
+                <Link href="/pricing" className="text-muted-foreground hover:text-foreground">Preise</Link>
+                <Link href="/contact" className="text-muted-foreground hover:text-foreground">Kontakt</Link>
             </nav>
             <p className="text-sm text-muted-foreground">© 2024 BioBloom. Alle Rechte vorbehalten.</p>
         </div>
