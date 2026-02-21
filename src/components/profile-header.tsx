@@ -32,24 +32,10 @@ export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeade
             </Button>
         )}
       </div>
-      <div className="relative group flex items-center gap-2">
-        <h1 className="font-headline text-5xl md:text-6xl font-bold text-foreground">{displayName}</h1>
-        {isEditable && onEdit && (
-            <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={onEdit}>
-                <Edit className="h-5 w-5" />
-                <span className="sr-only">Edit Profile</span>
-            </Button>
-        )}
-      </div>
-      <div className="relative group flex items-center gap-2 mt-3">
-        <p className="max-w-md text-lg text-muted-foreground">{bio}</p>
-        {isEditable && onEdit && (
-            <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity" onClick={onEdit}>
-                <Edit className="h-4 w-4" />
-                <span className="sr-only">Edit Profile</span>
-            </Button>
-        )}
-      </div>
+      
+      <h1 className="font-headline text-5xl md:text-6xl font-bold text-foreground">{displayName}</h1>
+      
+      <p className="max-w-md text-lg text-muted-foreground mt-3">{bio}</p>
     </div>
   );
 }
