@@ -19,7 +19,7 @@ export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeade
   const avatarHint = page.avatarHint || '';
   
   return (
-    <header className="flex flex-col items-start text-left py-10 md:py-8">
+    <div className="flex flex-col items-start text-left w-full">
       <div className="relative mb-6">
         <Avatar className="w-28 h-28 border-4 border-background ring-4 ring-primary shadow-lg">
           <AvatarImage src={avatarUrl} alt={displayName} data-ai-hint={avatarHint} />
@@ -50,6 +50,6 @@ export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeade
             </Button>
         )}
       </div>
-    </header>
+    </div>
   );
 }

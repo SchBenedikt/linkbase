@@ -310,39 +310,41 @@ export default function EditPage() {
   
   return (
     <div style={dynamicStyles as React.CSSProperties}>
-      <main className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
-        <div className="w-full max-w-6xl mx-auto">
-          <div className="fixed top-4 left-4 z-50">
-            <Button variant="outline" asChild>
-              <Link href="/profile">&larr; Back to Dashboard</Link>
-            </Button>
+      <main className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
+        <div className="w-full max-w-7xl mx-auto">
+          <header className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between">
+              <Button variant="outline" asChild>
+                <Link href="/profile">&larr; Back to Dashboard</Link>
+              </Button>
+            <div className="flex items-center gap-2">
+              {page.slug && <ShareButton publicUrl={`${window.location.origin}/${page.slug}`} />}
+              <ThemeSwitcher 
+                onThemeApply={handleThemeApply}
+                onAppearanceSave={handleAppearanceSave}
+                initialAppearance={appearance}
+              />
+              <UserNav />
+            </div>
+          </header>
+          
+          <div className="grid md:grid-cols-3 gap-8 pt-24">
+            <aside className="md:col-span-1 md:sticky md:top-24 h-fit">
+              <ProfileHeader page={page} onEdit={() => setSheetState({ view: 'editProfile', open: true })} isEditable={true} />
+            </aside>
+            <div className="md:col-span-2">
+              <LinkList
+                links={links || []}
+                ownerId={page?.ownerId}
+                onAddLink={() => setSheetState({ view: 'addContent', open: true })}
+                onEditLink={(link) => setSheetState({ view: 'editContent', open: true, content: link })}
+                onDeleteLink={setLinkToDelete}
+                onDragEnd={handleDragEnd}
+                appearance={appearance}
+                isEditable={true}
+              />
+            </div>
           </div>
-          <div className="fixed top-4 right-4 flex items-center gap-2 z-50">
-            {page.slug && <ShareButton publicUrl={`${window.location.origin}/${page.slug}`} />}
-            <ThemeSwitcher 
-              onThemeApply={handleThemeApply}
-              onAppearanceSave={handleAppearanceSave}
-              initialAppearance={appearance}
-            />
-            <UserNav />
-          </div>
-          <ProfileHeader page={page} onEdit={() => setSheetState({ view: 'editProfile', open: true })} isEditable={true} />
-          <LinkList
-            links={links || []}
-            ownerId={page?.ownerId}
-            onAddLink={() => setSheetState({ view: 'addContent', open: true })}
-            onEditLink={(link) => setSheetState({ view: 'editContent', open: true, content: link })}
-            onDeleteLink={setLinkToDelete}
-            onDragEnd={handleDragEnd}
-            appearance={appearance}
-            isEditable={true}
-          />
         </div>
-        <footer className="w-full max-w-6xl mx-auto mt-12 mb-6 text-center">
-            <p className="text-sm text-muted-foreground">
-                Powered by <span className="font-semibold text-primary">BioBloom</span>
-            </p>
-        </footer>
       </main>
 
       <Sheet open={sheetState.open} onOpenChange={(open) => !open && closeSheet()}>
