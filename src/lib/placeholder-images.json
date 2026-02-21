@@ -26,15 +26,15 @@
     },
     {
       "id": "hero-1",
-      "description": "Abstract colorful geometric shapes",
-      "imageUrl": "https://images.unsplash.com/photo-1604079628040-94301bb21b91?w=400&q=80",
-      "imageHint": "abstract shapes"
+      "description": "Person with flowers on their face, representing creativity and blooming.",
+      "imageUrl": "https://images.unsplash.com/photo-1502444336024-d23371b92e8c?w=400&q=80",
+      "imageHint": "creative floral"
     },
     {
       "id": "hero-2",
-      "description": "A person working on a laptop with stickers",
-      "imageUrl": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=400&q=80",
-      "imageHint": "creative workspace"
+      "description": "A photographer creator holding a camera.",
+      "imageUrl": "https://images.unsplash.com/photo-1516139008210-96e4510c1137?w=400&q=80",
+      "imageHint": "photographer creator"
     },
     {
       "id": "marquee-1",
@@ -86,21 +86,21 @@
     },
     {
       "id": "testimonial-1",
-      "description": "Avatar of Anna L.",
-      "imageUrl": "https://images.unsplash.com/photo-1609505848912-b7c3b8b4beda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MTUzODA5Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
+      "description": "Avatar of Anna L., a designer, drawing on a tablet",
+      "imageUrl": "https://images.unsplash.com/photo-1533109721025-d1ae7ee11794?w=100&q=80",
+      "imageHint": "designer drawing"
     },
     {
       "id": "testimonial-2",
-      "description": "Avatar of Marco B.",
-      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzE1MDUxMDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man portrait"
+      "description": "Avatar of Marco B., a musician in his studio",
+      "imageUrl": "https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=100&q=80",
+      "imageHint": "musician studio"
     },
     {
       "id": "testimonial-3",
-      "description": "Avatar of Clara S.",
-      "imageUrl": "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NzE0ODAxMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person portrait"
+      "description": "Avatar of Clara S., a food blogger in her kitchen",
+      "imageUrl": "https://images.unsplash.com/photo-1556911220-bff31c812db9?w=100&q=80",
+      "imageHint": "food blogger"
     }
   ]
 }
