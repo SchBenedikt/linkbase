@@ -2,16 +2,18 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link as LinkIcon, Music, Youtube, BookText, Newspaper, Rss } from 'lucide-react';
+import { Link as LinkIcon, Music, Youtube, BookText, Newspaper, Rss, Image as ImageIcon, ShoppingBag } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
 import { ArticleEditor, articleSchema } from './article-editor';
 import { BlogOverviewEditor, blogOverviewSchema } from './blog-overview-editor';
+import { ProductEditor, productSchema } from './product-editor';
+import { ImageEditor, imageSchema } from './image-editor';
 import type { z } from 'zod';
 import type { Link } from '@/lib/types';
 
 
-type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | z.infer<typeof blogOverviewSchema>) & { type: Link['type'] };
+type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | z.infer<typeof blogOverviewSchema> | z.infer<typeof productSchema> | z.infer<typeof imageSchema>) & { type: Link['type'] };
 
 interface AddContentDialogProps {
   onSave: (data: ContentFormData) => void;
@@ -24,7 +26,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
 
   const handleBack = () => setContentType(null);
   
-  const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | z.infer<typeof blogOverviewSchema>, type: Link['type']) => {
+  const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | z.infer<typeof blogOverviewSchema> | z.infer<typeof productSchema> | z.infer<typeof imageSchema>, type: Link['type']) => {
     onSave({ ...data, type });
   };
   
@@ -38,6 +40,12 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     }
     if (contentToEdit.type === 'blog-overview') {
       return <BlogOverviewEditor onSave={(data) => handleSave(data, 'blog-overview')} onCancel={onCancel} content={contentToEdit} />;
+    }
+    if (contentToEdit.type === 'product') {
+        return <ProductEditor onSave={(data) => handleSave(data, 'product')} onCancel={onCancel} product={contentToEdit} />;
+    }
+    if (contentToEdit.type === 'image') {
+        return <ImageEditor onSave={(data) => handleSave(data, 'image')} onCancel={onCancel} image={contentToEdit} />;
     }
     return <LinkEditor onSave={(data) => handleSave(data, contentToEdit.type as 'link' | 'spotify' | 'youtube')} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube'} link={contentToEdit} />;
   }
@@ -53,6 +61,12 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentType === 'blog-overview') {
         return <BlogOverviewEditor onSave={(data) => handleSave(data, 'blog-overview')} onCancel={handleBack} />;
     }
+     if (contentType === 'product') {
+        return <ProductEditor onSave={(data) => handleSave(data, 'product')} onCancel={handleBack} />;
+    }
+    if (contentType === 'image') {
+        return <ImageEditor onSave={(data) => handleSave(data, 'image')} onCancel={handleBack} />;
+    }
     // link, spotify, youtube
     return (
       <LinkEditor
@@ -65,7 +79,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
 
   // Initial view: show content type options
   return (
-    <div className="flex flex-col gap-4 pt-4">
+    <div className="grid grid-cols-1 gap-3 pt-4">
       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('link')}>
         <LinkIcon className="mr-4 h-8 w-8" />
         <div className="text-left">
@@ -80,11 +94,25 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
             <p className="text-sm font-normal text-muted-foreground">Add a title and some text.</p>
         </div>
       </Button>
+      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('image')}>
+        <ImageIcon className="mr-4 h-8 w-8" />
+        <div className="text-left">
+            <p>Image</p>
+            <p className="text-sm font-normal text-muted-foreground">Display a single image.</p>
+        </div>
+      </Button>
        <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('article')}>
         <Newspaper className="mr-4 h-8 w-8" />
         <div className="text-left">
             <p>Article Link</p>
             <p className="text-sm font-normal text-muted-foreground">Feature an article with metadata.</p>
+        </div>
+      </Button>
+       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('product')}>
+        <ShoppingBag className="mr-4 h-8 w-8" />
+        <div className="text-left">
+            <p>Product</p>
+            <p className="text-sm font-normal text-muted-foreground">Feature a product for sale.</p>
         </div>
       </Button>
       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('blog-overview')}>

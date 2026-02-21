@@ -14,6 +14,8 @@ import { YoutubeLinkCard } from './youtube-link-card';
 import { TextCard } from './text-card';
 import { ArticleCard } from './article-card';
 import { BlogOverviewCard } from './blog-overview-card';
+import { ProductCard } from './product-card';
+import { ImageCard } from './image-card';
 
 // Sortable Item Wrapper
 function SortableLinkItem(props: {
@@ -64,6 +66,12 @@ function SortableLinkItem(props: {
     case 'blog-overview':
       CardComponent = props.ownerId ? <BlogOverviewCard {...props} ownerId={props.ownerId} isEditable={true} dragHandleListeners={listeners} /> : null;
       break;
+    case 'product':
+        CardComponent = <ProductCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'image':
+        CardComponent = <ImageCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
     default:
       CardComponent = <LinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
       break;
@@ -178,6 +186,12 @@ export function LinkList({
                 break;
             case 'blog-overview':
                 CardComponent = ownerId ? <BlogOverviewCard link={link} ownerId={ownerId} appearance={appearance} isEditable={false} /> : null;
+                break;
+            case 'product':
+                CardComponent = <ProductCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'image':
+                CardComponent = <ImageCard link={link} appearance={appearance} isEditable={false} />;
                 break;
             default:
                 CardComponent = <LinkCard link={link} appearance={appearance} isEditable={false} />;

@@ -3,10 +3,10 @@ export type Link = {
   pageId: string;
   orderIndex: number;
   title: string;
-  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview';
+  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product';
   colSpan?: number;
   rowSpan?: number;
-  content?: string; // For text cards
+  content?: string; // For text cards or product description
   url?: string; // For link-based cards
   thumbnailUrl?: string;
   thumbnailHint?: string;
@@ -18,6 +18,7 @@ export type Link = {
   // New field for blog overview
   showCreationDate?: boolean;
   showExcerpts?: boolean;
+  price?: string; // For product cards
 };
 
 export type Page = {
@@ -33,7 +34,7 @@ export type Page = {
   backgroundColor?: string;
   primaryColor?: string;
   accentColor?: string;
-  foregroundColor?: string;
+  foregroundColor?: string; // Main text color
   cardColor?: string;
   cardForegroundColor?: string;
   borderRadius?: number;
