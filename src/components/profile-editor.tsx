@@ -66,8 +66,18 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
             <FormItem>
               <FormLabel>Title (Optional)</FormLabel>
               <FormControl>
-                <Input placeholder="e.g. Dr., Prof." {...field} />
+                <Input placeholder="e.g. Dr., Prof." {...field} list="title-suggestions" />
               </FormControl>
+               <datalist id="title-suggestions">
+                  <option value="Dr." />
+                  <option value="Prof." />
+                  <option value="Mr." />
+                  <option value="Mrs." />
+                  <option value="Ms." />
+                  <option value="Esq." />
+                  <option value="PhD" />
+                  <option value="MD" />
+              </datalist>
               <FormMessage />
             </FormItem>
           )}
