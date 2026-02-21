@@ -14,15 +14,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { UserNav } from '@/components/user-nav';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, CalendarIcon } from 'lucide-react';
 import type { Post } from '@/lib/types';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
 
 const postSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   content: z.string().min(1, 'Content is required.'),
   category: z.string().optional(),
+  createdAt: z.date().optional(),
 });
 
 type PostFormData = z.infer<typeof postSchema>;
@@ -52,6 +57,7 @@ export default function PostEditorPage() {
             title: '',
             content: '',
             category: '',
+            createdAt: new Date(),
         },
     });
 
@@ -61,6 +67,7 @@ export default function PostEditorPage() {
                 title: post.title,
                 content: post.content,
                 category: post.category || '',
+                createdAt: post.createdAt?.toDate ? post.createdAt.toDate() : undefined,
             });
         }
     }, [post, form]);
@@ -81,7 +88,7 @@ export default function PostEditorPage() {
                     pageId: 'default', // TODO: Allow selecting a page
                     slug: data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
                     status: currentStatus,
-                    createdAt: serverTimestamp(),
+                    createdAt: data.createdAt || serverTimestamp(),
                     updatedAt: serverTimestamp(),
                 };
                 const docRef = await addDoc(collection(firestore, 'posts'), newPostData);
@@ -175,7 +182,7 @@ export default function PostEditorPage() {
                                                 <FormControl>
                                                     <Textarea
                                                         {...field}
-                                                        className="text-4xl font-extrabold resize-none"
+                                                        className="text-4xl font-extrabold resize-none bg-card"
                                                         rows={1}
                                                     />
                                                 </FormControl>
@@ -193,7 +200,7 @@ export default function PostEditorPage() {
                                                     <Textarea
                                                         placeholder="Write your story..."
                                                         {...field}
-                                                        className="text-lg resize-none h-96"
+                                                        className="text-lg resize-none h-96 bg-card"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -233,6 +240,50 @@ export default function PostEditorPage() {
                                                 </FormControl>
                                                 <FormDescription>
                                                     Group this post with similar content.
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                     <FormField
+                                        control={form.control}
+                                        name="createdAt"
+                                        render={({ field }) => (
+                                            <FormItem className="grid gap-3">
+                                                <FormLabel>Publication Date</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button
+                                                                variant={"outline"}
+                                                                className={cn(
+                                                                    "w-full pl-3 text-left font-normal bg-card",
+                                                                    !field.value && "text-muted-foreground"
+                                                                )}
+                                                            >
+                                                                {field.value ? (
+                                                                    format(field.value, "PPP")
+                                                                ) : (
+                                                                    <span>Pick a date</span>
+                                                                )}
+                                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                        <Calendar
+                                                            mode="single"
+                                                            selected={field.value}
+                                                            onSelect={field.onChange}
+                                                            disabled={(date) =>
+                                                                date > new Date() || date < new Date("1900-01-01")
+                                                            }
+                                                            initialFocus
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormDescription>
+                                                    The date the post will appear to be published.
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
