@@ -30,7 +30,9 @@ export type Page = {
   id: string; // Same as user.uid
   ownerId: string;
   slug: string;
-  displayName: string;
+  title?: string;
+  firstName: string;
+  lastName: string;
   bio: string;
   avatarUrl: string;
   avatarHint: string;

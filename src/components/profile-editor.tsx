@@ -13,7 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Trash2 } from 'lucide-react';
 
 export const profileSchema = z.object({
-  displayName: z.string().min(1, 'Name is required'),
+  title: z.string().optional(),
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last name is required'),
   bio: z.string().max(160, 'Bio cannot be longer than 160 characters.').optional(),
   slug: z.string().min(3, 'Slug must be at least 3 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens.'),
   avatarUrl: z.string().url('Please enter a valid image URL').optional().or(z.literal('')),
@@ -35,7 +37,9 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      displayName: page.displayName || '',
+      title: page.title || '',
+      firstName: page.firstName || '',
+      lastName: page.lastName || '',
       bio: page.bio || '',
       slug: page.slug || '',
       avatarUrl: page.avatarUrl || '',
@@ -55,19 +59,47 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSave)} className="space-y-6 p-1">
-        <FormField
+         <FormField
           control={form.control}
-          name="displayName"
+          name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Title (Optional)</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input placeholder="e.g. Dr., Prof." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         <FormField
           control={form.control}
           name="avatarUrl"
@@ -117,8 +149,19 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
             <FormItem>
               <FormLabel>Category / Title</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. Photographer, Tech Enthusiast" />
+                <Input {...field} placeholder="e.g. Photographer, Tech Enthusiast" list="category-suggestions" />
               </FormControl>
+               <datalist id="category-suggestions">
+                  <option value="Photographer" />
+                  <option value="Developer" />
+                  <option value="Designer" />
+                  <option value="Musician" />
+                  <option value="Writer" />
+                  <option value="Artist" />
+                  <option value="Tech Enthusiast" />
+                  <option value="Filmmaker" />
+                  <option value="Entrepreneur" />
+              </datalist>
               <FormMessage />
             </FormItem>
           )}

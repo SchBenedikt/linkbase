@@ -34,7 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             const pagesQuery = query(collection(serverFirestore, 'pages'), where('ownerId', '==', post.ownerId), limit(1));
             const pagesSnap = await getDocs(pagesQuery);
             if (!pagesSnap.empty) {
-                authorName = pagesSnap.docs[0].data().displayName;
+                const pageData = pagesSnap.docs[0].data();
+                authorName = [pageData.firstName, pageData.lastName].filter(Boolean).join(' ');
             }
         }
 
@@ -88,7 +89,8 @@ export default async function Page({ params }: Props) {
             const pagesQuery = query(collection(serverFirestore, 'pages'), where('ownerId', '==', postDataRaw.ownerId), limit(1));
             const pagesSnap = await getDocs(pagesQuery);
             if (!pagesSnap.empty) {
-                authorName = pagesSnap.docs[0].data().displayName;
+                const pageData = pagesSnap.docs[0].data();
+                authorName = [pageData.firstName, pageData.lastName].filter(Boolean).join(' ');
             }
         }
         

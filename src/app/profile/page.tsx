@@ -34,7 +34,8 @@ export default function DashboardPage() {
         const newPageData = {
             ownerId: user.uid,
             slug: slug,
-            displayName: 'Untitled Page',
+            firstName: 'Untitled',
+            lastName: 'Page',
             bio: 'Add a description here.',
             avatarUrl: 'https://picsum.photos/seed/avatar/200',
             avatarHint: 'placeholder',
@@ -139,7 +140,7 @@ export default function DashboardPage() {
                         {pages.map((page) => (
                             <Card key={page.id} className="shadow-none border">
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                    <CardTitle className="text-2xl font-bold">{page.displayName}</CardTitle>
+                                    <CardTitle className="text-2xl font-bold">{page.firstName} {page.lastName}</CardTitle>
                                     <LinkIcon className="h-6 w-6 text-muted-foreground" />
                                 </CardHeader>
                                 <CardDescription className="px-6 pb-4">
@@ -181,7 +182,7 @@ export default function DashboardPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the page "{pageToDelete?.displayName}" and all associated links.
+                      This action cannot be undone. This will permanently delete the page "{pageToDelete?.firstName} {pageToDelete?.lastName}" and all associated links.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

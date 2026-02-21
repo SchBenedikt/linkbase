@@ -76,17 +76,18 @@ const renderSocialLink = (link: SocialLink) => {
 };
 
 export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeaderProps) {
-  const displayName = page.displayName || 'User';
+  const name = [page.title, page.firstName, page.lastName].filter(Boolean).join(' ') || 'User';
   const bio = page.bio || '';
   const avatarUrl = page.avatarUrl || '';
   const avatarHint = page.avatarHint || '';
+  const fallbackInitial = page.firstName?.charAt(0).toUpperCase() || '?';
   
   return (
     <div className="flex flex-col items-center md:items-start text-center md:text-left w-full">
       <div className="relative mb-6">
         <Avatar className="w-28 h-28 border-4 border-background ring-4 ring-primary shadow-lg">
-          <AvatarImage src={avatarUrl} alt={displayName} data-ai-hint={avatarHint} />
-          <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+          <AvatarImage src={avatarUrl} alt={name} data-ai-hint={avatarHint} />
+          <AvatarFallback>{fallbackInitial}</AvatarFallback>
         </Avatar>
         {isEditable && onEdit && (
             <Button variant="outline" size="icon" className="absolute bottom-0 right-0 rounded-full h-9 w-9 bg-background hover:bg-secondary" onClick={onEdit}>
@@ -96,7 +97,7 @@ export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeade
         )}
       </div>
       
-      <h1 className="font-headline text-5xl md:text-6xl font-bold text-foreground">{displayName}</h1>
+      <h1 className="font-headline text-5xl md:text-6xl font-bold text-foreground">{name}</h1>
       
       <div className="mt-4 flex flex-wrap justify-center md:justify-start items-center gap-2">
         {page.openForWork && (

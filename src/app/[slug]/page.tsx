@@ -36,16 +36,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const page = pageSnap.data() as PageType;
+    const displayName = [page.firstName, page.lastName].filter(Boolean).join(' ');
     const publicUrl = `${siteUrl}/${slug}`;
 
     const metadata: Metadata = {
-        title: page.displayName,
+        title: displayName,
         description: page.bio,
         alternates: {
           canonical: publicUrl,
         },
         openGraph: {
-            title: page.displayName,
+            title: displayName,
             description: page.bio,
             url: publicUrl,
             images: page.avatarUrl ? [
@@ -58,7 +59,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         },
         twitter: {
             card: 'summary',
-            title: page.displayName,
+            title: displayName,
             description: page.bio,
             images: page.avatarUrl ? [page.avatarUrl] : [],
         },

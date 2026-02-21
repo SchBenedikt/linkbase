@@ -34,7 +34,7 @@ export default function DashboardPage() {
     const filteredPages = useMemo(() => {
         if (!pages) return [];
         return pages.filter(page => 
-            page.displayName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            `${page.firstName} ${page.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
             page.slug.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [pages, searchQuery]);
@@ -45,7 +45,8 @@ export default function DashboardPage() {
         const newPageData = {
             ownerId: user.uid,
             slug: slug,
-            displayName: 'Untitled Page',
+            firstName: 'Untitled',
+            lastName: 'Page',
             bio: 'Add a description here.',
             avatarUrl: 'https://picsum.photos/seed/avatar/200',
             avatarHint: 'placeholder',
@@ -170,7 +171,7 @@ export default function DashboardPage() {
                             <Card key={page.id} className="shadow-none border">
                                 <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-2">
                                     <div>
-                                        <CardTitle className="text-2xl font-bold">{page.displayName}</CardTitle>
+                                        <CardTitle className="text-2xl font-bold">{page.firstName} {page.lastName}</CardTitle>
                                         <CardDescription className="pt-2">
                                            {page.slug && (
                                                 <Link href={`/${page.slug}`} target="_blank" className="text-primary hover:underline flex items-center gap-1">
@@ -225,7 +226,7 @@ export default function DashboardPage() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the page "{pageToDelete?.displayName}" and all associated links.
+                      This action cannot be undone. This will permanently delete the page "{pageToDelete?.firstName} {pageToDelete?.lastName}" and all associated links.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

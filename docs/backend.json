@@ -19,7 +19,9 @@
         "id": { "type": "string", "description": "Unique identifier for the Page entity." },
         "ownerId": { "type": "string", "description": "The UID of the user who owns this page." },
         "slug": { "type": "string", "description": "The unique, user-defined URL slug for the page." },
-        "displayName": { "type": "string", "description": "The public name displayed on the page." },
+        "title": { "type": "string", "description": "An optional academic or professional title (e.g., 'Dr.', 'Prof.')." },
+        "firstName": { "type": "string", "description": "The first name of the page owner." },
+        "lastName": { "type": "string", "description": "The last name of the page owner." },
         "bio": { "type": "string", "description": "A short biography or description displayed on the page." },
         "avatarUrl": { "type": "string", "format": "uri", "description": "URL to the user's profile picture for this page." },
         "avatarHint": { "type": "string", "description": "AI hint for the avatar image." },
@@ -52,7 +54,7 @@
           }
         }
       },
-      "required": ["id", "ownerId", "slug", "displayName", "status", "createdAt", "updatedAt"]
+      "required": ["id", "ownerId", "slug", "firstName", "lastName", "status", "createdAt", "updatedAt"]
     },
     "Link": {
       "$schema": "http://json-schema.org/draft-07/schema#",
