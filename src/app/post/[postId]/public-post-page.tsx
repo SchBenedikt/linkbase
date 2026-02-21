@@ -15,10 +15,11 @@ type PublicPost = Omit<Post, 'createdAt' | 'updatedAt'> & {
 type PublicPostPageComponentProps = { 
     post: PublicPost;
     authorName: string;
+    publicUrl: string;
 };
 
 
-export default function PublicPostPageComponent({ post, authorName }: PublicPostPageComponentProps) {
+export default function PublicPostPageComponent({ post, authorName, publicUrl }: PublicPostPageComponentProps) {
     
     const publicationDate = post.createdAt ? format(new Date(post.createdAt), 'PPP') : '';
     
@@ -38,7 +39,7 @@ export default function PublicPostPageComponent({ post, authorName }: PublicPost
         'dateModified': post.updatedAt,
         'mainEntityOfPage': {
             '@type': 'WebPage',
-            '@id': typeof window !== 'undefined' ? window.location.href : ''
+            '@id': publicUrl
         },
         'articleBody': post.content,
     };

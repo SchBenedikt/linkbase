@@ -78,7 +78,8 @@ export default async function Page({ params }: Props) {
         if (!postSnap.exists() || postSnap.data().status !== 'published') {
             notFound();
         }
-
+        
+        const publicUrl = `${siteUrl}/post/${postId}`;
         const postDataRaw = postSnap.data() as PostType;
 
         // Fetch author's name
@@ -99,7 +100,7 @@ export default async function Page({ params }: Props) {
             updatedAt: postDataRaw.updatedAt.toDate().toISOString(),
         }
 
-        return <PublicPostPageComponent post={postData as any} authorName={authorName} />;
+        return <PublicPostPageComponent post={postData as any} authorName={authorName} publicUrl={publicUrl} />;
 
     } catch (error) {
         console.error("Error fetching public post data", error);
