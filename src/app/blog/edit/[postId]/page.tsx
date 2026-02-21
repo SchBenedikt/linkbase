@@ -163,39 +163,43 @@ export default function PostEditorPage() {
                 </header>
                 <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <form className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                        <div className="lg:col-span-2 space-y-8">
-                             <FormField
-                                control={form.control}
-                                name="title"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Post Title"
-                                            {...field}
-                                            className="text-4xl font-extrabold border-0 shadow-none resize-none p-0 focus-visible:ring-0 bg-transparent"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="pl-1" />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="content"
-                                render={({ field }) => (
-                                    <FormItem>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Write your story..."
-                                            {...field}
-                                            className="text-lg border-0 shadow-none resize-none p-0 h-96 focus-visible:ring-0 bg-transparent"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="pl-1" />
-                                    </FormItem>
-                                )}
-                            />
+                        <div className="lg:col-span-2">
+                             <Card>
+                                <CardContent className="p-8 space-y-8">
+                                    <FormField
+                                        control={form.control}
+                                        name="title"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Post Title"
+                                                    {...field}
+                                                    className="text-4xl font-extrabold border-0 shadow-none resize-none p-0 focus-visible:ring-0 bg-transparent"
+                                                />
+                                            </FormControl>
+                                            <FormMessage className="pl-1" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="content"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Write your story..."
+                                                    {...field}
+                                                    className="text-lg border-0 shadow-none resize-none p-0 h-96 focus-visible:ring-0 bg-transparent"
+                                                />
+                                            </FormControl>
+                                            <FormMessage className="pl-1" />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </CardContent>
+                            </Card>
                         </div>
 
                         <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
@@ -223,7 +227,7 @@ export default function PostEditorPage() {
                                             <FormItem className="grid gap-3">
                                                 <FormLabel>Category</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="e.g. Technology" {...field} />
+                                                    <Input placeholder="e.g. Technology" {...field} className="bg-card" />
                                                 </FormControl>
                                                 <FormDescription>
                                                     Group this post with similar content.
