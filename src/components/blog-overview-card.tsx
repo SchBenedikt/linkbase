@@ -29,7 +29,7 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
   
   const postsQuery = useMemoFirebase(() => {
     if (!firestore || !ownerId) return null;
-      return query(collection(firestore, 'posts'), where('ownerId', '==', ownerId));
+      return query(collection(firestore, 'posts'), where('ownerId', '==', ownerId), where('status', '==', 'published'));
   }, [firestore, ownerId]);
 
   const { data: fetchedPosts, isLoading } = useCollection<Post>(postsQuery);
@@ -37,9 +37,7 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
   const posts = useMemo(() => {
     if (!fetchedPosts) return [];
     
-    const relevantPosts = fetchedPosts.filter(p => p.status === 'published');
-
-    return relevantPosts
+    return fetchedPosts
       .sort((a, b) => {
         const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
         const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
@@ -84,13 +82,20 @@ export function BlogOverviewCard({ link, ownerId, onEdit, onDelete, appearance, 
                 </div>
             )}
             {!isLoading && posts && posts.length > 0 && (
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                     {posts.map(post => (
-                        <li key={post.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                             <Link href={`/post/${post.id}`} className="hover:underline flex-grow truncate" style={textStyle} target="_blank" rel="noopener noreferrer">
-                                {post.title}
-                            </Link>
-                            <div className="flex items-center gap-2 flex-shrink-0">
+                         <li key={post.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-x-4 gap-y-1">
+                            <div className="flex-grow">
+                                <Link href={`/post/${post.id}`} className="hover:underline font-medium" style={textStyle} target="_blank" rel="noopener noreferrer">
+                                    {post.title}
+                                </Link>
+                                {link.showExcerpts && post.content && (
+                                    <p className="text-sm mt-1" style={textMutedStyle}>
+                                        {post.content.substring(0, 100)}{post.content.length > 100 ? '...' : ''}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0 pt-1 sm:pt-0">
                                 {post.category && <Badge variant="secondary" className="hidden sm:inline-flex">{post.category}</Badge>}
                                 {link.showCreationDate !== false && post.createdAt?.toDate && (
                                      <span className="text-xs" style={textMutedStyle}>

@@ -21,6 +21,7 @@ const initialAppearance: AppearanceSettings = {
     borderRadius: 1.25,
     borderWidth: 0,
     borderColor: '#e5e7eb',
+    fontFamily: 'Bricolage Grotesque',
 };
 
 export default function PublicPage() {
@@ -76,6 +77,7 @@ export default function PublicPage() {
                         borderColor: dbAppearance.borderColor || initialAppearance.borderColor,
                         backgroundImage: dbAppearance.backgroundImage || initialAppearance.backgroundImage,
                         foregroundColor: dbAppearance.foregroundColor || getContrastColor(dbAppearance.backgroundColor) || initialAppearance.foregroundColor,
+                        fontFamily: dbAppearance.fontFamily || initialAppearance.fontFamily,
                     };
                     setAppearance(newAppearance);
                     setDynamicStyles({
@@ -108,7 +110,9 @@ export default function PublicPage() {
         fetchPage();
     }, [slug, firestore]);
 
-    const mainStyle: React.CSSProperties = {};
+    const mainStyle: React.CSSProperties = {
+        fontFamily: appearance.fontFamily || "'Bricolage Grotesque', sans-serif"
+    };
     if (appearance.backgroundImage) {
         mainStyle.backgroundImage = `url(${appearance.backgroundImage})`;
         mainStyle.backgroundSize = 'cover';

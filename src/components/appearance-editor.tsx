@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { AppearanceSettings } from '@/lib/types';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 interface AppearanceEditorProps {
   initialSettings: AppearanceSettings;
@@ -60,6 +61,28 @@ export function AppearanceEditor({ initialSettings, onSave, onCancel }: Appearan
                             value={settings.backgroundColor || '#ffffff'}
                             onChange={(value) => updateSetting('backgroundColor', value)}
                         />
+                    </AccordionContent>
+                </AccordionItem>
+                 <AccordionItem value="typography">
+                    <AccordionTrigger>Typography</AccordionTrigger>
+                    <AccordionContent className="space-y-4 pt-4">
+                        <div className="space-y-2">
+                            <Label>Font Family</Label>
+                            <Select
+                                value={settings.fontFamily}
+                                onValueChange={(value) => updateSetting('fontFamily', value)}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a font" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Bricolage Grotesque">Bricolage Grotesque (Default)</SelectItem>
+                                    <SelectItem value="Inter">Inter</SelectItem>
+                                    <SelectItem value="Lora">Lora</SelectItem>
+                                    <SelectItem value="Source Code Pro">Source Code Pro</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="colors">

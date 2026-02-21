@@ -40,6 +40,7 @@ const initialAppearance: AppearanceSettings = {
   borderRadius: 1.25,
   borderWidth: 0,
   borderColor: '#e5e7eb',
+  fontFamily: 'Bricolage Grotesque',
 };
 
 
@@ -91,6 +92,7 @@ export default function EditPage() {
         borderColor: dbAppearance.borderColor || initialAppearance.borderColor,
         backgroundImage: dbAppearance.backgroundImage || initialAppearance.backgroundImage,
         foregroundColor: dbAppearance.foregroundColor || getContrastColor(dbAppearance.backgroundColor) || initialAppearance.foregroundColor,
+        fontFamily: dbAppearance.fontFamily || initialAppearance.fontFamily,
     };
     handleAppearanceSave(newAppearance, false); // Don't save back to DB on initial load
   }, [page]);
@@ -229,6 +231,7 @@ export default function EditPage() {
         borderWidth: newSettings.borderWidth,
         borderColor: newSettings.borderColor,
         backgroundImage: newSettings.backgroundImage,
+        fontFamily: newSettings.fontFamily,
       };
       setDocumentNonBlocking(pageRef, dataToSave, { merge: true });
     }
@@ -268,7 +271,9 @@ export default function EditPage() {
     }
   };
 
-  const mainStyle: React.CSSProperties = {};
+  const mainStyle: React.CSSProperties = {
+    fontFamily: appearance.fontFamily || "'Bricolage Grotesque', sans-serif"
+  };
   if (appearance.backgroundImage) {
       mainStyle.backgroundImage = `url(${appearance.backgroundImage})`;
       mainStyle.backgroundSize = 'cover';

@@ -15,6 +15,7 @@ export const blogOverviewSchema = z.object({
   colSpan: z.number().min(1).max(4).default(4),
   rowSpan: z.number().min(1).max(2).default(2),
   showCreationDate: z.boolean().default(true),
+  showExcerpts: z.boolean().default(false),
 });
 
 type BlogOverviewEditorFormData = z.infer<typeof blogOverviewSchema>;
@@ -33,6 +34,7 @@ export function BlogOverviewEditor({ content, onSave, onCancel }: BlogOverviewEd
       colSpan: content?.colSpan || 4,
       rowSpan: content?.rowSpan || 2,
       showCreationDate: content?.showCreationDate !== false,
+      showExcerpts: content?.showExcerpts || false,
     },
   });
 
@@ -62,6 +64,27 @@ export function BlogOverviewEditor({ content, onSave, onCancel }: BlogOverviewEd
                 <FormLabel>Show Date</FormLabel>
                 <FormDescription>
                   Display the creation date for each post.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="showExcerpts"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+              <div className="space-y-0.5">
+                <FormLabel>Show Excerpts</FormLabel>
+                <FormDescription>
+                  Display a short excerpt for each post.
                 </FormDescription>
               </div>
               <FormControl>

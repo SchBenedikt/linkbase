@@ -23,6 +23,7 @@
         "bio": { "type": "string", "description": "A short biography or description displayed on the page." },
         "avatarUrl": { "type": "string", "format": "uri", "description": "URL to the user's profile picture for this page." },
         "avatarHint": { "type": "string", "description": "AI hint for the avatar image." },
+        "fontFamily": { "type": "string", "description": "The CSS font-family for the page." },
         "backgroundImage": { "type": "string", "format": "uri" },
         "backgroundColor": { "type": "string" },
         "primaryColor": { "type": "string" },
@@ -57,6 +58,7 @@
         "readingTime": { "type": "string", "description": "Estimated reading time for the article (e.g., '5 min read')." },
         "publicationDate": { "type": "string", "description": "The publication date of the article (e.g., 'Jan 1, 2024')." },
         "showCreationDate": { "type": "boolean", "description": "Whether to show the creation date on the blog overview card." },
+        "showExcerpts": { "type": "boolean", "description": "Whether to show post excerpts on the blog overview card." },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },

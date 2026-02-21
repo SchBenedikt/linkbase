@@ -46,6 +46,7 @@ export default function DashboardPage() {
             borderRadius: 1.25,
             borderWidth: 0,
             borderColor: '#e5e7eb',
+            fontFamily: 'Bricolage Grotesque',
         };
         try {
             const docRef = await addDoc(collection(firestore, 'pages'), newPageData);

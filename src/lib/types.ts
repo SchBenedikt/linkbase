@@ -17,6 +17,7 @@ export type Link = {
   publicationDate?: string;
   // New field for blog overview
   showCreationDate?: boolean;
+  showExcerpts?: boolean;
 };
 
 export type Page = {
@@ -38,6 +39,7 @@ export type Page = {
   borderRadius?: number;
   borderWidth?: number;
   borderColor?: string;
+  fontFamily?: string;
 };
 
 export type Post = {
@@ -79,4 +81,5 @@ export type AppearanceSettings = {
   borderRadius?: number;
   borderWidth?: number;
   borderColor?: string;
+  fontFamily?: string;
 };
