@@ -43,7 +43,7 @@ export function ThemeSwitcher({ onThemeApply, onAppearanceSave, initialAppearanc
             Use AI to generate a theme or manually tweak every detail of your profile's appearance.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="ai" className="w-full pt-4">
+        <Tabs defaultValue="manual" className="w-full pt-4">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="ai">AI Magic</TabsTrigger>
             <TabsTrigger value="manual">Customize</TabsTrigger>
