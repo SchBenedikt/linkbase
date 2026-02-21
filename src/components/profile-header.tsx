@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Edit, Briefcase, Instagram, Twitter, Facebook, Linkedin, Github, Youtube, Globe, Soundcloud, Tiktok } from 'lucide-react';
+import { Edit, Briefcase, Instagram, Twitter, Facebook, Linkedin, Github, Youtube, Globe, Tiktok } from 'lucide-react';
 import type { Page, SocialLink } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 
@@ -12,6 +12,27 @@ interface ProfileHeaderProps {
   onEdit?: () => void;
   isEditable?: boolean;
 }
+
+const SoundcloudIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        {...props}
+    >
+        <path d="M3.75 18a2.25 2.25 0 0 1-2.25-2.25V8.25A2.25 2.25 0 0 1 3.75 6h.75c.62 0 1.12.5 1.12 1.12v8.75c0 .62-.5 1.12-1.12 1.12h-.75z"/>
+        <path d="M8.25 18a2.25 2.25 0 0 1-2.25-2.25V6.37a2.25 2.25 0 0 1 2.25-2.25h.75c.62 0 1.12.5 1.12 1.12v11.75c0 .62-.5 1.12-1.12 1.12h-.75z"/>
+        <path d="M12.75 18a2.25 2.25 0 0 1-2.25-2.25V9.37a2.25 2.25 0 0 1 2.25-2.25h.75c.62 0 1.12.5 1.12 1.12v8.75c0 .62-.5 1.12-1.12 1.12h-.75z"/>
+        <path d="M17.25 18a2.25 2.25 0 0 1-2.25-2.25V10.5a2.25 2.25 0 0 1 2.25-2.25h.75c.62 0 1.12.5 1.12 1.12v5.25c0 .62-.5 1.12-1.12 1.12h-.75z"/>
+        <path d="M21.75 18a2.25 2.25 0 0 1-2.25-2.25v-2.5a2.25 2.25 0 0 1 2.25-2.25h.75c.62 0 1.12.5 1.12 1.12v2.25c0 .62-.5 1.12-1.12 1.12h-.75z"/>
+    </svg>
+);
 
 const socialIcons: { [key: string]: React.ElementType } = {
     instagram: Instagram,
@@ -23,7 +44,7 @@ const socialIcons: { [key: string]: React.ElementType } = {
     website: Globe,
     tiktok: Tiktok,
     pinterest: Globe, // Fallback icon
-    soundcloud: Soundcloud,
+    soundcloud: SoundcloudIcon,
 };
 
 const renderSocialLink = (link: SocialLink) => {
