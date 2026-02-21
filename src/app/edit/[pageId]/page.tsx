@@ -23,6 +23,9 @@ import { UserNav } from '@/components/user-nav';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Badge } from '@/components/ui/badge';
+import { Zap, ZapOff } from 'lucide-react';
+
 
 type SheetState = 
   | { view: 'editProfile'; open: true }
@@ -73,7 +76,7 @@ export default function EditPage() {
     if (!isPageLoading && page && user && page.ownerId !== user.uid) {
         // If the user is not the owner of the page, redirect to their dashboard
         console.warn('User is not the owner of this page.');
-        router.push('/profile');
+        router.push('/dashboard');
     }
   }, [isUserLoading, user, router, isPageLoading, page]);
 
@@ -257,6 +260,12 @@ export default function EditPage() {
       handleAppearanceSave(newAppearance);
     }
   };
+  
+  const handleToggleStatus = () => {
+    if (!pageRef || !page) return;
+    const newStatus = page.status === 'published' ? 'draft' : 'published';
+    setDocumentNonBlocking(pageRef, { status: newStatus }, { merge: true });
+  };
 
   const renderSheetContent = () => {
     if (!sheetState.open || !page) return null;
@@ -321,10 +330,17 @@ export default function EditPage() {
         <div className="w-full max-w-7xl mx-auto">
           <header className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between">
               <Button variant="outline" asChild>
-                <Link href="/profile">&larr; Back to Dashboard</Link>
+                <Link href="/dashboard">&larr; Back to Dashboard</Link>
               </Button>
             <div className="flex items-center gap-2">
-              {page.slug && <ShareButton publicUrl={`${window.location.origin}/${page.slug}`} />}
+              <Badge variant={page.status === 'published' ? 'default' : 'secondary'} className="capitalize">
+                {page.status}
+              </Badge>
+              <Button onClick={handleToggleStatus} variant="outline" size="sm">
+                {page.status === 'published' ? <ZapOff className="mr-2 h-4 w-4" /> : <Zap className="mr-2 h-4 w-4" />}
+                {page.status === 'published' ? 'Unpublish' : 'Publish'}
+              </Button>
+              {page.slug && page.status === 'published' && <ShareButton publicUrl={`${window.location.origin}/${page.slug}`} />}
               <ThemeSwitcher 
                 onThemeApply={handleThemeApply}
                 onAppearanceSave={handleAppearanceSave}

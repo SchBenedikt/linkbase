@@ -18,7 +18,8 @@ service cloud.firestore {
 
     // Public Pages & Links
     match /pages/{pageId} {
-      allow get, list: if true;
+      allow get: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
+      allow list: if true;
       allow create: if isOwner(request.resource.data.ownerId);
       allow update, delete: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
 

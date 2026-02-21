@@ -29,6 +29,7 @@ export type Page = {
   bio: string;
   avatarUrl: string;
   avatarHint: string;
+  status: 'published' | 'draft';
   // Appearance settings can be part of the profile
   backgroundImage?: string;
   backgroundColor?: string;

@@ -23,6 +23,7 @@
         "bio": { "type": "string", "description": "A short biography or description displayed on the page." },
         "avatarUrl": { "type": "string", "format": "uri", "description": "URL to the user's profile picture for this page." },
         "avatarHint": { "type": "string", "description": "AI hint for the avatar image." },
+        "status": { "type": "string", "enum": ["draft", "published"], "description": "The visibility status of the page." },
         "fontFamily": { "type": "string", "description": "The CSS font-family for the page." },
         "backgroundImage": { "type": "string", "format": "uri" },
         "backgroundColor": { "type": "string" },
@@ -37,7 +38,7 @@
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "ownerId", "slug", "displayName", "createdAt", "updatedAt"]
+      "required": ["id", "ownerId", "slug", "displayName", "status", "createdAt", "updatedAt"]
     },
     "Link": {
       "$schema": "http://json-schema.org/draft-07/schema#",

@@ -7,7 +7,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://biobloom.co';
 
   try {
-    const pagesSnap = await getDocs(collection(serverFirestore, 'pages'));
+    const pagesQuery = query(collection(serverFirestore, 'pages'), where('status', '==', 'published'));
+    const pagesSnap = await getDocs(pagesQuery);
     const pageUrls = pagesSnap.docs.map(doc => {
         const data = doc.data();
         return {

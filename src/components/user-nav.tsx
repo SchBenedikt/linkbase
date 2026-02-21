@@ -61,7 +61,7 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/profile">
+          <Link href="/dashboard">
             <LayoutDashboard className="mr-2 h-4 w-4" />
             <span>Dashboard</span>
           </Link>
@@ -73,7 +73,7 @@ export function UserNav() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/profile/settings">
+          <Link href="/dashboard/settings">
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </Link>

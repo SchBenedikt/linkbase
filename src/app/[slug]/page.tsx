@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const pageRef = doc(serverFirestore, 'pages', pageId);
     const pageSnap = await getDoc(pageRef);
 
-    if (!pageSnap.exists()) {
+    if (!pageSnap.exists() || pageSnap.data().status !== 'published') {
        return {
         title: 'Page Not Found',
         description: 'The page you are looking for does not exist.',
@@ -94,7 +94,7 @@ export default async function Page({ params }: Props) {
             getDocs(linksQuery)
         ]);
 
-        if (!pageSnap.exists()) {
+        if (!pageSnap.exists() || pageSnap.data().status !== 'published') {
             notFound();
         }
 
