@@ -96,7 +96,10 @@
         "status": { "type": "string", "enum": ["draft", "published"], "description": "The current status of the post." },
         "category": { "type": "string", "description": "The category of the blog post." },
         "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "authorName": { "type": "string", "description": "The name of the post's author, denormalized for efficient queries." },
+        "authorAvatarUrl": { "type": "string", "format": "uri", "description": "The URL of the author's avatar, denormalized." },
+        "authorPageSlug": { "type": "string", "description": "The URL slug of the author's page, denormalized." }
       },
       "required": ["id", "pageId", "ownerId", "title", "content", "slug", "status", "createdAt", "updatedAt"]
     },

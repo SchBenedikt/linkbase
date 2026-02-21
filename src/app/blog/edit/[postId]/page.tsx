@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter, useParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc, addDoc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
+import { doc, addDoc, setDoc, serverTimestamp, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { UserNav } from '@/components/user-nav';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ArrowLeft, CalendarIcon } from 'lucide-react';
-import type { Post } from '@/lib/types';
+import type { Post, Page } from '@/lib/types';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { DashboardNav } from '@/components/dashboard-nav';
 
 const postSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -68,7 +69,7 @@ export default function PostEditorPage() {
                 title: post.title,
                 content: post.content,
                 category: post.category || '',
-                createdAt: post.createdAt?.toDate ? post.createdAt.toDate() : undefined,
+                createdAt: post.createdAt?.toDate ? post.createdAt.toDate() : new Date(post.createdAt),
             });
         }
     }, [post, form]);
@@ -80,11 +81,30 @@ export default function PostEditorPage() {
         }
 
         const currentStatus = status || post?.status || 'draft';
+        let authorInfo: Partial<Post> = {};
+
+        if (currentStatus === 'published') {
+            try {
+                const pagesQuery = query(collection(firestore, 'pages'), where('ownerId', '==', user.uid), limit(1));
+                const pagesSnap = await getDocs(pagesQuery);
+                if (!pagesSnap.empty) {
+                    const pageData = pagesSnap.docs[0].data() as Page;
+                    authorInfo = {
+                        authorName: [pageData.firstName, pageData.lastName].filter(Boolean).join(' '),
+                        authorAvatarUrl: pageData.avatarUrl,
+                        authorPageSlug: pageData.slug,
+                    };
+                }
+            } catch (e) {
+                console.error("Could not fetch author page data for denormalization", e);
+            }
+        }
 
         if (isNewPost) {
             try {
                 const newPostData = {
                     ...data,
+                    ...authorInfo,
                     ownerId: user.uid,
                     pageId: 'default', // TODO: Allow selecting a page
                     slug: data.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, ''),
@@ -93,7 +113,7 @@ export default function PostEditorPage() {
                     updatedAt: serverTimestamp(),
                 };
                 const docRef = await addDoc(collection(firestore, 'posts'), newPostData);
-                toast({ title: 'Post created!', description: 'Your post has been saved as a draft.' });
+                toast({ title: 'Post created!', description: 'Your post has been saved.' });
                 router.replace(`/blog/edit/${docRef.id}`);
             } catch (error) {
                 console.error("Error creating post:", error);
@@ -103,9 +123,14 @@ export default function PostEditorPage() {
             try {
                 const updatedData: Partial<Post> = {
                     ...data,
+                    ...authorInfo,
                     status: currentStatus,
                     updatedAt: serverTimestamp(),
                 };
+                if (data.createdAt) {
+                  updatedData.createdAt = data.createdAt;
+                }
+                
                 await setDoc(postRef, updatedData, { merge: true });
                 toast({ title: 'Post updated!', description: `Your post is now ${currentStatus}.` });
                 if (currentStatus === 'published') {
@@ -141,12 +166,7 @@ export default function PostEditorPage() {
             <div className="min-h-screen bg-background">
                 <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-                        <Button variant="outline" size="sm" asChild>
-                            <Link href="/blog">
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Back to Blog
-                            </Link>
-                        </Button>
+                        <DashboardNav />
                         <div className="flex items-center gap-4">
                             <Button
                                 type="button"

@@ -14,7 +14,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { UserNav } from '@/components/user-nav';
-import Link from 'next/link';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,6 +25,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { ThemeToggle } from '@/components/theme-toggle';
+import { DashboardNav } from '@/components/dashboard-nav';
 
 // Schemas
 const emailSchema = z.object({
@@ -128,9 +128,7 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
         <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-                <h1 className="font-headline text-2xl font-bold text-foreground">
-                    Settings
-                </h1>
+                <DashboardNav />
                 <div className="flex items-center gap-2">
                     <ThemeToggle />
                     <UserNav />
@@ -138,10 +136,8 @@ export default function SettingsPage() {
             </div>
         </header>
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h2 className="text-3xl font-bold tracking-tight mb-8">Settings</h2>
             <div className="max-w-2xl mx-auto space-y-8">
-                <Button variant="outline" asChild>
-                    <Link href="/dashboard">&larr; Back to Dashboard</Link>
-                </Button>
                 <Card className="border-0 shadow-none bg-transparent">
                     <CardHeader>
                         <CardTitle>Change Email Address</CardTitle>

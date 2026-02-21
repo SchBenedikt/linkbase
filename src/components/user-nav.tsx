@@ -15,10 +15,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useUser, useAuth } from '@/firebase';
-import { LogOut, LayoutDashboard, Settings, BookOpen } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from './ui/skeleton';
-import Link from 'next/link';
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
@@ -35,7 +34,7 @@ export function UserNav() {
   }
 
   if (!user) {
-    return null; // Should not happen if this component is used correctly
+    return null;
   }
 
   const userInitial = user.displayName?.charAt(0) || user.email?.charAt(0) || '?';
@@ -59,25 +58,6 @@ export function UserNav() {
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard">
-            <LayoutDashboard className="mr-2 h-4 w-4" />
-            <span>Dashboard</span>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/blog">
-            <BookOpen className="mr-2 h-4 w-4" />
-            <span>Blog</span>
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings">
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-          </Link>
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />

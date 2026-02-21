@@ -77,6 +77,8 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
                   <option value="Esq." />
                   <option value="PhD" />
                   <option value="MD" />
+                  <option value="CEO" />
+                  <option value="Founder" />
               </datalist>
               <FormMessage />
             </FormItem>
@@ -171,6 +173,17 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
                   <option value="Tech Enthusiast" />
                   <option value="Filmmaker" />
                   <option value="Entrepreneur" />
+                  <option value="Creator" />
+                  <option value="Influencer" />
+                  <option value="Blogger" />
+                  <option value="Vlogger" />
+                  <option value="Coach" />
+                  <option value="Consultant" />
+                  <option value="Speaker" />
+                  <option value="Engineer" />
+                  <option value="Scientist" />
+                  <option value="Educator" />
+                  <option value="Student" />
               </datalist>
               <FormMessage />
             </FormItem>

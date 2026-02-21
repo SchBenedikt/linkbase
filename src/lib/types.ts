@@ -65,6 +65,9 @@ export type Post = {
   category?: string;
   createdAt: any;
   updatedAt: any;
+  authorName?: string;
+  authorAvatarUrl?: string;
+  authorPageSlug?: string;
 };
 
 export type SlugLookup = {

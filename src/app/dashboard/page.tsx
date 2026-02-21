@@ -15,6 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { DashboardNav } from '@/components/dashboard-nav';
 
 
 export default function DashboardPage() {
@@ -64,7 +65,6 @@ export default function DashboardPage() {
         };
         try {
             const docRef = await addDoc(collection(firestore, 'pages'), newPageData);
-            // Also create the initial slug lookup document
             const slugRef = doc(firestore, 'slug_lookups', slug);
             await setDoc(slugRef, { pageId: docRef.id });
             router.push(`/edit/${docRef.id}`);
@@ -77,28 +77,24 @@ export default function DashboardPage() {
         if (!pageToDelete || !firestore) return;
 
         try {
-            // 1. Delete all links in the subcollection
             const linksQuery = query(collection(firestore, 'pages', pageToDelete.id, 'links'));
             const linksSnapshot = await getDocs(linksQuery);
             linksSnapshot.forEach(linkDoc => {
                 deleteDocumentNonBlocking(linkDoc.ref);
             });
 
-            // 2. Delete the slug lookup
             if (pageToDelete.slug) {
                 const slugRef = doc(firestore, 'slug_lookups', pageToDelete.slug);
                 deleteDocumentNonBlocking(slugRef);
             }
 
-            // 3. Delete the page itself
             const pageRef = doc(firestore, 'pages', pageToDelete.id);
             deleteDocumentNonBlocking(pageRef);
 
         } catch (error) {
             console.error("Error deleting page:", error);
-            // Optionally, show a toast notification for the error
         } finally {
-            setPageToDelete(null); // Close the dialog
+            setPageToDelete(null); 
         }
     };
 
@@ -114,8 +110,11 @@ export default function DashboardPage() {
             <div className="min-h-screen bg-background">
                 <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-                        <Skeleton className="h-6 w-32" />
-                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <Skeleton className="h-8 w-64" />
+                        <div className="flex items-center gap-2">
+                           <Skeleton className="h-8 w-8 rounded-full" />
+                           <Skeleton className="h-8 w-8 rounded-full" />
+                        </div>
                     </div>
                 </header>
                 <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -136,9 +135,7 @@ export default function DashboardPage() {
         <div className="min-h-screen bg-background">
             <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-                    <h1 className="font-headline text-2xl font-bold text-foreground">
-                        Dashboard
-                    </h1>
+                    <DashboardNav />
                     <div className="flex items-center gap-2">
                         <ThemeToggle />
                         <UserNav />
