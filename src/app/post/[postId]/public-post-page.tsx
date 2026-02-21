@@ -2,7 +2,7 @@
 
 import type { Post } from '@/lib/types';
 import { format } from 'date-fns';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,13 +12,43 @@ type PublicPost = Omit<Post, 'createdAt' | 'updatedAt'> & {
     updatedAt: string;
 };
 
-export default function PublicPostPageComponent({ post }: { post: PublicPost }) {
+type PublicPostPageComponentProps = { 
+    post: PublicPost;
+    authorName: string;
+};
+
+
+export default function PublicPostPageComponent({ post, authorName }: PublicPostPageComponentProps) {
     
-    // The date is now an ISO string, so we create a new Date object from it
     const publicationDate = post.createdAt ? format(new Date(post.createdAt), 'PPP') : '';
     
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        'headline': post.title,
+        'author': {
+            '@type': 'Person',
+            'name': authorName,
+        },
+        'publisher': {
+            '@type': 'Organization',
+            'name': 'BioBloom',
+        },
+        'datePublished': post.createdAt,
+        'dateModified': post.updatedAt,
+        'mainEntityOfPage': {
+            '@type': 'WebPage',
+            '@id': typeof window !== 'undefined' ? window.location.href : ''
+        },
+        'articleBody': post.content,
+    };
+
     return (
         <div className="bg-background min-h-screen">
+             <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
              <header className="py-4 border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
                     <Button variant="outline" size="sm" asChild>
@@ -41,9 +71,12 @@ export default function PublicPostPageComponent({ post }: { post: PublicPost }) 
                         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-4 text-foreground">
                             {post.title}
                         </h1>
-                        <p className="text-muted-foreground text-base">
+                        <div className="flex justify-center items-center gap-2 text-muted-foreground text-base">
+                            <UserIcon className="h-4 w-4" />
+                            <span>By {authorName}</span>
+                            <span>&middot;</span>
                             <span>{publicationDate}</span>
-                        </p>
+                        </div>
                     </header>
                     <div className="text-lg text-foreground leading-relaxed whitespace-pre-wrap">
                        {post.content}

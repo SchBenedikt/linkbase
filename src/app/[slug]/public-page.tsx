@@ -23,11 +23,20 @@ const initialAppearance: AppearanceSettings = {
 
 const isHex = (s: string | undefined): s is string => !!s && s.startsWith('#');
 
-export default function PublicPageComponent({ page, links }: { page: Page, links: LinkType[] }) {
+export default function PublicPageComponent({ page, links, publicUrl }: { page: Page, links: LinkType[], publicUrl: string }) {
     const { theme } = useTheme();
     const [dynamicStyles, setDynamicStyles] = useState<React.CSSProperties>({});
     const [appearance, setAppearance] = useState<AppearanceSettings>(initialAppearance);
     const [isClient, setIsClient] = useState(false);
+
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: page.displayName,
+        url: publicUrl,
+        image: page.avatarUrl,
+        description: page.bio,
+    };
 
     useEffect(() => {
         setIsClient(true);
@@ -85,6 +94,10 @@ export default function PublicPageComponent({ page, links }: { page: Page, links
 
     return (
         <div style={dynamicStyles}>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
              <main className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 bg-background text-foreground" style={mainStyle}>
                 <div className="w-full max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
                     <aside className="md:col-span-1 md:sticky md:top-8 h-fit">

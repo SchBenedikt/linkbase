@@ -9,6 +9,8 @@ type Props = {
   params: { slug: string }
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://biobloom.co';
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { slug } = params;
@@ -34,13 +36,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     const page = pageSnap.data() as PageType;
+    const publicUrl = `${siteUrl}/${slug}`;
 
     const metadata: Metadata = {
         title: page.displayName,
         description: page.bio,
+        alternates: {
+          canonical: publicUrl,
+        },
         openGraph: {
             title: page.displayName,
             description: page.bio,
+            url: publicUrl,
             images: page.avatarUrl ? [
             {
                 url: page.avatarUrl,
@@ -93,8 +100,9 @@ export default async function Page({ params }: Props) {
 
         const pageData = { id: pageSnap.id, ...pageSnap.data() } as PageType;
         const linksData = linksSnap.docs.map(d => ({ id: d.id, ...d.data() } as LinkType));
+        const publicUrl = `${siteUrl}/${slug}`;
         
-        return <PublicPageComponent page={pageData} links={linksData} />;
+        return <PublicPageComponent page={pageData} links={linksData} publicUrl={publicUrl} />;
     } catch(error) {
         console.error("Error fetching public page data", error);
         notFound();

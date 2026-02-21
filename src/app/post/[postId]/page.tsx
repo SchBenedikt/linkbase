@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, limit } from 'firebase/firestore';
 import { serverFirestore } from '@/firebase/server';
 import type { Post as PostType } from '@/lib/types';
 import PublicPostPageComponent from './public-post-page';
@@ -8,6 +8,8 @@ import PublicPostPageComponent from './public-post-page';
 type Props = {
     params: { postId: string }
 }
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://biobloom.co';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     try {
@@ -23,20 +25,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         }
 
         const post = postSnap.data() as PostType;
-        const excerpt = post.content.substring(0, 155);
+        const excerpt = post.content.substring(0, 155).replace(/\s+/g, ' ').trim() + '...';
+        const publicUrl = `${siteUrl}/post/${postId}`;
+
+        // Fetch author's name
+        let authorName = 'BioBloom User';
+        if (post.ownerId) {
+            const pagesQuery = query(collection(serverFirestore, 'pages'), where('ownerId', '==', post.ownerId), limit(1));
+            const pagesSnap = await getDocs(pagesQuery);
+            if (!pagesSnap.empty) {
+                authorName = pagesSnap.docs[0].data().displayName;
+            }
+        }
 
         return {
             title: post.title,
             description: excerpt,
+            alternates: {
+              canonical: publicUrl,
+            },
             openGraph: {
                 title: post.title,
                 description: excerpt,
+                url: publicUrl,
                 type: 'article',
                 publishedTime: post.createdAt.toDate().toISOString(),
-                authors: ['BioBloom User'], // This could be enhanced to fetch author name
+                authors: [authorName],
             },
             twitter: {
-                card: 'summary',
+                card: 'summary_large_image',
                 title: post.title,
                 description: excerpt,
             },
@@ -63,6 +80,16 @@ export default async function Page({ params }: Props) {
         }
 
         const postDataRaw = postSnap.data() as PostType;
+
+        // Fetch author's name
+        let authorName = 'BioBloom User';
+        if (postDataRaw.ownerId) {
+            const pagesQuery = query(collection(serverFirestore, 'pages'), where('ownerId', '==', postDataRaw.ownerId), limit(1));
+            const pagesSnap = await getDocs(pagesQuery);
+            if (!pagesSnap.empty) {
+                authorName = pagesSnap.docs[0].data().displayName;
+            }
+        }
         
         // Serialize Firestore Timestamps to strings to pass to client component
         const postData = {
@@ -72,7 +99,7 @@ export default async function Page({ params }: Props) {
             updatedAt: postDataRaw.updatedAt.toDate().toISOString(),
         }
 
-        return <PublicPostPageComponent post={postData as any} />;
+        return <PublicPostPageComponent post={postData as any} authorName={authorName} />;
 
     } catch (error) {
         console.error("Error fetching public post data", error);
