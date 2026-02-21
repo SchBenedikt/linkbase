@@ -1,3 +1,8 @@
+export type SocialLink = {
+  platform: string;
+  url: string;
+};
+
 export type Link = {
   id: string;
   pageId: string;
@@ -42,6 +47,9 @@ export type Page = {
   borderWidth?: number;
   borderColor?: string;
   fontFamily?: string;
+  openForWork?: boolean;
+  category?: string;
+  socialLinks?: SocialLink[];
 };
 
 export type Post = {

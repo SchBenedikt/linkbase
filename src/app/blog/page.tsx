@@ -1,24 +1,28 @@
 'use client';
 
-import { useMemo } from 'react';
-import { collection, query, where, orderBy } from 'firebase/firestore';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useMemo, useState } from 'react';
+import { collection, query, where, doc } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PlusCircle, Edit, BookOpen } from 'lucide-react';
+import { PlusCircle, Edit, BookOpen, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import type { Post } from '@/lib/types';
 import { UserNav } from '@/components/user-nav';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+
 
 export default function BlogDashboardPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
+
+    const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
     // Query for all posts by the user, but without ordering.
     // Ordering on one field while filtering on another requires a composite index.
@@ -40,6 +44,20 @@ export default function BlogDashboardPage() {
             return dateB - dateA; // Sort descending
         });
     }, [unsortedPosts]);
+
+    const handleConfirmDelete = () => {
+        if (!postToDelete || !firestore) return;
+
+        try {
+            const postRef = doc(firestore, 'posts', postToDelete.id);
+            deleteDocumentNonBlocking(postRef);
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            // Optionally, show a toast notification for the error
+        } finally {
+            setPostToDelete(null); // Close the dialog
+        }
+    };
 
 
     if (isUserLoading || arePostsLoading) {
@@ -120,6 +138,10 @@ export default function BlogDashboardPage() {
                                                 Edit
                                             </Link>
                                         </Button>
+                                         <Button variant="destructive" onClick={() => setPostToDelete(post)}>
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Delete
+                                        </Button>
                                     </div>
                                 </CardFooter>
                             </Card>
@@ -138,6 +160,20 @@ export default function BlogDashboardPage() {
                     </div>
                 )}
             </main>
+             <AlertDialog open={!!postToDelete} onOpenChange={(open) => !open && setPostToDelete(null)}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. This will permanently delete the post "{postToDelete?.title}".
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel onClick={() => setPostToDelete(null)}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
         </div>
     );
 }

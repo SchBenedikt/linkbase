@@ -36,7 +36,21 @@
         "borderWidth": { "type": "number" },
         "borderColor": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" }
+        "updatedAt": { "type": "string", "format": "date-time" },
+        "openForWork": { "type": "boolean", "description": "Whether the user is available for work opportunities." },
+        "category": { "type": "string", "description": "A category or professional title for the user, e.g., 'Photographer', 'Tech Enthusiast'." },
+        "socialLinks": {
+          "type": "array",
+          "description": "A list of social media links for the user's page.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "platform": { "type": "string", "description": "The social media platform name (e.g., 'instagram', 'x')." },
+              "url": { "type": "string", "format": "uri", "description": "The URL to the user's profile on the platform." }
+            },
+            "required": ["platform", "url"]
+          }
+        }
       },
       "required": ["id", "ownerId", "slug", "displayName", "status", "createdAt", "updatedAt"]
     },
