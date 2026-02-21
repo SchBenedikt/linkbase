@@ -165,20 +165,21 @@ export default function PostEditorPage() {
                     <form className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                         <div className="lg:col-span-2">
                              <Card>
-                                <CardContent className="p-8 space-y-8">
+                                <CardContent className="p-6 space-y-6">
                                     <FormField
                                         control={form.control}
                                         name="title"
                                         render={({ field }) => (
                                             <FormItem>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Post Title"
-                                                    {...field}
-                                                    className="text-4xl font-extrabold border-0 shadow-none resize-none p-0 focus-visible:ring-0 bg-transparent"
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="pl-1" />
+                                                <FormLabel>Post Title</FormLabel>
+                                                <FormControl>
+                                                    <Textarea
+                                                        {...field}
+                                                        className="text-4xl font-extrabold resize-none"
+                                                        rows={1}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
@@ -187,14 +188,15 @@ export default function PostEditorPage() {
                                         name="content"
                                         render={({ field }) => (
                                             <FormItem>
-                                            <FormControl>
-                                                <Textarea
-                                                    placeholder="Write your story..."
-                                                    {...field}
-                                                    className="text-lg border-0 shadow-none resize-none p-0 h-96 focus-visible:ring-0 bg-transparent"
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="pl-1" />
+                                                <FormLabel>Content</FormLabel>
+                                                <FormControl>
+                                                    <Textarea
+                                                        placeholder="Write your story..."
+                                                        {...field}
+                                                        className="text-lg resize-none h-96"
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
                                             </FormItem>
                                         )}
                                     />
