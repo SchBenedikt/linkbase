@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { doc, getDoc, collection, query, where, limit } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, limit, getDocs } from 'firebase/firestore';
 import { serverFirestore } from '@/firebase/server';
 import type { Post as PostType } from '@/lib/types';
 import PublicPostPageComponent from './public-post-page';
