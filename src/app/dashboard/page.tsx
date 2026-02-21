@@ -190,13 +190,13 @@ export default function DashboardPage() {
                                             {page.status === 'published' ? <ZapOff className="mr-2 h-4 w-4" /> : <Zap className="mr-2 h-4 w-4" />}
                                             {page.status === 'published' ? 'Unpublish' : 'Publish'}
                                         </Button>
-                                        <Button asChild>
+                                        <Button asChild size="sm">
                                             <Link href={`/edit/${page.id}`}>
                                                 <Edit className="mr-2 h-4 w-4" />
                                                 Edit
                                             </Link>
                                         </Button>
-                                        <Button variant="destructive" onClick={() => setPageToDelete(page)}>
+                                        <Button variant="destructive" size="sm" onClick={() => setPageToDelete(page)}>
                                             <Trash2 className="mr-2 h-4 w-4" />
                                             Delete
                                         </Button>

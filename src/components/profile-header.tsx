@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Edit, Briefcase, Instagram, Twitter, Facebook, Linkedin, Github, Youtube, Globe } from 'lucide-react';
+import { Edit, Briefcase, Instagram, Twitter, Facebook, Linkedin, Github, Youtube, Globe, Soundcloud, Tiktok } from 'lucide-react';
 import type { Page, SocialLink } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 
@@ -21,7 +21,9 @@ const socialIcons: { [key: string]: React.ElementType } = {
     github: Github,
     youtube: Youtube,
     website: Globe,
-    tiktok: Globe, // Fallback icon
+    tiktok: Tiktok,
+    pinterest: Globe, // Fallback icon
+    soundcloud: Soundcloud,
 };
 
 const renderSocialLink = (link: SocialLink) => {

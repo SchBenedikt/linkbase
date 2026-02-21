@@ -50,7 +50,7 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
     name: "socialLinks"
   });
 
-  const availablePlatforms = ["instagram", "x", "facebook", "linkedin", "tiktok", "github", "youtube", "website"];
+  const availablePlatforms = ["instagram", "x", "facebook", "linkedin", "tiktok", "pinterest", "soundcloud", "github", "youtube", "website"];
 
   return (
     <Form {...form}>

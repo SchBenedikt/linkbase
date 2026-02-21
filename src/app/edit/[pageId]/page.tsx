@@ -17,7 +17,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileEditor, profileSchema } from '@/components/profile-editor';
 import { AddContentDialog } from '@/components/add-content-dialog';
-import { hexToHsl, getContrastColor } from '@/lib/utils';
+import { hexToHsl, getContrastColor, isColorLight } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserNav } from '@/components/user-nav';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,7 @@ import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Zap, ZapOff } from 'lucide-react';
+import { useTheme } from '@/components/theme-provider';
 
 
 type SheetState = 
@@ -54,6 +55,7 @@ export default function EditPage() {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const { theme } = useTheme();
 
   const [sheetState, setSheetState] = useState<SheetState>({ open: false });
   const [linkToDelete, setLinkToDelete] = useState<LinkType | null>(null);
@@ -67,6 +69,11 @@ export default function EditPage() {
   
   const [appearance, setAppearance] = useState<AppearanceSettings>(initialAppearance);
   const [dynamicStyles, setDynamicStyles] = useState<React.CSSProperties>({});
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   
   // Redirect if not logged in or not the owner
   useEffect(() => {
@@ -81,25 +88,47 @@ export default function EditPage() {
   }, [isUserLoading, user, router, isPageLoading, page]);
 
 
-  // Update appearance when page data changes
+  // Update appearance when page data changes, and on theme changes
   useEffect(() => {
-    if (!page) return;
+    if (!page || !isClient) return;
+
+    const isDarkMode = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     const dbAppearance = page as unknown as AppearanceSettings;
-    const newAppearance: AppearanceSettings = {
-        backgroundColor: dbAppearance.backgroundColor || initialAppearance.backgroundColor,
-        primaryColor: dbAppearance.primaryColor || initialAppearance.primaryColor,
-        accentColor: dbAppearance.accentColor || initialAppearance.accentColor,
-        cardColor: dbAppearance.cardColor || initialAppearance.cardColor,
-        cardForegroundColor: dbAppearance.cardForegroundColor || initialAppearance.cardForegroundColor,
-        borderRadius: dbAppearance.borderRadius ?? initialAppearance.borderRadius,
-        borderWidth: dbAppearance.borderWidth ?? initialAppearance.borderWidth,
-        borderColor: dbAppearance.borderColor || initialAppearance.borderColor,
-        backgroundImage: dbAppearance.backgroundImage || initialAppearance.backgroundImage,
-        foregroundColor: dbAppearance.foregroundColor || getContrastColor(dbAppearance.backgroundColor) || initialAppearance.foregroundColor,
-        fontFamily: dbAppearance.fontFamily || initialAppearance.fontFamily,
-    };
-    handleAppearanceSave(newAppearance, false); // Don't save back to DB on initial load
-  }, [page]);
+    
+    let effectiveAppearance = { ...initialAppearance, ...dbAppearance };
+    const wasThemeTransformed = isDarkMode && isColorLight(dbAppearance.backgroundColor);
+
+    if (wasThemeTransformed) {
+        effectiveAppearance.backgroundColor = '#111827';
+        effectiveAppearance.cardColor = isColorLight(dbAppearance.cardColor) ? '#1f2937' : dbAppearance.cardColor!;
+        effectiveAppearance.borderColor = '#374151';
+    }
+
+    effectiveAppearance.foregroundColor = (!wasThemeTransformed && dbAppearance.foregroundColor) ? dbAppearance.foregroundColor : getContrastColor(effectiveAppearance.backgroundColor);
+    effectiveAppearance.cardForegroundColor = (!wasThemeTransformed && dbAppearance.cardForegroundColor) ? dbAppearance.cardForegroundColor : getContrastColor(effectiveAppearance.cardColor);
+    
+    setAppearance(effectiveAppearance);
+
+    const isHex = (s: string | undefined): s is string => !!s && s.startsWith('#');
+
+    setDynamicStyles({
+        '--radius': `${effectiveAppearance.borderRadius ?? 1.25}rem`,
+        '--background': hexToHsl(effectiveAppearance.backgroundColor),
+        '--foreground': isHex(effectiveAppearance.foregroundColor) ? hexToHsl(effectiveAppearance.foregroundColor) : effectiveAppearance.foregroundColor,
+        '--card': hexToHsl(effectiveAppearance.cardColor),
+        '--card-foreground': isHex(effectiveAppearance.cardForegroundColor) ? hexToHsl(effectiveAppearance.cardForegroundColor) : effectiveAppearance.cardForegroundColor,
+        '--popover': hexToHsl(effectiveAppearance.cardColor),
+        '--popover-foreground': isHex(effectiveAppearance.cardForegroundColor) ? hexToHsl(effectiveAppearance.cardForegroundColor) : effectiveAppearance.cardForegroundColor,
+        '--primary': hexToHsl(effectiveAppearance.primaryColor),
+        '--primary-foreground': getContrastColor(effectiveAppearance.primaryColor),
+        '--accent': hexToHsl(effectiveAppearance.accentColor),
+        '--accent-foreground': getContrastColor(effectiveAppearance.accentColor),
+        '--border': hexToHsl(effectiveAppearance.borderColor),
+        '--input': hexToHsl(effectiveAppearance.backgroundColor),
+        '--ring': hexToHsl(effectiveAppearance.primaryColor),
+    });
+
+  }, [page, theme, isClient]);
 
 
   const closeSheet = () => setSheetState({ open: false });
@@ -201,14 +230,15 @@ export default function EditPage() {
 
 
   const generateStylesFromAppearance = (settings: AppearanceSettings): React.CSSProperties => {
+    const isHex = (s: string | undefined): s is string => !!s && s.startsWith('#');
     return {
         '--radius': `${settings.borderRadius ?? 1.25}rem`,
         '--background': hexToHsl(settings.backgroundColor),
-        '--foreground': hexToHsl(settings.foregroundColor),
+        '--foreground': isHex(settings.foregroundColor) ? hexToHsl(settings.foregroundColor) : settings.foregroundColor,
         '--card': hexToHsl(settings.cardColor),
-        '--card-foreground': hexToHsl(settings.cardForegroundColor),
+        '--card-foreground': isHex(settings.cardForegroundColor) ? hexToHsl(settings.cardForegroundColor) : settings.cardForegroundColor,
         '--popover': hexToHsl(settings.cardColor),
-        '--popover-foreground': hexToHsl(settings.cardForegroundColor),
+        '--popover-foreground': isHex(settings.cardForegroundColor) ? hexToHsl(settings.cardForegroundColor) : settings.cardForegroundColor,
         '--primary': hexToHsl(settings.primaryColor),
         '--primary-foreground': getContrastColor(settings.primaryColor),
         '--accent': hexToHsl(settings.accentColor),
@@ -281,11 +311,14 @@ export default function EditPage() {
     }
   };
 
+  const isDarkMode = isClient && (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches));
+  const isOriginalThemeLight = isColorLight(page?.backgroundColor);
+
   const mainStyle: React.CSSProperties = {
     fontFamily: appearance.fontFamily || "'Bricolage Grotesque', sans-serif",
-    backgroundColor: 'hsl(var(--background))',
   };
-  if (appearance.backgroundImage) {
+
+  if (appearance.backgroundImage && !(isDarkMode && isOriginalThemeLight)) {
       mainStyle.backgroundImage = `url(${appearance.backgroundImage})`;
       mainStyle.backgroundSize = 'cover';
       mainStyle.backgroundPosition = 'center';
@@ -326,7 +359,7 @@ export default function EditPage() {
   
   return (
     <div style={dynamicStyles as React.CSSProperties}>
-      <main className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
+      <main className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 bg-background text-foreground" style={mainStyle}>
         <div className="w-full max-w-7xl mx-auto">
           <header className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between">
               <Button variant="outline" asChild>
