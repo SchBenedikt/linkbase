@@ -97,22 +97,22 @@ export default function LandingPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="bg-accent text-primary min-h-screen flex items-center pt-24 pb-16 px-4">
+        <section className="bg-accent text-accent-foreground min-h-screen flex items-center pt-24 pb-16 px-4">
             <div className="container mx-auto grid md:grid-cols-2 gap-8 items-center">
                  <div className="flex flex-col gap-6 items-start text-left">
                      <h1 className="font-headline text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tighter leading-tight">
                         One link in bio, made for you.
                     </h1>
-                    <p className="max-w-xl text-lg sm:text-xl text-primary/80">
+                    <p className="max-w-xl text-lg sm:text-xl text-accent-foreground/80">
                         Everything you are, all in one place. Share your creations, your work, and your personality with the world.
                     </p>
                     <form className="w-full max-w-md flex flex-col sm:flex-row gap-2 mt-4">
                         <div className="flex-1 relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60">biobloom.co/</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent-foreground/60">biobloom.co/</span>
                         <Input
                             type="text"
                             placeholder="your-name"
-                            className="w-full h-14 rounded-full pl-32 pr-4 text-base bg-black/5 border-primary/20 placeholder:text-primary/50 text-primary focus:ring-primary"
+                            className="w-full h-14 rounded-full pl-32 pr-4 text-base bg-black/5 border-accent-foreground/20 placeholder:text-accent-foreground/50 text-accent-foreground focus:ring-accent-foreground"
                         />
                         </div>
                         <Button asChild size="lg" className="h-14 rounded-full text-base font-bold w-full sm:w-auto px-8">
