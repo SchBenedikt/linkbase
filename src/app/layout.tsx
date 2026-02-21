@@ -2,11 +2,42 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
+import { ThemeProvider } from '@/components/theme-provider';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://biobloom.co';
+const ogImageUrl = 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=630&fit=crop';
+
 
 export const metadata: Metadata = {
-  title: 'BioBloom',
-  description: 'Your vibrant and expressive link-in-bio profile.',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'BioBloom | Your vibrant link-in-bio profile',
+    template: '%s | BioBloom',
+  },
+  description: 'BioBloom is the ultimate platform for creators to build a beautiful, customizable, and powerful link-in-bio page. Share your world, your way.',
+  openGraph: {
+    title: 'BioBloom | Your vibrant link-in-bio profile',
+    description: 'Everything you are, all in one place. Share your creations, your work, and your personality with the world.',
+    url: siteUrl,
+    siteName: 'BioBloom',
+    images: [
+      {
+        url: ogImageUrl,
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'BioBloom | Your vibrant link-in-bio profile',
+    description: 'Everything you are, all in one place. Share your creations, your work, and your personality with the world.',
+    images: [ogImageUrl],
+  },
 };
+
 
 export default function RootLayout({
   children,
@@ -14,17 +45,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="!scroll-smooth" data-scroll-behavior="smooth">
+    <html lang="en" className="!scroll-smooth" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <FirebaseClientProvider>
-          {children}
-        </FirebaseClientProvider>
-        <Toaster />
+        <ThemeProvider>
+          <FirebaseClientProvider>
+            {children}
+          </FirebaseClientProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

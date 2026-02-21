@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 
 export default function FeaturesPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#f3f3f1]">
+    <div className="flex flex-col min-h-screen bg-background">
       <header className="container mx-auto px-4 py-6">
         <Link href="/" className="font-headline font-bold text-2xl text-primary">
           BioBloom*

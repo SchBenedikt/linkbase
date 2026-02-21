@@ -44,7 +44,7 @@ body {
     --primary: 70 79% 52%; /* #d2e822 */
     --primary-foreground: 102 53% 20%; /* #254e1a */
     --secondary: 34 100% 53%; /* #ff9312 */
-    --secondary-foreground: 30 89% 16%; /* #4c2f05 */
+    --secondary-foreground: 30 80% 95%; /* light orange for high contrast */
     --muted: 240 4% 15%;
     --muted-foreground: 240 5% 65%;
     --accent: 70 79% 52%; /* #d2e822 */

@@ -22,6 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UserNav } from '@/components/user-nav';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 type SheetState = 
   | { view: 'editProfile'; open: true }
@@ -272,7 +273,8 @@ export default function EditPage() {
   };
 
   const mainStyle: React.CSSProperties = {
-    fontFamily: appearance.fontFamily || "'Bricolage Grotesque', sans-serif"
+    fontFamily: appearance.fontFamily || "'Bricolage Grotesque', sans-serif",
+    backgroundColor: 'hsl(var(--background))',
   };
   if (appearance.backgroundImage) {
       mainStyle.backgroundImage = `url(${appearance.backgroundImage})`;
@@ -283,7 +285,7 @@ export default function EditPage() {
 
   if (isUserLoading || isPageLoading) {
     return (
-        <div className="min-h-screen bg-[#f3f3f1] p-8">
+        <div className="min-h-screen bg-background p-8">
             <div className="w-full max-w-6xl mx-auto flex flex-col items-center">
                 <div className="w-full flex justify-end gap-2 mb-8">
                     <Skeleton className="h-10 w-24" />
@@ -307,7 +309,7 @@ export default function EditPage() {
 
   if (!user || !page) {
       return (
-        <div className="flex items-center justify-center min-h-screen bg-[#f3f3f1]">
+        <div className="flex items-center justify-center min-h-screen bg-background">
             <p>Loading page or you do not have permission...</p>
         </div>
       )
@@ -328,6 +330,7 @@ export default function EditPage() {
                 onAppearanceSave={handleAppearanceSave}
                 initialAppearance={appearance}
               />
+              <ThemeToggle />
               <UserNav />
             </div>
           </header>
@@ -353,7 +356,7 @@ export default function EditPage() {
       </main>
 
       <Sheet open={sheetState.open} onOpenChange={(open) => !open && closeSheet()}>
-        <SheetContent className="bg-[#f3f3f1]">
+        <SheetContent>
           <SheetHeader>
             <SheetTitle>
                 {sheetState.open && sheetState.view === 'editProfile' && 'Edit your Page'}
@@ -371,7 +374,7 @@ export default function EditPage() {
       </Sheet>
 
       <AlertDialog open={!!linkToDelete} onOpenChange={(open) => !open && setLinkToDelete(null)}>
-        <AlertDialogContent className="bg-[#f3f3f1]">
+        <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>

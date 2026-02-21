@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const MarqueeItem = ({ image, shape = 'rounded-xl' }: { image: ImagePlaceholder, shape?: 'rounded-xl' | 'rounded-full' | 'rounded-lg' }) => (
     <div className={cn("relative h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40 flex-shrink-0", shape)}>
@@ -60,19 +61,21 @@ export default function LandingPage() {
     if (user) {
         return (
             <div className="flex items-center gap-2">
-                <Button variant="outline" asChild className="rounded-full hidden sm:flex border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                <Button variant="outline" asChild className="rounded-full hidden sm:flex">
                     <Link href="/profile">Dashboard</Link>
                 </Button>
+                <ThemeToggle />
                 <UserNav />
             </div>
         );
     }
     return (
         <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild className="rounded-full text-primary hover:bg-black/10">
+            <ThemeToggle />
+            <Button variant="ghost" asChild className="rounded-full hover:bg-accent/80">
                 <Link href="/login">Login</Link>
             </Button>
-            <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button asChild className="rounded-full">
                 <Link href="/login">Sign up Free</Link>
             </Button>
         </div>
@@ -80,10 +83,10 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="text-foreground flex flex-col min-h-screen">
+    <div className="text-foreground bg-background flex flex-col min-h-screen">
       <header className="fixed top-4 z-50 w-full px-4">
         <div className="container mx-auto">
-          <nav className="bg-white/30 backdrop-blur-md w-full rounded-full border border-black/10 p-2 flex items-center justify-between">
+          <nav className="bg-background/30 backdrop-blur-md w-full rounded-full border p-2 flex items-center justify-between">
             <Link href="/" className="font-headline font-bold text-xl pl-4 text-primary">
               BioBloom*
             </Link>

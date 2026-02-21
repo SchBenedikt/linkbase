@@ -22,6 +22,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const postSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
@@ -137,8 +138,8 @@ export default function PostEditorPage() {
     
     return (
         <Form {...form}>
-            <div className="min-h-screen bg-[#f3f3f1]">
-                <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
+            <div className="min-h-screen bg-background">
+                <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                         <Button variant="outline" size="sm" asChild>
                             <Link href="/blog">
@@ -164,6 +165,7 @@ export default function PostEditorPage() {
                                 {isPublishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {post?.status === 'published' ? 'Update Post' : 'Publish'}
                             </Button>
+                            <ThemeToggle />
                             <UserNav />
                         </div>
                     </div>

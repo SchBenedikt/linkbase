@@ -13,6 +13,7 @@ import type { Post } from '@/lib/types';
 import { UserNav } from '@/components/user-nav';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export default function BlogDashboardPage() {
     const { user, isUserLoading } = useUser();
@@ -43,8 +44,8 @@ export default function BlogDashboardPage() {
 
     if (isUserLoading || arePostsLoading) {
         return (
-            <div className="min-h-screen bg-[#f3f3f1]">
-                <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
+            <div className="min-h-screen bg-background">
+                <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                         <Skeleton className="h-6 w-32" />
                         <Skeleton className="h-8 w-8 rounded-full" />
@@ -65,13 +66,16 @@ export default function BlogDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#f3f3f1]">
-            <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
+        <div className="min-h-screen bg-background">
+            <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                     <h1 className="font-headline text-2xl font-bold text-foreground">
                         Blog
                     </h1>
-                    <UserNav />
+                    <div className="flex items-center gap-2">
+                        <ThemeToggle />
+                        <UserNav />
+                    </div>
                 </div>
             </header>
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">

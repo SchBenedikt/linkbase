@@ -12,6 +12,7 @@ import Link from 'next/link';
 import type { Page } from '@/lib/types';
 import { UserNav } from '@/components/user-nav';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 
 export default function DashboardPage() {
@@ -90,8 +91,8 @@ export default function DashboardPage() {
     
     if (isUserLoading || arePagesLoading) {
         return (
-            <div className="min-h-screen bg-[#f3f3f1]">
-                <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
+            <div className="min-h-screen bg-background">
+                <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                         <Skeleton className="h-6 w-32" />
                         <Skeleton className="h-8 w-8 rounded-full" />
@@ -112,13 +113,16 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#f3f3f1]">
-            <header className="bg-[#f3f3f1]/80 backdrop-blur-md border-b sticky top-0 z-50">
+        <div className="min-h-screen bg-background">
+            <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                     <h1 className="font-headline text-2xl font-bold text-foreground">
                         Dashboard
                     </h1>
-                    <UserNav />
+                    <div className="flex items-center gap-2">
+                        <ThemeToggle />
+                        <UserNav />
+                    </div>
                 </div>
             </header>
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -173,7 +177,7 @@ export default function DashboardPage() {
                 )}
             </main>
             <AlertDialog open={!!pageToDelete} onOpenChange={(open) => !open && setPageToDelete(null)}>
-                <AlertDialogContent className="bg-[#f3f3f1]">
+                <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
