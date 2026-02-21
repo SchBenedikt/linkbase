@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { collection, query, where, doc, setDoc, getDocs } from 'firebase/firestore';
-import { useUser, useFirestore, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase';
+import { collection, query, where, doc, setDoc, getDocs, addDoc } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -28,7 +28,7 @@ export default function DashboardPage() {
     const { data: pages, isLoading: arePagesLoading } = useCollection<Page>(pagesQuery);
 
     const handleCreateNewPage = async () => {
-        if (!user) return;
+        if (!user || !firestore) return;
         const slug = `page-${Math.random().toString(36).substring(2, 9)}`;
         const newPageData = {
             ownerId: user.uid,
@@ -48,13 +48,11 @@ export default function DashboardPage() {
             borderColor: '#e5e7eb',
         };
         try {
-            const docRef = await addDocumentNonBlocking(collection(firestore, 'pages'), newPageData);
-            if (docRef) {
-                // Also create the initial slug lookup document
-                const slugRef = doc(firestore, 'slug_lookups', slug);
-                await setDoc(slugRef, { pageId: docRef.id });
-                router.push(`/edit/${docRef.id}`);
-            }
+            const docRef = await addDoc(collection(firestore, 'pages'), newPageData);
+            // Also create the initial slug lookup document
+            const slugRef = doc(firestore, 'slug_lookups', slug);
+            await setDoc(slugRef, { pageId: docRef.id });
+            router.push(`/edit/${docRef.id}`);
         } catch(e) {
             console.error("Error creating new page", e);
         }

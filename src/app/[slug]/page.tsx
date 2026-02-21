@@ -140,21 +140,17 @@ export default function PublicPage() {
 
     return (
         <div style={dynamicStyles}>
-             <main className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
-                <div className="w-full max-w-screen-xl mx-auto grid md:grid-cols-3 gap-8 md:gap-12">
-                    <div className="md:col-span-1 md:sticky md:top-8 md:self-start">
-                        <ProfileHeader page={page} isEditable={false} />
-                    </div>
-                    <div className="md:col-span-2">
-                        <LinkList
-                            links={links || []}
-                            ownerId={page?.ownerId}
-                            appearance={appearance}
-                            isEditable={false}
-                        />
-                    </div>
+             <main className="flex flex-col items-center min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 text-foreground" style={mainStyle}>
+                <div className="w-full max-w-6xl mx-auto">
+                    <ProfileHeader page={page} isEditable={false} />
+                    <LinkList
+                        links={links || []}
+                        ownerId={page?.ownerId}
+                        appearance={appearance}
+                        isEditable={false}
+                    />
                 </div>
-                <footer className="w-full max-w-screen-xl mx-auto mt-12 mb-6 text-center">
+                <footer className="w-full max-w-6xl mx-auto mt-12 mb-6 text-center">
                     <a href="/" className="text-sm text-muted-foreground hover:text-primary font-semibold">
                         Powered by BioBloom
                     </a>
