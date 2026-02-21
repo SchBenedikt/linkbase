@@ -5,6 +5,25 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function isColorLight(H: string | undefined): boolean {
+  if (!H) return true; // Assume undefined/empty is light, so it gets transformed in dark mode.
+  if (!/^#([A-Fa-f0-9]{3}){1,2}$/.test(H)) return true;
+
+  let r = 0, g = 0, b = 0;
+  if (H.length === 4) {
+    r = Number("0x" + H[1] + H[1]);
+    g = Number("0x" + H[2] + H[2]);
+    b = Number("0x" + H[3] + H[3]);
+  } else if (H.length === 7) {
+    r = Number("0x" + H[1] + H[2]);
+    g = Number("0x" + H[3] + H[4]);
+    b = Number("0x" + H[5] + H[6]);
+  }
+  // http://www.w3.org/TR/AERT#color-contrast
+  const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  return yiq >= 128;
+}
+
 export function hexToHsl(H: string | undefined): string {
   if (!H) return '0 0% 0%';
   let r = 0, g = 0, b = 0;
