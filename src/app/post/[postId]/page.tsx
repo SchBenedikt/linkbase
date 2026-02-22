@@ -9,16 +9,17 @@ export async function generateStaticParams() {
   try {
     if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
       console.warn("Firebase config not found. Returning fallback params.");
-      return [];
+      return [{ postId: '_placeholder' }];
     }
     const postsQuery = query(collection(serverFirestore, 'posts'), where('status', '==', 'published'));
     const postsSnap = await getDocs(postsQuery);
-    return postsSnap.docs.map(doc => {
+    const params = postsSnap.docs.map(doc => {
         return { postId: doc.id };
     });
+    return params.length > 0 ? params : [{ postId: '_placeholder' }];
   } catch (error) {
     console.error('Error generating static params for [postId]:', error);
-    return [];
+    return [{ postId: '_placeholder' }];
   }
 }
 
