@@ -85,6 +85,9 @@ export type Post = {
   slug: string;
   status: 'draft' | 'published';
   category?: string;
+  coverImage?: string;
+  excerpt?: string;
+  readingTime?: string;
   createdAt: any;
   updatedAt: any;
   authorName?: string;
