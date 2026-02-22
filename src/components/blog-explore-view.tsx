@@ -24,7 +24,7 @@ function PostCard({ post }: { post: Post }) {
                         {post.title}
                     </Link>
                 </CardTitle>
-                 <CardDescription>{format(new Date(post.createdAt), 'PPP')}</CardDescription>
+                 <CardDescription>{post.createdAt?.toDate ? format(post.createdAt.toDate(), 'PPP') : '...'}</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
                 <p className="text-muted-foreground line-clamp-3">
