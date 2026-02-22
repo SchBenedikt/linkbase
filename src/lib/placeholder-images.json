@@ -26,15 +26,15 @@
     },
     {
       "id": "hero-1",
-      "description": "Person with flowers on their face, representing creativity and blooming.",
-      "imageUrl": "https://images.unsplash.com/photo-1502444336024-d23371b92e8c?w=400&q=80",
-      "imageHint": "creative floral"
+      "description": "A female potter molding clay on a potter's wheel, representing hands-on creation.",
+      "imageUrl": "https://images.unsplash.com/photo-1531913131405-835824556b6a?w=400&q=80",
+      "imageHint": "creator pottery"
     },
     {
       "id": "hero-2",
-      "description": "A photographer creator holding a camera.",
-      "imageUrl": "https://images.unsplash.com/photo-1516139008210-96e4510c1137?w=400&q=80",
-      "imageHint": "photographer creator"
+      "description": "A person writing in a notebook at a desk, symbolizing planning and content creation.",
+      "imageUrl": "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=400&q=80",
+      "imageHint": "writing creator"
     },
     {
       "id": "marquee-1",
