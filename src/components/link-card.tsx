@@ -21,8 +21,9 @@ export function LinkCard({ link, onEdit, onDelete, appearance, isEditable = fals
   const firestore = useFirestore();
 
   const handleClick = () => {
+    if (!firestore || !link.pageId) return;
     const today = new Date().toISOString().split('T')[0];
-    const clickRef = doc(firestore, 'link_clicks', `${link.id}_${today}`);
+    const clickRef = doc(firestore, 'pages', link.pageId, 'link_clicks', `${link.id}_${today}`);
     setDoc(clickRef, { linkId: link.id, pageId: link.pageId, date: today, count: increment(1) }, { merge: true }).catch((err) => console.warn('Failed to track link click:', err));
   };
   const cardStyle: React.CSSProperties = {

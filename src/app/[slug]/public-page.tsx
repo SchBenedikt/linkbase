@@ -46,9 +46,9 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
     }, []);
 
     useEffect(() => {
-        if (!isClient || !page?.id) return;
+        if (!isClient || !page?.id || !firestore) return;
         const today = new Date().toISOString().split('T')[0];
-        const viewRef = doc(firestore, 'page_views', `${page.id}_${today}`);
+        const viewRef = doc(firestore, 'pages', page.id, 'page_views', today);
         setDoc(viewRef, { pageId: page.id, date: today, count: increment(1) }, { merge: true }).catch((err) => console.warn('Failed to track page view:', err));
     }, [page.id, isClient, firestore]);
 

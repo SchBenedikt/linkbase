@@ -74,7 +74,7 @@
         "pageId": { "type": "string", "description": "Reference to the Page this link belongs to." },
         "title": { "type": "string" },
         "orderIndex": { "type": "number" },
-        "type": { "type": "string", "enum": ["link", "text", "spotify", "youtube", "article", "blog-overview", "image", "product", "profile"], "description": "The type of content block." },
+        "type": { "type": "string", "enum": ["link", "text", "spotify", "youtube", "article", "blog-overview", "image", "product", "profile", "map"], "description": "The type of content block." },
         "url": { "type": "string", "format": "uri" },
         "thumbnailUrl": { "type": "string", "format": "uri" },
         "thumbnailHint": { "type": "string", "description": "AI hint for the thumbnail image." },
@@ -186,6 +186,22 @@
         }
       },
       {
+        "path": "/pages/{pageId}/page_views/{viewId}",
+        "definition": {
+          "entityName": "PageView",
+          "schema": { "$ref": "#/backend/entities/PageView" },
+          "description": "Stores daily view counts for pages. Writable by anyone, but only listable by page owner."
+        }
+      },
+      {
+        "path": "/pages/{pageId}/link_clicks/{clickId}",
+        "definition": {
+          "entityName": "LinkClick",
+          "schema": { "$ref": "#/backend/entities/LinkClick" },
+          "description": "Stores daily click counts for links. Writable by anyone, but only listable by page owner."
+        }
+      },
+      {
         "path": "/posts/{postId}",
         "definition": {
           "entityName": "Post",
@@ -207,22 +223,6 @@
           "entityName": "UsernameLookup",
           "schema": { "$ref": "#/backend/entities/UsernameLookup" },
           "description": "A public lookup table to map unique @usernames to user IDs for mentions."
-        }
-      },
-      {
-        "path": "/page_views/{viewId}",
-        "definition": {
-          "entityName": "PageView",
-          "schema": { "$ref": "#/backend/entities/PageView" },
-          "description": "Stores daily view counts for pages. Writable by anyone, but only listable by page owner."
-        }
-      },
-      {
-        "path": "/link_clicks/{clickId}",
-        "definition": {
-          "entityName": "LinkClick",
-          "schema": { "$ref": "#/backend/entities/LinkClick" },
-          "description": "Stores daily click counts for links. Writable by anyone, but only listable by page owner."
         }
       }
     ]

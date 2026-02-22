@@ -34,10 +34,9 @@ export default function AnalyticsPage() {
 
   const viewsQuery = useMemoFirebase(
     () =>
-      pageId
+      pageId && firestore
         ? query(
-            collection(firestore, 'page_views'),
-            where('pageId', '==', pageId),
+            collection(firestore, 'pages', pageId, 'page_views'),
             where('date', '>=', thirtyDaysAgo),
             orderBy('date')
           )
@@ -47,10 +46,9 @@ export default function AnalyticsPage() {
 
   const clicksQuery = useMemoFirebase(
     () =>
-      pageId
+      pageId && firestore
         ? query(
-            collection(firestore, 'link_clicks'),
-            where('pageId', '==', pageId),
+            collection(firestore, 'pages', pageId, 'link_clicks'),
             where('date', '>=', thirtyDaysAgo),
             orderBy('date')
           )
@@ -60,7 +58,7 @@ export default function AnalyticsPage() {
 
   const linksQuery = useMemoFirebase(
     () =>
-      pageId ? collection(firestore, 'pages', pageId, 'links') : null,
+      pageId && firestore ? collection(firestore, 'pages', pageId, 'links') : null,
     [firestore, pageId]
   );
 

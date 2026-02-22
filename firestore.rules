@@ -29,6 +29,21 @@ service cloud.firestore {
         allow get, list: if true;
         allow write: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
       }
+
+      // Analytics Data
+      match /page_views/{viewId} {
+        // Owner can read their own analytics
+        allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+        // Anyone can write (increment a counter)
+        allow write: if true;
+      }
+
+      match /link_clicks/{clickId} {
+        // Owner can read their own analytics
+        allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+        // Anyone can write (increment a counter)
+        allow write: if true;
+      }
     }
 
     // Blog Posts - DEFINITIVE FIX
@@ -65,19 +80,6 @@ service cloud.firestore {
       allow create: if !exists(/databases/$(database)/documents/username_lookups/$(username)) && isOwner(request.resource.data.userId);
       allow delete: if isOwner(resource.data.userId);
       allow update: if false; // Deleting and creating a new one is safer
-    }
-
-    // Analytics Data
-    match /page_views/{viewId} {
-      allow get: if isSignedIn() && get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId == request.auth.uid;
-      allow list: if isSignedIn();
-      allow write: if true;
-    }
-
-    match /link_clicks/{clickId} {
-      allow get: if isSignedIn() && get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId == request.auth.uid;
-      allow list: if isSignedIn();
-      allow write: if true;
     }
   }
 }
