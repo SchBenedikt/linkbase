@@ -29,7 +29,7 @@ interface LinkEditorProps {
   link?: Link | null;
   onSave: (data: LinkEditorFormData) => void;
   onCancel: () => void;
-  mode?: 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github';
+  mode?: 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch';
 }
 
 export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditorProps) {
@@ -40,8 +40,8 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
       url: link?.url || '',
       thumbnailUrl: link?.thumbnailUrl || '',
       content: link?.content || '',
-      colSpan: link?.colSpan || (mode === 'spotify' || mode === 'soundcloud' ? 4 : (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' ? 2 : 1)),
-      rowSpan: link?.rowSpan || (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' ? 2 : 1),
+      colSpan: link?.colSpan || (mode === 'spotify' || mode === 'soundcloud' ? 4 : (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' || mode === 'twitch' ? 2 : 1)),
+      rowSpan: link?.rowSpan || (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' || mode === 'twitch' ? 2 : 1),
     },
   });
   
@@ -61,6 +61,8 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
     if (mode === 'vimeo' && !form.getValues('title')) form.setValue('title', 'Vimeo Video');
     if (mode === 'calendly' && !form.getValues('title')) form.setValue('title', 'Book a Meeting');
     if (mode === 'github' && !form.getValues('title')) form.setValue('title', 'GitHub Repository');
+    if (mode === 'twitter' && !form.getValues('title')) form.setValue('title', 'Tweet / X Post');
+    if (mode === 'twitch' && !form.getValues('title')) form.setValue('title', 'Twitch Stream');
   }, [mode, form]);
 
   const { toast } = useToast();
@@ -169,6 +171,8 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
                     : mode === 'vimeo' ? "https://vimeo.com/123456789"
                     : mode === 'calendly' ? "https://calendly.com/username/meeting-type"
                     : mode === 'github' ? "https://github.com/owner/repo"
+                    : mode === 'twitter' ? "https://x.com/username/status/123456789"
+                    : mode === 'twitch' ? "https://www.twitch.tv/channel-name"
                     : "https://example.com"
                   } {...field} />
                 </FormControl>

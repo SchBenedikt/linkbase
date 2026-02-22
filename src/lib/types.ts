@@ -8,7 +8,7 @@ export type Link = {
   pageId: string;
   orderIndex: number;
   title: string;
-  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile' | 'map' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'clock' | 'countdown' | 'calendly' | 'github';
+  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile' | 'map' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'clock' | 'countdown' | 'calendly' | 'github' | 'twitter' | 'twitch';
   colSpan?: number;
   rowSpan?: number;
   content?: string; // For text cards or product description
@@ -138,5 +138,22 @@ export type LinkClickRecord = {
   linkId: string;
   pageId: string;
   date: string; // YYYY-MM-DD
+  count: number;
+};
+
+export type ShortLink = {
+  id: string;
+  code: string;          // e.g. "abc123"
+  originalUrl: string;
+  title?: string;
+  ownerId: string;
+  clickCount: number;
+  createdAt: any;
+  updatedAt: any;
+};
+
+export type ShortLinkClickRecord = {
+  code: string;
+  date: string;  // YYYY-MM-DD
   count: number;
 };

@@ -6,7 +6,7 @@ import {
   Link as LinkIcon, Music, Youtube, BookText, Newspaper, Rss,
   Image as ImageIcon, ShoppingBag, User as UserIcon, MapPin,
   Instagram, Video, Music2, Cloud, CalendarDays, Github,
-  Clock, Timer,
+  Clock, Timer, Twitter, Tv,
 } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
@@ -84,6 +84,8 @@ const CONTENT_SECTIONS: { label: string; items: ContentTypeButton[] }[] = [
     items: [
       { type: 'calendly', label: 'Calendly', description: 'Embed a booking page', icon: CalendarDays },
       { type: 'github', label: 'GitHub', description: 'Show a GitHub repo', icon: Github },
+      { type: 'twitter', label: 'Twitter / X', description: 'Embed a tweet or post', icon: Twitter },
+      { type: 'twitch', label: 'Twitch', description: 'Embed a live stream', icon: Tv },
     ],
   },
 ];
@@ -121,7 +123,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentToEdit.type === 'map') return <MapEditor onSave={(d) => handleSave(d, 'map')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'clock') return <ClockEditor onSave={(d) => handleSave(d, 'clock')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'countdown') return <CountdownEditor onSave={(d) => handleSave(d, 'countdown')} onCancel={onCancel} content={contentToEdit} />;
-    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github'} link={contentToEdit} />;
+    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch'} link={contentToEdit} />;
   }
 
   // Adding new content
@@ -139,7 +141,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
       <LinkEditor
         onSave={(d) => handleSave(d, contentType)}
         onCancel={handleBack}
-        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github'}
+        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch'}
       />
     );
   }

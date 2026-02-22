@@ -26,6 +26,8 @@ import { ClockCard } from './clock-card';
 import { CountdownCard } from './countdown-card';
 import { CalendlyCard } from './calendly-card';
 import { GithubCard } from './github-card';
+import { TwitterCard } from './twitter-card';
+import { TwitchCard } from './twitch-card';
 
 // Grid constants  
 const GRID_COLS = 4;
@@ -169,6 +171,10 @@ function renderCardComponent(
       return <CalendlyCard {...props} />;
     case 'github':
       return <GithubCard {...props} />;
+    case 'twitter':
+      return <TwitterCard {...props} />;
+    case 'twitch':
+      return <TwitchCard {...props} />;
     default:
       return <LinkCard {...props} />;
   }
