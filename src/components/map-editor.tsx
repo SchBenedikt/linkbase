@@ -11,7 +11,12 @@ import { Slider } from './ui/slider';
 
 export const mapSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  url: z.string().url('Please enter a valid Google Maps embed URL'),
+  url: z.string().url('Please enter a valid Google Maps embed URL').refine(
+    (val) => val.startsWith('https://www.google.com/maps/embed'),
+    {
+      message: 'Invalid URL. Must be a Google Maps embed link starting with "https://www.google.com/maps/embed...".'
+    }
+  ),
   colSpan: z.number().min(1).max(4).default(2),
   rowSpan: z.number().min(1).max(2).default(2),
 });
@@ -62,7 +67,7 @@ export function MapEditor({ content, onSave, onCancel }: MapEditorProps) {
                 <Input placeholder="https://www.google.com/maps/embed?pb=..." {...field} />
               </FormControl>
               <FormDescription>
-                Go to Google Maps, find a location, click "Share", then "Embed a map", and copy the SRC URL from the iframe code.
+                On Google Maps, click "Share", go to the "Embed a map" tab, and copy the URL from the `src="..."` attribute in the iframe code.
               </FormDescription>
               <FormMessage />
             </FormItem>
