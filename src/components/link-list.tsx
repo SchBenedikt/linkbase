@@ -18,14 +18,22 @@ import { ProductCard } from './product-card';
 import { ImageCard } from './image-card';
 import { ProfileCard } from './profile-card';
 import { MapCard } from './map-card';
+import { InstagramCard } from './instagram-card';
+import { TiktokCard } from './tiktok-card';
+import { SoundcloudCard } from './soundcloud-card';
+import { VimeoCard } from './vimeo-card';
+import { ClockCard } from './clock-card';
+import { CountdownCard } from './countdown-card';
+import { CalendlyCard } from './calendly-card';
+import { GithubCard } from './github-card';
 
 // Sortable Item Wrapper
 function SortableLinkItem(props: {
   link: Link;
   ownerId?: string;
   appearance: AppearanceSettings;
-  onEdit?: (link: Link) => void;
-  onDelete?: (link: Link) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   const {
     attributes,
@@ -79,6 +87,30 @@ function SortableLinkItem(props: {
         break;
     case 'map':
         CardComponent = <MapCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'instagram':
+        CardComponent = <InstagramCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'tiktok':
+        CardComponent = <TiktokCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'soundcloud':
+        CardComponent = <SoundcloudCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'vimeo':
+        CardComponent = <VimeoCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'clock':
+        CardComponent = <ClockCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'countdown':
+        CardComponent = <CountdownCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'calendly':
+        CardComponent = <CalendlyCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'github':
+        CardComponent = <GithubCard {...props} isEditable={true} dragHandleListeners={listeners} />;
         break;
     default:
       CardComponent = <LinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
@@ -206,6 +238,30 @@ export function LinkList({
                 break;
             case 'map':
                 CardComponent = <MapCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'instagram':
+                CardComponent = <InstagramCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'tiktok':
+                CardComponent = <TiktokCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'soundcloud':
+                CardComponent = <SoundcloudCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'vimeo':
+                CardComponent = <VimeoCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'clock':
+                CardComponent = <ClockCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'countdown':
+                CardComponent = <CountdownCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'calendly':
+                CardComponent = <CalendlyCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'github':
+                CardComponent = <GithubCard link={link} appearance={appearance} isEditable={false} />;
                 break;
             default:
                 CardComponent = <LinkCard link={link} appearance={appearance} isEditable={false} />;

@@ -5,6 +5,8 @@ import type { Link, AppearanceSettings } from '@/lib/types';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from './ui/dropdown-menu';
+import { doc, setDoc, increment } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 
 interface LinkCardProps {
   link: Link;
@@ -16,6 +18,13 @@ interface LinkCardProps {
 }
 
 export function LinkCard({ link, onEdit, onDelete, appearance, isEditable = false, dragHandleListeners }: LinkCardProps) {
+  const firestore = useFirestore();
+
+  const handleClick = () => {
+    const today = new Date().toISOString().split('T')[0];
+    const clickRef = doc(firestore, 'link_clicks', `${link.id}_${today}`);
+    setDoc(clickRef, { linkId: link.id, pageId: link.pageId, date: today, count: increment(1) }, { merge: true }).catch((err) => console.warn('Failed to track link click:', err));
+  };
   const cardStyle: React.CSSProperties = {
     borderWidth: `${appearance.borderWidth || 0}px`,
     borderColor: appearance.borderColor,
@@ -40,7 +49,7 @@ export function LinkCard({ link, onEdit, onDelete, appearance, isEditable = fals
         className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card flex flex-col w-full h-full"
         style={cardStyle}
     >
-        <a href={link.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
+        <a href={link.url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10" onClick={handleClick}>
             <span className="sr-only">Visit {link.title}</span>
         </a>
         <div className="relative flex-grow">

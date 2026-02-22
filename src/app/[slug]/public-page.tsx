@@ -6,6 +6,8 @@ import { hexToHsl, getContrastColor, isColorLight } from '@/lib/utils';
 import { ProfileHeader } from '@/components/profile-header';
 import { LinkList } from '@/components/link-list';
 import { useTheme } from '@/components/theme-provider';
+import { doc, setDoc, increment } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 
 const initialAppearance: AppearanceSettings = {
     backgroundImage: '',
@@ -25,6 +27,7 @@ const isHex = (s: string | undefined): s is string => !!s && s.startsWith('#');
 
 export default function PublicPageComponent({ page, links, publicUrl }: { page: Page, links: LinkType[], publicUrl: string }) {
     const { theme } = useTheme();
+    const firestore = useFirestore();
     const [dynamicStyles, setDynamicStyles] = useState<React.CSSProperties>({});
     const [appearance, setAppearance] = useState<AppearanceSettings>(initialAppearance);
     const [isClient, setIsClient] = useState(false);
@@ -32,7 +35,7 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
     const jsonLd = {
         '@context': 'https://schema.org',
         '@type': 'Person',
-        name: page.displayName,
+        name: [page.firstName, page.lastName].filter(Boolean).join(' '),
         url: publicUrl,
         image: page.avatarUrl,
         description: page.bio,
@@ -41,6 +44,13 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
     useEffect(() => {
         setIsClient(true);
     }, []);
+
+    useEffect(() => {
+        if (!isClient || !page?.id) return;
+        const today = new Date().toISOString().split('T')[0];
+        const viewRef = doc(firestore, 'page_views', `${page.id}_${today}`);
+        setDoc(viewRef, { pageId: page.id, date: today, count: increment(1) }, { merge: true }).catch((err) => console.warn('Failed to track page view:', err));
+    }, [page.id, isClient, firestore]);
 
     useEffect(() => {
         if (!page || !isClient) return;

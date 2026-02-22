@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PlusCircle, Eye, Edit, Trash2, Search, Zap, ZapOff, Loader2 } from 'lucide-react';
+import { PlusCircle, Eye, Edit, Trash2, Search, Zap, ZapOff, Loader2, BarChart2 } from 'lucide-react';
 import Link from 'next/link';
 import type { Page } from '@/lib/types';
 import { UserNav } from '@/components/user-nav';
@@ -194,6 +194,12 @@ export default function DashboardPage() {
                                                 <Button variant="outline" size="sm" onClick={() => togglePageStatus(page)}>
                                                     {page.status === 'published' ? <ZapOff className="mr-2 h-4 w-4" /> : <Zap className="mr-2 h-4 w-4" />}
                                                     {page.status === 'published' ? 'Unpublish' : 'Publish'}
+                                                </Button>
+                                                <Button asChild size="sm" variant="outline">
+                                                    <Link href={`/dashboard/analytics/${page.id}`}>
+                                                        <BarChart2 className="mr-2 h-4 w-4" />
+                                                        Analytics
+                                                    </Link>
                                                 </Button>
                                                 <Button asChild size="sm">
                                                     <Link href={`/edit/${page.id}`}>
