@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import type { Link, UserProfile } from '@/lib/types';
 import { Slider } from './ui/slider';
-import { searchUsersByUsername } from '@/lib/actions';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Loader2 } from 'lucide-react';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+
 
 export const profileCardSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -21,7 +21,6 @@ export const profileCardSchema = z.object({
 });
 
 type ProfileCardFormData = z.infer<typeof profileCardSchema>;
-type SearchResult = Pick<UserProfile, 'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'username'>;
 
 interface ProfileCardEditorProps {
   content?: Link | null;
@@ -30,10 +29,13 @@ interface ProfileCardEditorProps {
 }
 
 export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEditorProps) {
-  const [isSearching, startSearchTransition] = useTransition();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [selectedProfile, setSelectedProfile] = useState<SearchResult | null>(null);
+  const firestore = useFirestore();
+
+  const profilesQuery = useMemoFirebase(() =>
+    firestore ? collection(firestore, 'user_profiles') : null,
+    [firestore]
+  );
+  const { data: allProfiles, isLoading: areProfilesLoading } = useCollection<UserProfile>(profilesQuery);
 
   const form = useForm<ProfileCardFormData>({
     resolver: zodResolver(profileCardSchema),
@@ -44,35 +46,6 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
       rowSpan: content?.rowSpan || 1,
     },
   });
-
-  useEffect(() => {
-    // If editing, we can't easily get the profile info, so user has to re-search
-    if (content?.mentionedUserId) {
-        form.setValue('mentionedUserId', content.mentionedUserId);
-    }
-  }, [content, form]);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (searchTerm.length > 1) {
-        startSearchTransition(async () => {
-          const results = await searchUsersByUsername(searchTerm);
-          setSearchResults(results);
-        });
-      } else {
-        setSearchResults([]);
-      }
-    }, 500); // Debounce search
-
-    return () => clearTimeout(handler);
-  }, [searchTerm]);
-  
-  const handleSelectProfile = (profile: SearchResult) => {
-    form.setValue('mentionedUserId', profile.id, { shouldValidate: true });
-    setSelectedProfile(profile);
-    setSearchTerm('');
-    setSearchResults([]);
-  };
 
   return (
     <Form {...form}>
@@ -94,42 +67,32 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
           name="mentionedUserId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Search for a user</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input 
-                    placeholder="@username" 
-                    value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value.replace(/^@/, ''))}
-                    autoComplete="off"
-                  />
-                  {isSearching && <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin" />}
-                </div>
-              </FormControl>
+              <FormLabel>User Profile to Feature</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={areProfilesLoading || !allProfiles}
+                >
+                    <FormControl>
+                        <SelectTrigger>
+                            <SelectValue placeholder={areProfilesLoading ? "Loading profiles..." : "Select a user"} />
+                        </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        {allProfiles?.map(profile => (
+                             <SelectItem key={profile.id} value={profile.id}>
+                                {profile.firstName} {profile.lastName} (@{profile.username})
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
                <FormDescription>
-                {selectedProfile ? `Selected: ${selectedProfile.firstName} ${selectedProfile.lastName} (@${selectedProfile.username})` : 'Start typing to search for a user.'}
+                Select a user profile to feature on your page.
                </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {searchResults.length > 0 && (
-          <div className="space-y-2 rounded-md border max-h-48 overflow-y-auto">
-            {searchResults.map(profile => (
-              <div key={profile.id} onClick={() => handleSelectProfile(profile)} className="flex items-center gap-3 p-2 hover:bg-accent cursor-pointer">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={profile.avatarUrl} />
-                  <AvatarFallback>{profile.firstName?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{profile.firstName} {profile.lastName}</p>
-                  <p className="text-sm text-muted-foreground">@{profile.username}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
 
         <div className="grid grid-cols-2 gap-4">
           <FormField
