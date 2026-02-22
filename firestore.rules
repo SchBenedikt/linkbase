@@ -13,8 +13,11 @@ service cloud.firestore {
     
     // User Profile
     match /user_profiles/{userId} {
-      allow read: if true;
+      allow get: if true;
       allow write: if isOwner(userId);
+    }
+    match /user_profiles {
+      allow list: if true; // Allow querying the collection for search
     }
 
     // Public Pages & Links
