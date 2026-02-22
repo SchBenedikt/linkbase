@@ -1,12 +1,7 @@
 
-import type {NextConfig} from 'next';
-
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-})
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
   distDir: 'build',
   typescript: {
     ignoreBuildErrors: true,
@@ -36,6 +31,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Add webpack configuration to disable caching for production
+  webpack: (config, { dev }) => {
+    if (!dev) {
+      config.cache = false;
+    }
+    return config;
+  },
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default nextConfig;
