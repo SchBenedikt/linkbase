@@ -2,7 +2,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  distDir: 'build',
+  distDir: 'output',
   typescript: {
     ignoreBuildErrors: true,
   },
