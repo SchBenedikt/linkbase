@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "ANALYZE=true npm run build",
+    "postbuild": "rm -rf .next/cache || true"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
