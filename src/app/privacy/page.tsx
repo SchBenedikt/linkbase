@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy / Datenschutz',
+  title: 'Privacy Policy',
   description: 'Privacy Policy and data protection information for Linkbase.',
 };
 
@@ -16,11 +16,10 @@ export default function PrivacyPage() {
       </header>
 
       <main className="container mx-auto px-4 py-12 max-w-3xl">
-        {/* English version */}
         <h1 className="text-3xl font-extrabold tracking-tight mb-2">Privacy Policy</h1>
         <p className="text-muted-foreground mb-8">Last updated: February 2025</p>
 
-        <section className="space-y-6 mb-12 text-sm leading-relaxed">
+        <section className="space-y-6 text-sm leading-relaxed">
           <div>
             <h2 className="text-xl font-bold mb-2">1. Who we are</h2>
             <p>
@@ -56,7 +55,7 @@ export default function PrivacyPage() {
             <ul className="list-disc pl-5 space-y-1 text-muted-foreground mt-2">
               <li><strong>Google Firebase</strong> (Authentication &amp; Firestore database) – <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a></li>
               <li><strong>Cloudflare Pages</strong> (hosting) – <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a></li>
-              <li><strong>Google AI (Gemini)</strong> – used only when you explicitly generate an AI theme. – <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a></li>
+              <li><strong>Google AI (Gemini)</strong> – used only when you explicitly generate an AI theme – <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a></li>
             </ul>
           </div>
 
@@ -86,82 +85,11 @@ export default function PrivacyPage() {
             </p>
           </div>
         </section>
-
-        <hr className="my-8" />
-
-        {/* German version */}
-        <h1 className="text-3xl font-extrabold tracking-tight mb-2">Datenschutzerklärung</h1>
-        <p className="text-muted-foreground mb-8">Stand: Februar 2025</p>
-
-        <section className="space-y-6 text-sm leading-relaxed">
-          <div>
-            <h2 className="text-xl font-bold mb-2">1. Verantwortlicher</h2>
-            <p>
-              Benedikt Schächner, Deutschland.
-              Kontakt: <a href="mailto:contact@linkbase.app" className="text-primary underline">contact@linkbase.app</a>
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-2">2. Welche Daten wir erheben</h2>
-            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li><strong>Kontodaten</strong>: E-Mail-Adresse und Anzeigename bei der Registrierung.</li>
-              <li><strong>Profildaten</strong>: Name, Bio, Avatar-URL, Links und Erscheinungseinstellungen Ihrer Seite.</li>
-              <li><strong>Nutzungsdaten</strong>: Standard-Server-Logs (IP-Adresse, Browser-Typ, aufgerufene Seiten) für Sicherheit und Debugging.</li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-2">3. Zweck der Datenverarbeitung</h2>
-            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li>Bereitstellung und Verbesserung des Linkbase-Dienstes.</li>
-              <li>Anzeige Ihrer öffentlichen Profilseite für Besucher.</li>
-              <li>Authentifizierung und Sicherheit Ihres Kontos.</li>
-              <li>Wir <strong>verkaufen</strong> Ihre personenbezogenen Daten <strong>nicht</strong> an Dritte.</li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-2">4. Drittanbieter</h2>
-            <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li><strong>Google Firebase</strong> (Authentifizierung &amp; Datenbank) – Datenschutz: <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">firebase.google.com/support/privacy</a></li>
-              <li><strong>Cloudflare Pages</strong> (Hosting) – <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer" className="text-primary underline">cloudflare.com/privacypolicy</a></li>
-              <li><strong>Google AI (Gemini)</strong> – nur bei expliziter Nutzung der KI-Theme-Funktion – <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">policies.google.com/privacy</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-2">5. Cookies</h2>
-            <p className="text-muted-foreground">
-              Wir verwenden ausschließlich technisch notwendige Cookies (z. B. für das Sitzungsmanagement).
-              Tracking- oder Werbe-Cookies werden nicht eingesetzt. Details finden Sie in unserer{' '}
-              <Link href="/cookies" className="text-primary underline">Cookie-Richtlinie</Link>.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-2">6. Ihre Rechte (DSGVO)</h2>
-            <p className="text-muted-foreground">
-              Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung,
-              Datenübertragbarkeit und Widerspruch. Wenden Sie sich dazu an{' '}
-              <a href="mailto:contact@linkbase.app" className="text-primary underline">contact@linkbase.app</a>.
-              Außerdem haben Sie das Recht, sich bei einer Datenschutzbehörde zu beschweren.
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-xl font-bold mb-2">7. Speicherdauer</h2>
-            <p className="text-muted-foreground">
-              Wir speichern Ihre Daten solange Ihr Konto aktiv ist. Sie können Ihr Konto jederzeit
-              in den Kontoeinstellungen löschen.
-            </p>
-          </div>
-        </section>
       </main>
 
       <footer className="border-t mt-12">
         <div className="container mx-auto px-4 py-8 flex flex-wrap gap-4 text-sm text-muted-foreground">
-          <Link href="/impressum" className="hover:text-foreground">Impressum</Link>
+          <Link href="/impressum" className="hover:text-foreground">Legal Notice</Link>
           <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
           <Link href="/cookies" className="hover:text-foreground">Cookie Policy</Link>
           <Link href="/" className="hover:text-foreground">Home</Link>

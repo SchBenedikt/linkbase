@@ -300,7 +300,7 @@ export default function LandingPage() {
                 <Link href="/features" className="text-muted-foreground hover:text-foreground">Features</Link>
                 <Link href="/pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link>
                 <Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link>
-                <Link href="/impressum" className="text-muted-foreground hover:text-foreground">Impressum</Link>
+                <Link href="/impressum" className="text-muted-foreground hover:text-foreground">Legal Notice</Link>
                 <Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy</Link>
                 <Link href="/cookies" className="text-muted-foreground hover:text-foreground">Cookies</Link>
             </nav>
