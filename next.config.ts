@@ -30,21 +30,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  output: 'standalone',  // Optimiert für Deployment (Pages/Workers)
+  output: 'standalone',
   experimental: {
-    webpackBuildWorker: false,  // Verhindert große webpack-Packs [web:38]
+    webpackBuildWorker: false,  // Vermeidet große Packs
   },
   webpack: (config) => {
-    // Preact-Alias für ~50% React-Reduktion (npm i -D preact)
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      react: 'preact/compat',
-      'react-dom': 'preact/compat',
-    };
-    // Chunk-Splitting: Max 20 MB pro Chunk
+    // KEIN Preact-Alias – dnd-kit braucht echtes React
     config.optimization!.splitChunks = {
       ...config.optimization!.splitChunks,
-      maxSize: 20 * 1024 * 1024,  // 20 MiB [web:32]
+      maxSize: 20 * 1024 * 1024,  // 20 MiB/Chunks
     };
     return config;
   },
