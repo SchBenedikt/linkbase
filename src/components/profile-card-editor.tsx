@@ -33,7 +33,7 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
   const { user, isUserLoading } = useUser();
 
   const profilesQuery = useMemoFirebase(() =>
-    firestore && user ? collection(firestore, 'user_profiles') : null,
+    (firestore && user) ? collection(firestore, 'user_profiles') : null,
     [firestore, user]
   );
   const { data: allProfiles, isLoading: areProfilesLoading } = useCollection<UserProfile>(profilesQuery);
