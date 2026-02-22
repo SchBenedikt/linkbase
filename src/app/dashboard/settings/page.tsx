@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth, useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
-import { collection, query, where, doc, limit, writeBatch, getDoc } from 'firebase/firestore';
-import type { Page } from '@/lib/types';
+import { doc, writeBatch, getDoc, serverTimestamp } from 'firebase/firestore';
+import type { UserProfile } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -30,8 +30,8 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { DashboardNav } from '@/components/dashboard-nav';
 
 // Schemas
-const slugSchema = z.object({
-  slug: z.string().min(3, 'Username must be at least 3 characters.').regex(/^[a-z0-9-]+$/, 'Username can only contain lowercase letters, numbers, and hyphens.'),
+const usernameSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters.').regex(/^[a-z0-9-]+$/, 'Username can only contain lowercase letters, numbers, and hyphens.'),
 });
 const emailSchema = z.object({
   email: z.string().email('Invalid email address.'),
@@ -50,16 +50,15 @@ export default function SettingsPage() {
   const [reauthAction, setReauthAction] = useState<{ type: 'email' | 'password', value: string } | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
 
-  const pagesQuery = useMemoFirebase(() => 
-    user ? query(collection(firestore, 'pages'), where('ownerId', '==', user.uid), limit(1)) : null,
+  const userProfileRef = useMemoFirebase(() => 
+    user ? doc(firestore, 'user_profiles', user.uid) : null,
     [user, firestore]
   );
-  const { data: pages, isLoading: arePagesLoading } = useCollection<Page>(pagesQuery);
-  const page = pages?.[0];
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
 
-  const slugForm = useForm<z.infer<typeof slugSchema>>({
-    resolver: zodResolver(slugSchema),
-    defaultValues: { slug: '' },
+  const usernameForm = useForm<z.infer<typeof usernameSchema>>({
+    resolver: zodResolver(usernameSchema),
+    defaultValues: { username: '' },
   });
   const emailForm = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
@@ -74,40 +73,60 @@ export default function SettingsPage() {
     if(user?.email) {
       emailForm.reset({ email: user.email });
     }
-    if (page?.slug) {
-        slugForm.reset({ slug: page.slug });
+    if (userProfile?.username) {
+        usernameForm.reset({ username: userProfile.username });
     }
-  }, [user, page, emailForm, slugForm]);
+  }, [user, userProfile, emailForm, usernameForm]);
 
-  const handleUpdateSlug = async ({ slug }: z.infer<typeof slugSchema>) => {
-    if (!firestore || !page || !user) {
+  const handleUpdateUsername = async ({ username }: z.infer<typeof usernameSchema>) => {
+    if (!firestore || !user) {
         toast({ variant: "destructive", title: "Error", description: "Could not update username." });
         return;
     }
 
-    if (slug === page.slug) {
+    if (username === userProfile?.username) {
         toast({ title: "No changes", description: "The new username is the same as the old one." });
         return;
     }
     
-    setLoading('slug');
+    setLoading('username');
 
-    const newSlugRef = doc(firestore, 'slug_lookups', slug);
-    const newSlugSnap = await getDoc(newSlugRef);
+    const newUsernameRef = doc(firestore, 'username_lookups', username);
+    const newUsernameSnap = await getDoc(newUsernameRef);
 
-    if (newSlugSnap.exists()) {
-        slugForm.setError('slug', { type: 'manual', message: 'This username is already taken.' });
+    if (newUsernameSnap.exists()) {
+        usernameForm.setError('username', { type: 'manual', message: 'This username is already taken.' });
         setLoading('');
         return;
     }
     
     try {
         const batch = writeBatch(firestore);
-        const pageRef = doc(firestore, 'pages', page.id);
-        batch.update(pageRef, { slug: slug });
-        const oldSlugRef = doc(firestore, 'slug_lookups', page.slug);
-        batch.delete(oldSlugRef);
-        batch.set(newSlugRef, { pageId: page.id });
+        const profileRef = doc(firestore, 'user_profiles', user.uid);
+        const profileSnap = await getDoc(profileRef);
+
+        if (profileSnap.exists()) {
+            batch.update(profileRef, { username: username, updatedAt: serverTimestamp() });
+            const oldUsername = profileSnap.data()?.username;
+            if (oldUsername) {
+                const oldUsernameRef = doc(firestore, 'username_lookups', oldUsername);
+                batch.delete(oldUsernameRef);
+            }
+        } else {
+            const newUserProfileData = {
+                id: user.uid,
+                username: username,
+                firstName: user.displayName?.split(' ')[0] || '',
+                lastName: user.displayName?.split(' ')[1] || '',
+                bio: '',
+                avatarUrl: user.photoURL || '',
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+            };
+            batch.set(profileRef, newUserProfileData);
+        }
+
+        batch.set(newUsernameRef, { userId: user.uid });
         await batch.commit();
         toast({ title: 'Success!', description: 'Your username has been updated.' });
     } catch (error: any) {
@@ -173,7 +192,7 @@ export default function SettingsPage() {
     }
   };
 
-  const isLoading = isUserLoading || arePagesLoading;
+  const isLoading = isUserLoading || isProfileLoading;
 
   if (isLoading) {
       return (
@@ -197,42 +216,40 @@ export default function SettingsPage() {
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h2 className="text-3xl font-bold tracking-tight mb-8">Settings</h2>
             <div className="max-w-2xl mx-auto space-y-8">
-                {page && (
-                    <Card className="border-0 shadow-none bg-transparent">
-                        <CardHeader>
-                            <CardTitle>Change Username</CardTitle>
-                            <CardDescription>This is your unique URL on BioBloom. Choose wisely.</CardDescription>
-                        </CardHeader>
-                        <Form {...slugForm}>
-                            <form onSubmit={slugForm.handleSubmit(handleUpdateSlug)}>
-                                <CardContent>
-                                    <FormField
-                                        control={slugForm.control}
-                                        name="slug"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Username</FormLabel>
-                                                <div className="flex items-center">
-                                                    <span className="text-sm text-muted-foreground px-3 py-2 bg-muted rounded-l-md border border-r-0">biobloom.co/</span>
-                                                    <FormControl>
-                                                        <Input {...field} className="rounded-l-none bg-card" />
-                                                    </FormControl>
-                                                </div>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </CardContent>
-                                <CardFooter>
-                                    <Button type="submit" disabled={loading === 'slug'}>
-                                        {loading === 'slug' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        Save Username
-                                    </Button>
-                                </CardFooter>
-                            </form>
-                        </Form>
-                    </Card>
-                )}
+                <Card className="border-0 shadow-none bg-transparent">
+                    <CardHeader>
+                        <CardTitle>Your Username</CardTitle>
+                        <CardDescription>This is your unique @username for mentions across BioBloom.</CardDescription>
+                    </CardHeader>
+                    <Form {...usernameForm}>
+                        <form onSubmit={usernameForm.handleSubmit(handleUpdateUsername)}>
+                            <CardContent>
+                                <FormField
+                                    control={usernameForm.control}
+                                    name="username"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Username</FormLabel>
+                                            <div className="flex items-center">
+                                                <span className="text-sm text-muted-foreground px-3 py-2 bg-muted rounded-l-md border border-r-0">@</span>
+                                                <FormControl>
+                                                    <Input {...field} className="rounded-l-none bg-card" />
+                                                </FormControl>
+                                            </div>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </CardContent>
+                            <CardFooter>
+                                <Button type="submit" disabled={loading === 'username'}>
+                                    {loading === 'username' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Save Username
+                                </Button>
+                            </CardFooter>
+                        </form>
+                    </Form>
+                </Card>
                 <Card className="border-0 shadow-none bg-transparent">
                     <CardHeader>
                         <CardTitle>Change Email Address</CardTitle>
