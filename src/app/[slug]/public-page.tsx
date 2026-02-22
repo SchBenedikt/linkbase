@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { Page, Link as LinkType, AppearanceSettings } from '@/lib/types';
-import { hexToHsl, getContrastColor, isColorLight } from '@/lib/utils';
+import { hexToHsl, getContrastColor, isColorLight, resolveReadableFg } from '@/lib/utils';
 import { ProfileHeader } from '@/components/profile-header';
 import { LinkList } from '@/components/link-list';
 import { useTheme } from '@/components/theme-provider';
@@ -68,8 +68,12 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
         }
 
         // Get raw values (hex from DB or raw HSL from getContrastColor)
-        const rawFg = (!wasThemeTransformed && dbAppearance.foregroundColor) ? dbAppearance.foregroundColor : getContrastColor(effectiveAppearance.backgroundColor);
-        const rawCardFg = (!wasThemeTransformed && dbAppearance.cardForegroundColor) ? dbAppearance.cardForegroundColor : getContrastColor(effectiveAppearance.cardColor);
+        const rawFg = wasThemeTransformed
+            ? getContrastColor(effectiveAppearance.backgroundColor)
+            : resolveReadableFg(dbAppearance.foregroundColor, effectiveAppearance.backgroundColor);
+        const rawCardFg = wasThemeTransformed
+            ? getContrastColor(effectiveAppearance.cardColor)
+            : resolveReadableFg(dbAppearance.cardForegroundColor, effectiveAppearance.cardColor);
 
         // Set appearance state with valid CSS color values for direct use in child components
         setAppearance({
