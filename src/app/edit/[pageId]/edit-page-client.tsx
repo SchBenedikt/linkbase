@@ -240,6 +240,13 @@ export default function EditPage() {
     batch.commit();
   };
 
+  const handleResizeLink = (linkId: string, colSpan: number, rowSpan: number) => {
+    if (!linksRef) return;
+    setLinksData(prev => prev!.map(l => l.id === linkId ? { ...l, colSpan, rowSpan } : l));
+    const linkRef = doc(linksRef, linkId);
+    setDocumentNonBlocking(linkRef, { colSpan, rowSpan }, { merge: true });
+  };
+
 
   const generateStylesFromAppearance = (settings: AppearanceSettings): React.CSSProperties => {
     return {
@@ -419,6 +426,7 @@ export default function EditPage() {
                 onEditLink={(link) => setSheetState({ view: 'editContent', open: true, content: link })}
                 onDeleteLink={setLinkToDelete}
                 onDragEnd={handleDragEnd}
+                onResizeLink={handleResizeLink}
                 appearance={appearance}
                 isEditable={true}
               />
