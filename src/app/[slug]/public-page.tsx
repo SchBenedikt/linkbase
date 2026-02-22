@@ -31,6 +31,8 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
     const [dynamicStyles, setDynamicStyles] = useState<React.CSSProperties>({});
     const [appearance, setAppearance] = useState<AppearanceSettings>(initialAppearance);
     const [isClient, setIsClient] = useState(false);
+    // Sensitive content gate: starts gated if page.sensitiveContent is true
+    const [gateAccepted, setGateAccepted] = useState(false);
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -110,6 +112,33 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
         mainStyle.backgroundSize = 'cover';
         mainStyle.backgroundPosition = 'center';
         mainStyle.backgroundAttachment = 'fixed';
+    }
+
+    // Show sensitive content gate if the page requires it and user hasn't confirmed
+    if (page.sensitiveContent && !gateAccepted) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background p-8">
+                <div className="max-w-sm w-full rounded-2xl border bg-card p-8 text-center shadow-xl space-y-5">
+                    <div className="text-5xl">🔞</div>
+                    <h1 className="text-2xl font-bold text-card-foreground">Sensitive Content</h1>
+                    <p className="text-muted-foreground text-sm">
+                        This page may contain content that is only appropriate for adults or a mature audience.
+                        By continuing you confirm that you are of legal age in your country.
+                    </p>
+                    <div className="flex flex-col gap-2">
+                        <button
+                            className="w-full py-2.5 px-4 rounded-lg font-semibold bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                            onClick={() => setGateAccepted(true)}
+                        >
+                            I confirm, I'm 18+
+                        </button>
+                        <a href="/" className="w-full py-2 px-4 rounded-lg text-sm text-muted-foreground hover:text-foreground transition-colors">
+                            Take me back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     return (

@@ -21,6 +21,8 @@ export const linkSchema = z.object({
   content: z.string().optional(),
   colSpan: z.number().min(1).max(4).default(1),
   rowSpan: z.number().min(1).max(2).default(1),
+  scheduledStart: z.string().optional(),
+  scheduledEnd: z.string().optional(),
 });
 
 type LinkEditorFormData = z.infer<typeof linkSchema>;
@@ -42,6 +44,8 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
       content: link?.content || '',
       colSpan: link?.colSpan || (mode === 'spotify' || mode === 'soundcloud' ? 4 : (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' || mode === 'twitch' ? 2 : 1)),
       rowSpan: link?.rowSpan || (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' || mode === 'twitch' ? 2 : 1),
+      scheduledStart: link?.scheduledStart || '',
+      scheduledEnd: link?.scheduledEnd || '',
     },
   });
   
@@ -264,6 +268,41 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
             )}
             />
         </div>
+
+        {/* Optional scheduling */}
+        <details className="border rounded-lg p-3 text-sm">
+          <summary className="cursor-pointer font-medium text-muted-foreground select-none">
+            Schedule visibility (optional)
+          </summary>
+          <div className="grid grid-cols-2 gap-4 mt-3">
+            <FormField
+              control={form.control}
+              name="scheduledStart"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Visible from</FormLabel>
+                  <FormControl>
+                    <Input type="datetime-local" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="scheduledEnd"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Visible until</FormLabel>
+                  <FormControl>
+                    <Input type="datetime-local" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </details>
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>

@@ -28,6 +28,10 @@ import { CalendlyCard } from './calendly-card';
 import { GithubCard } from './github-card';
 import { TwitterCard } from './twitter-card';
 import { TwitchCard } from './twitch-card';
+import { DonationCard } from './donation-card';
+import { ContactInfoCard } from './contact-info-card';
+import { AudioCard } from './audio-card';
+import { AppDownloadCard } from './appdownload-card';
 
 // Grid constants  
 const GRID_COLS = 4;
@@ -175,6 +179,14 @@ function renderCardComponent(
       return <TwitterCard {...props} />;
     case 'twitch':
       return <TwitchCard {...props} />;
+    case 'donation':
+      return <DonationCard {...props} />;
+    case 'contact-info':
+      return <ContactInfoCard {...props} />;
+    case 'audio':
+      return <AudioCard {...props} />;
+    case 'appdownload':
+      return <AppDownloadCard {...props} />;
     default:
       return <LinkCard {...props} />;
   }
@@ -312,7 +324,25 @@ export function LinkList({
     return [...(links || [])].sort((a, b) => a.orderIndex - b.orderIndex);
   }, [links]);
 
-  const linkIds = useMemo(() => sortedLinks.map((l) => l.id), [sortedLinks]);
+  // For the public (non-editable) view, filter out links outside their scheduling window
+  const visibleLinks = useMemo(() => {
+    if (isEditable) return sortedLinks;
+    const now = Date.now();
+    return sortedLinks.filter((link) => {
+      if (link.scheduledStart) {
+        const start = new Date(link.scheduledStart).getTime();
+        if (!isNaN(start) && now < start) return false;
+      }
+      if (link.scheduledEnd) {
+        const end = new Date(link.scheduledEnd).getTime();
+        if (!isNaN(end) && now > end) return false;
+      }
+      return true;
+    });
+  }, [sortedLinks, isEditable]);
+
+  // Memoize IDs for DnD to avoid recreating on every render
+  const editableLinkIds = useMemo(() => visibleLinks.map((l) => l.id), [visibleLinks]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -324,9 +354,9 @@ export function LinkList({
   if (isEditable) {
     return (
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={linkIds} strategy={rectSortingStrategy}>
+        <SortableContext items={editableLinkIds} strategy={rectSortingStrategy}>
           <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[10rem] gap-4">
-            {sortedLinks.map((link) => (
+            {visibleLinks.map((link) => (
               <SortableLinkItem
                 key={link.id}
                 link={link}
@@ -354,10 +384,10 @@ export function LinkList({
     );
   }
 
-  // Public, non-editable view
+  // Public, non-editable view (scheduling already applied via visibleLinks)
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[10rem] gap-4">
-      {sortedLinks.map((link) => {
+      {visibleLinks.map((link) => {
         const componentType = resolveComponentType(link);
         const style: React.CSSProperties = {
           gridColumn: `span ${link.colSpan || 1}`,
