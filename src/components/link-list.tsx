@@ -16,6 +16,7 @@ import { ArticleCard } from './article-card';
 import { BlogOverviewCard } from './blog-overview-card';
 import { ProductCard } from './product-card';
 import { ImageCard } from './image-card';
+import { ProfileCard } from './profile-card';
 
 // Sortable Item Wrapper
 function SortableLinkItem(props: {
@@ -71,6 +72,9 @@ function SortableLinkItem(props: {
         break;
     case 'image':
         CardComponent = <ImageCard {...props} isEditable={true} dragHandleListeners={listeners} />;
+        break;
+    case 'profile':
+        CardComponent = <ProfileCard {...props} isEditable={true} dragHandleListeners={listeners} />;
         break;
     default:
       CardComponent = <LinkCard {...props} isEditable={true} dragHandleListeners={listeners} />;
@@ -192,6 +196,9 @@ export function LinkList({
                 break;
             case 'image':
                 CardComponent = <ImageCard link={link} appearance={appearance} isEditable={false} />;
+                break;
+            case 'profile':
+                CardComponent = <ProfileCard link={link} appearance={appearance} isEditable={false} />;
                 break;
             default:
                 CardComponent = <LinkCard link={link} appearance={appearance} isEditable={false} />;

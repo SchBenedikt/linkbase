@@ -8,7 +8,7 @@ export type Link = {
   pageId: string;
   orderIndex: number;
   title: string;
-  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product';
+  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile';
   colSpan?: number;
   rowSpan?: number;
   content?: string; // For text cards or product description
@@ -24,6 +24,7 @@ export type Link = {
   showCreationDate?: boolean;
   showExcerpts?: boolean;
   price?: string; // For product cards
+  mentionedPageId?: string; // For profile cards
 };
 
 export type Page = {

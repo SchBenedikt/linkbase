@@ -2,6 +2,9 @@
 
 import { aiThemeSuggestion, type AIThemeSuggestionInput } from '@/ai/flows/ai-theme-suggestion-flow';
 import { z } from 'zod';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { serverFirestore } from '@/firebase/server';
+import type { Page } from '@/lib/types';
 
 const schema = z.object({
   keywords: z.string().min(3, { message: 'Please enter at least 3 characters.' }),
@@ -85,5 +88,43 @@ export async function getWebsiteMeta(url: string): Promise<{ title?: string; ima
     }
     console.error('Error fetching website meta:', error);
     return { error: 'Failed to fetch meta data from the URL.' };
+  }
+}
+
+export async function searchPages(searchTerm: string): Promise<Pick<Page, 'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'slug'>[]> {
+  if (!searchTerm || searchTerm.length < 2) {
+    return [];
+  }
+  
+  const lowerCaseQuery = searchTerm.toLowerCase();
+
+  try {
+    const pagesRef = collection(serverFirestore, 'pages');
+    // Simple prefix search on slug. This is limited but works without extra indexing.
+    const q = query(
+      pagesRef, 
+      where('status', '==', 'published'), 
+      where('slug', '>=', lowerCaseQuery), 
+      where('slug', '<=', lowerCaseQuery + '\uf8ff'),
+      limit(10)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const pages = querySnapshot.docs.map(doc => {
+      const data = doc.data() as Page;
+      return {
+        id: doc.id,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        avatarUrl: data.avatarUrl,
+        slug: data.slug,
+      };
+    });
+
+    return pages;
+
+  } catch (error) {
+    console.error("Error searching pages:", error);
+    return [];
   }
 }
