@@ -126,8 +126,24 @@ export default async function Page({ params }: Props) {
             notFound();
         }
 
-        const pageData = { id: pageSnap.id, ...pageSnap.data() } as PageType;
-        const linksData = linksSnap.docs.map(d => ({ id: d.id, ...d.data() } as LinkType));
+        const rawPageData = pageSnap.data();
+        const pageData = { 
+            id: pageSnap.id, 
+            ...rawPageData,
+            createdAt: rawPageData.createdAt?.toDate ? rawPageData.createdAt.toDate().toISOString() : null,
+            updatedAt: rawPageData.updatedAt?.toDate ? rawPageData.updatedAt.toDate().toISOString() : null,
+        } as PageType;
+
+        const linksData = linksSnap.docs.map(d => {
+            const rawLinkData = d.data();
+            return { 
+                id: d.id,
+                ...rawLinkData,
+                createdAt: rawLinkData.createdAt?.toDate ? rawLinkData.createdAt.toDate().toISOString() : null,
+                updatedAt: rawLinkData.updatedAt?.toDate ? rawLinkData.updatedAt.toDate().toISOString() : null,
+            } as LinkType
+        });
+        
         const publicUrl = `${siteUrl}/${slug}`;
         
         return <PublicPageComponent page={pageData} links={linksData} publicUrl={publicUrl} />;
