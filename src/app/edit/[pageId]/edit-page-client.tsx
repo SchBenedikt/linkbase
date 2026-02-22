@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { doc, collection, writeBatch } from 'firebase/firestore';
 import { z } from 'zod';
@@ -60,6 +60,8 @@ export default function EditPage() {
 
   const [sheetState, setSheetState] = useState<SheetState>({ open: false });
   const [linkToDelete, setLinkToDelete] = useState<LinkType | null>(null);
+  const appearanceSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isAppearanceLocalRef = useRef(false);
 
   // Firestore references
   const pageRef = useMemoFirebase(() => pageId ? doc(firestore, 'pages', pageId) : null, [firestore, pageId]);
@@ -89,9 +91,11 @@ export default function EditPage() {
   }, [isUserLoading, user, router, isPageLoading, page]);
 
 
-  // Update appearance when page data changes, and on theme changes
+  // Update appearance when page data changes, and on theme changes.
+  // Skip when the update was triggered by our own local appearance save.
   useEffect(() => {
     if (!page || !isClient) return;
+    if (isAppearanceLocalRef.current) return;
 
     const isDarkMode = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     const dbAppearance = page as unknown as AppearanceSettings;
@@ -255,20 +259,32 @@ export default function EditPage() {
     setAppearance(newSettings);
     setDynamicStyles(generateStylesFromAppearance(newSettings));
     if (pageRef && saveToDb) {
-      const dataToSave = {
-        backgroundColor: newSettings.backgroundColor,
-        primaryColor: newSettings.primaryColor,
-        accentColor: newSettings.accentColor,
-        foregroundColor: newSettings.foregroundColor,
-        cardColor: newSettings.cardColor,
-        cardForegroundColor: newSettings.cardForegroundColor,
-        borderRadius: newSettings.borderRadius,
-        borderWidth: newSettings.borderWidth,
-        borderColor: newSettings.borderColor,
-        backgroundImage: newSettings.backgroundImage,
-        fontFamily: newSettings.fontFamily,
-      };
-      setDocumentNonBlocking(pageRef, dataToSave, { merge: true });
+      // Mark that the next Firestore snapshot is caused by our own write,
+      // so the appearance useEffect won't overwrite local state.
+      isAppearanceLocalRef.current = true;
+
+      // Debounce writes: wait 400 ms after the last call before writing to Firestore.
+      if (appearanceSaveTimerRef.current) {
+        clearTimeout(appearanceSaveTimerRef.current);
+      }
+      appearanceSaveTimerRef.current = setTimeout(() => {
+        const dataToSave = {
+          backgroundColor: newSettings.backgroundColor,
+          primaryColor: newSettings.primaryColor,
+          accentColor: newSettings.accentColor,
+          foregroundColor: newSettings.foregroundColor,
+          cardColor: newSettings.cardColor,
+          cardForegroundColor: newSettings.cardForegroundColor,
+          borderRadius: newSettings.borderRadius,
+          borderWidth: newSettings.borderWidth,
+          borderColor: newSettings.borderColor,
+          backgroundImage: newSettings.backgroundImage,
+          fontFamily: newSettings.fontFamily,
+        };
+        setDocumentNonBlocking(pageRef, dataToSave, { merge: true });
+        // Reset flag shortly after the write so future external changes are applied.
+        setTimeout(() => { isAppearanceLocalRef.current = false; }, 2000);
+      }, 400);
     }
   };
 
