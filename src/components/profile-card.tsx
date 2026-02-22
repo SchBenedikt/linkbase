@@ -97,10 +97,8 @@ export function ProfileCard({ link, onEdit, onDelete, appearance, isEditable = f
         style={cardStyle}
     >
         {primaryPage && (
-            <NextLink href={`/${primaryPage.slug}`} passHref legacyBehavior>
-                <a target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
-                    <span className="sr-only">View profile: {name}</span>
-                </a>
+            <NextLink href={`/${primaryPage.slug}`} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
+                <span className="sr-only">View profile: {name}</span>
             </NextLink>
         )}
         <div className="flex flex-col justify-between flex-grow relative z-20 space-y-3">

@@ -180,7 +180,7 @@ export default function DashboardPage() {
                                                 <CardDescription className="pt-2">
                                                 {page.slug && (
                                                         <Link href={`/${page.slug}`} target="_blank" className="text-primary hover:underline flex items-center gap-1">
-                                                            linkbase.pro/{page.slug} <Eye className="h-4 w-4" />
+                                                            links.schächner.de/{page.slug} <Eye className="h-4 w-4" />
                                                         </Link>
                                                     )}
                                                 </CardDescription>
