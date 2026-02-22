@@ -1,14 +1,26 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { doc, getDoc, collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import { serverFirestore } from '@/firebase/server';
 import type { Page as PageType, Link as LinkType, SlugLookup } from '@/lib/types';
 import PublicPageComponent from './public-page';
 
 export async function generateStaticParams() {
-  // For static builds, return empty array to avoid Firebase errors
-  // Dynamic routes will be handled at runtime
-  return [];
+  try {
+    if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+      console.warn("Firebase config not found. Returning fallback params.");
+      return [];
+    }
+    const pagesQuery = query(collection(serverFirestore, 'pages'), where('status', '==', 'published'));
+    const pagesSnap = await getDocs(pagesQuery);
+    return pagesSnap.docs.map(doc => {
+        const data = doc.data();
+        return { slug: data.slug };
+    });
+  } catch (error) {
+    console.error('Error generating static params for [slug]:', error);
+    return [];
+  }
 }
 
 type Props = {

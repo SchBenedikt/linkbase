@@ -6,9 +6,20 @@ import type { Post as PostType } from '@/lib/types';
 import PublicPostPageComponent from './public-post-page';
 
 export async function generateStaticParams() {
-  // For static builds, return empty array to avoid Firebase errors
-  // Dynamic routes will be handled at runtime
-  return [];
+  try {
+    if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+      console.warn("Firebase config not found. Returning fallback params.");
+      return [];
+    }
+    const postsQuery = query(collection(serverFirestore, 'posts'), where('status', '==', 'published'));
+    const postsSnap = await getDocs(postsQuery);
+    return postsSnap.docs.map(doc => {
+        return { postId: doc.id };
+    });
+  } catch (error) {
+    console.error('Error generating static params for [postId]:', error);
+    return [];
+  }
 }
 
 type Props = {
