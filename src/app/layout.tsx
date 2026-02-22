@@ -15,6 +15,13 @@ export const metadata: Metadata = {
     template: '%s | Linkbase',
   },
   description: 'Linkbase is the ultimate platform for creators to build a beautiful, customizable, and powerful link-in-bio page. Share your world, your way.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-icon.png',
+  },
   openGraph: {
     title: 'Linkbase | Your vibrant link-in-bio profile',
     description: 'Everything you are, all in one place. Share your creations, your work, and your personality with the world.',

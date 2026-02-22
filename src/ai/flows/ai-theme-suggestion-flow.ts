@@ -1,4 +1,3 @@
-'use server';
 /**
  * @fileOverview A Genkit flow for suggesting themes and color palettes based on user keywords.
  *

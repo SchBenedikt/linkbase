@@ -291,17 +291,20 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="bg-background">
+      <footer className="bg-background border-t">
         <div className="container mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <Link href="/" className="font-headline font-bold text-xl text-foreground">
                 Linkbase*
             </Link>
-            <nav className="flex gap-4 sm:gap-6 text-sm font-medium">
+            <nav className="flex flex-wrap justify-center gap-4 sm:gap-6 text-sm font-medium">
                 <Link href="/features" className="text-muted-foreground hover:text-foreground">Features</Link>
                 <Link href="/pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link>
                 <Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link>
+                <Link href="/impressum" className="text-muted-foreground hover:text-foreground">Legal Notice</Link>
+                <Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy</Link>
+                <Link href="/cookies" className="text-muted-foreground hover:text-foreground">Cookies</Link>
             </nav>
-            <p className="text-sm text-muted-foreground">© 2024 Linkbase. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">© 2025 Linkbase. All rights reserved.</p>
         </div>
       </footer>
     </div>

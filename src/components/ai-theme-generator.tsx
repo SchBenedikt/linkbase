@@ -1,7 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useState, type FormEvent } from 'react';
 import { generateTheme } from '@/lib/actions';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,31 +13,33 @@ interface AiThemeGeneratorProps {
   onThemeApply: (theme: AITheme) => void;
 }
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} className="w-40">
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-      Generate
-    </Button>
-  );
-}
-
 export function AiThemeGenerator({ onThemeApply }: AiThemeGeneratorProps) {
-  const initialState = { error: '', data: null };
-  const [state, dispatch] = useActionState(generateTheme, initialState);
-  
+  const [state, setState] = useState<{ error?: string; data: AITheme | null }>({ data: null });
+  const [isPending, setIsPending] = useState(false);
+
   const aiTheme: AITheme | null = state.data;
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsPending(true);
+    const formData = new FormData(e.currentTarget);
+    const result = await generateTheme(null, formData);
+    setState(result);
+    setIsPending(false);
+  };
 
   return (
     <div className="space-y-6">
-      <form action={dispatch} className="flex flex-col sm:flex-row gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
         <Input
           name="keywords"
           placeholder="e.g. '80s synthwave', 'minimalist dark', 'forest cabin'"
           required
         />
-        <SubmitButton />
+        <Button type="submit" disabled={isPending} className="w-40">
+          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+          Generate
+        </Button>
       </form>
 
       {state?.error && (
