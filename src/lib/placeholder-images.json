@@ -101,6 +101,18 @@
       "description": "Avatar of Clara S., a food blogger in her kitchen",
       "imageUrl": "https://images.unsplash.com/photo-1556911220-bff31c812db9?w=100&q=80",
       "imageHint": "food blogger"
+    },
+    {
+      "id": "blog-author",
+      "description": "Avatar for a blog author.",
+      "imageUrl": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80",
+      "imageHint": "author portrait"
+    },
+    {
+      "id": "blog-header",
+      "description": "Header image for a blog post about productivity or learning.",
+      "imageUrl": "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=1200&q=80",
+      "imageHint": "desk setup"
     }
   ]
 }

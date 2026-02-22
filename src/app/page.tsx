@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
-import { Palette, Link as LinkIcon, Sparkles, BarChart3, MoveRight } from 'lucide-react';
+import { Palette, Link as LinkIcon, Sparkles, BarChart3, MoveRight, BookOpen } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { UserNav } from '@/components/user-nav';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { HeroShowcase } from '@/components/hero-showcase';
+import { BlogShowcase } from '@/components/blog-showcase';
 
 const MarqueeItem = ({ image, shape = 'rounded-xl' }: { image: ImagePlaceholder, shape?: 'rounded-xl' | 'rounded-full' | 'rounded-lg' }) => (
     <div className={cn("relative h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40 flex-shrink-0", shape)}>
@@ -61,7 +62,7 @@ export default function LandingPage() {
         return (
             <div className="flex items-center gap-2">
                 <Button variant="outline" asChild className="rounded-full hidden sm:flex">
-                    <Link href="/profile">Dashboard</Link>
+                    <Link href="/dashboard">Dashboard</Link>
                 </Button>
                 <ThemeToggle />
                 <UserNav />
@@ -137,7 +138,7 @@ export default function LandingPage() {
 
 
         {/* New Bento Grid Section */}
-        <section className="py-16 sm:py-24 bg-background text-destructive">
+        <section className="py-16 sm:py-24 bg-background">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
@@ -157,8 +158,8 @@ export default function LandingPage() {
                   <h3 className="font-headline text-2xl font-bold mb-2">Design without limits</h3>
                   <p className="text-primary-foreground/80 mb-4">Take full control of your page's appearance. Fine-tune every detail from colors and backgrounds to borders and corner radiuses.</p>
                 </div>
-                <Link href="/login" className="font-semibold inline-flex items-center gap-2 group">
-                  Start designing <MoveRight className="h-4 w-4" />
+                <Link href="/login" className="font-semibold inline-flex items-center gap-2 group text-primary-foreground/80 hover:text-primary-foreground">
+                  Start designing <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Card>
               <Card className="p-8 flex flex-col justify-between bg-accent text-accent-foreground rounded-3xl border-none">
@@ -170,33 +171,56 @@ export default function LandingPage() {
                   <p className="text-accent-foreground/80">Describe your desired aesthetic and let our AI generate stunning, unique themes for you in seconds.</p>
                 </div>
               </Card>
-              <Card className="p-8 flex flex-col justify-between bg-secondary text-secondary-foreground rounded-3xl border-none">
+              <Card className="p-8 flex flex-col justify-between bg-card text-card-foreground rounded-3xl border">
                  <div>
-                   <div className="p-2 bg-black/10 rounded-full w-fit mb-4">
+                   <div className="p-2 bg-foreground/10 rounded-full w-fit mb-4">
                       <LinkIcon className="h-6 w-6" />
                    </div>
-                  <h3 className="font-headline text-2xl font-bold mb-2">All your links</h3>
-                  <p className="text-secondary-foreground/80">Your central hub for everything you do. Link to your social profiles, your latest project, your online shop, or even embed a Spotify track.</p>
+                  <h3 className="font-headline text-2xl font-bold mb-2">All your content</h3>
+                  <p className="text-muted-foreground">Your central hub for everything you do. Link to socials, embed a Spotify track, or feature another creator's profile.</p>
                 </div>
               </Card>
-              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-destructive text-destructive-foreground rounded-3xl border-none">
+              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-secondary text-secondary-foreground rounded-3xl border-none">
                 <div>
-                  <div className="p-2 bg-white/10 rounded-full w-fit mb-4">
+                  <div className="p-2 bg-black/10 rounded-full w-fit mb-4">
                      <BarChart3 className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Detailed Analytics</h3>
-                  <p className="text-destructive-foreground/80">Our upcoming analytics suite will give you deep insights into your audience. Understand which links get the most clicks and what content truly resonates.</p>
+                  <p className="text-secondary-foreground/80">Our upcoming analytics suite will give you deep insights into your audience. Understand which links get the most clicks and what content truly resonates.</p>
                 </div>
-                <Link href="/login" className="font-semibold inline-flex items-center gap-2 group">
-                  Get insights <MoveRight className="h-4 w-4" />
+                <Link href="/login" className="font-semibold inline-flex items-center gap-2 group text-secondary-foreground/80 hover:text-secondary-foreground">
+                  Get insights <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Card>
             </div>
           </div>
         </section>
 
-        {/* How It Works Section */}
+        {/* Blog Section */}
         <section className="py-16 sm:py-24 bg-background text-foreground">
+          <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+            <div className="order-2 md:order-1">
+              <BlogShowcase />
+            </div>
+            <div className="order-1 md:order-2 max-w-lg">
+                <div className="p-2 bg-foreground/10 rounded-full w-fit mb-4">
+                  <BookOpen className="h-6 w-6" />
+                </div>
+              <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
+                Share your story with an integrated blog
+              </h2>
+              <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
+                Don't just share links, share your thoughts. Linkbase comes with a full-featured, easy-to-use blog. Write articles, share updates, and connect with your audience on a deeper level—all from one place.
+              </p>
+               <Button asChild size="lg" className="mt-8 h-14 rounded-full text-base font-bold px-8">
+                  <Link href="/login">Start Writing Now</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section className="py-16 sm:py-24 bg-card text-card-foreground">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
