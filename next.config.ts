@@ -31,7 +31,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  trailingSlash: true,
   excludeDefaultMomentLocales: true,
   experimental: {
     webpackBuildWorker: false,  // Vermeidet große Packs
