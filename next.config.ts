@@ -30,7 +30,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  output: 'standalone',
+  output: 'export',
   experimental: {
     webpackBuildWorker: false,  // Vermeidet große Packs
   },
