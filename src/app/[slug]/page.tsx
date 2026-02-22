@@ -12,6 +12,14 @@ type Props = {
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.xn--schchner-2za.de';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  // Guard clause for build environments without Firebase credentials.
+  if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+    console.warn(`Firebase config not found. Skipping metadata generation for /${params.slug}.`);
+    return {
+      title: 'Linkbase Page',
+    };
+  }
+
   try {
     const { slug } = params;
     const slugRef = doc(serverFirestore, 'slug_lookups', slug);

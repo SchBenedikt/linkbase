@@ -92,7 +92,7 @@ export async function getWebsiteMeta(url: string): Promise<{ title?: string; ima
 }
 
 export async function searchUsersByUsername(username: string): Promise<Pick<UserProfile, 'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'username'>[]> {
-  if (!username || username.length < 1) {
+  if (!username || username.length < 1 || !process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
     return [];
   }
   

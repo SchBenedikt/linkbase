@@ -6,6 +6,17 @@ import type { Page, Post } from '@/lib/types';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.xn--schchner-2za.de';
 
+  const routes = ['', '/features', '/pricing', '/contact', '/login'].map((route) => ({
+    url: `${siteUrl}${route}`,
+    lastModified: new Date(),
+  }));
+
+  // Guard clause to prevent build errors if Firebase ENV vars are not set.
+  if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
+    console.warn("Firebase environment variables not set. Generating a static sitemap only.");
+    return routes;
+  }
+
   try {
     const pagesQuery = query(collection(serverFirestore, 'pages'), where('status', '==', 'published'));
     const pagesSnap = await getDocs(pagesQuery);
@@ -27,11 +38,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }
     });
 
-    const routes = ['', '/features', '/pricing', '/contact', '/login'].map((route) => ({
-      url: `${siteUrl}${route}`,
-      lastModified: new Date(),
-    }));
-
     return [
       ...routes,
       ...pageUrls,
@@ -39,11 +45,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]
   } catch (error) {
     console.error("Error generating sitemap:", error);
-    return [
-      {
-        url: siteUrl,
-        lastModified: new Date(),
-      },
-    ];
+    return routes;
   }
 }
