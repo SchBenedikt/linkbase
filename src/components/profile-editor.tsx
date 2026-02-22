@@ -145,7 +145,7 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
             <FormItem>
               <FormLabel>Unique URL (Slug)</FormLabel>
                <div className="flex items-center">
-                  <span className="text-sm text-muted-foreground px-3 py-2 bg-muted rounded-l-md border border-r-0">biobloom.co/</span>
+                  <span className="text-sm text-muted-foreground px-3 py-2 bg-muted rounded-l-md border border-r-0">links.schächner.de/</span>
                   <FormControl>
                     <Input {...field} className="rounded-l-none" />
                   </FormControl>

@@ -126,7 +126,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
         <UserIcon className="mr-4 h-8 w-8" />
         <div className="text-left">
             <p>Feature a Profile</p>
-            <p className="text-sm font-normal text-muted-foreground">Mention another BioBloom user.</p>
+            <p className="text-sm font-normal text-muted-foreground">Mention another user.</p>
         </div>
       </Button>
       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('blog-overview')}>

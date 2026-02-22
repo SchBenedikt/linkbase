@@ -77,11 +77,11 @@ export default function LandingPage() {
                     </p>
                     <form className="w-full max-w-md flex flex-col sm:flex-row gap-2 mt-4">
                         <div className="flex-1 relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent-foreground/60">linkbase.pro/</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent-foreground/60">links.schächner.de/</span>
                         <Input
                             type="text"
                             placeholder="your-name"
-                            className="w-full h-14 rounded-full pl-32 pr-4 text-base bg-black/5 border-accent-foreground/20 placeholder:text-accent-foreground/50 text-accent-foreground focus:ring-accent-foreground"
+                            className="w-full h-14 rounded-full pl-40 pr-4 text-base bg-black/5 border-accent-foreground/20 placeholder:text-accent-foreground/50 text-accent-foreground focus:ring-accent-foreground"
                         />
                         </div>
                         <Button asChild size="lg" className="h-14 rounded-full text-base font-bold w-full sm:w-auto px-8">

@@ -9,7 +9,7 @@ type Props = {
   params: { slug: string }
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://linkbase.pro';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.xn--schchner-2za.de';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {

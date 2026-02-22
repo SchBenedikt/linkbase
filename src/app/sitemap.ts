@@ -4,7 +4,7 @@ import { serverFirestore } from '@/firebase/server';
 import type { Page, Post } from '@/lib/types';
  
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://linkbase.pro';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.xn--schchner-2za.de';
 
   try {
     const pagesQuery = query(collection(serverFirestore, 'pages'), where('status', '==', 'published'));

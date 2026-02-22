@@ -15,7 +15,7 @@ export function ShareButton({ publicUrl }: ShareButtonProps) {
     navigator.clipboard.writeText(publicUrl);
     toast({
       title: "Copied to clipboard!",
-      description: "You can now share your BioBloom profile.",
+      description: "You can now share your profile.",
     });
   };
 
