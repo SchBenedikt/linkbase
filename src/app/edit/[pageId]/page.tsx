@@ -8,6 +8,11 @@ import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocum
 import type { Page, Link as LinkType, AITheme, AppearanceSettings } from '@/lib/types';
 import { arrayMove } from '@dnd-kit/sortable';
 
+// Add generateStaticParams at the top level before the component
+export async function generateStaticParams() {
+  return [];
+}
+
 import { ProfileHeader } from '@/components/profile-header';
 import { LinkList } from '@/components/link-list';
 import { ThemeSwitcher } from '@/components/theme-switcher';

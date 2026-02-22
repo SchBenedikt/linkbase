@@ -32,6 +32,8 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'export',
+  trailingSlash: true,
+  excludeDefaultMomentLocales: true,
   experimental: {
     webpackBuildWorker: false,  // Vermeidet große Packs
   },

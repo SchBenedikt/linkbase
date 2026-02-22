@@ -5,6 +5,10 @@ import { serverFirestore } from '@/firebase/server';
 import type { Post as PostType } from '@/lib/types';
 import PublicPostPageComponent from './public-post-page';
 
+export async function generateStaticParams() {
+  return [];
+}
+
 type Props = {
     params: { postId: string }
 }
