@@ -77,8 +77,8 @@ export default function DashboardPage() {
     const filteredPages = useMemo(() => {
         if (!pages) return [];
         return pages.filter(page => 
-            page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            page.slug.toLowerCase().includes(searchQuery.toLowerCase())
+            (page.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (page.slug || '').toLowerCase().includes(searchQuery.toLowerCase())
         );
     }, [pages, searchQuery]);
 
