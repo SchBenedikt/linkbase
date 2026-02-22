@@ -4,7 +4,6 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import Image from 'next/image';
 import { CalendarDays, UserCircle } from 'lucide-react';
 import { Badge } from './ui/badge';
 
@@ -55,11 +54,10 @@ export const BlogShowcase = () => {
             variants={cardVariants}
           >
             {blogHeader && (
-              <Image
+              <img
                 src={blogHeader.imageUrl}
                 alt="Blog post header"
-                fill
-                className="object-cover"
+                className="absolute inset-0 h-full w-full object-cover"
               />
             )}
           </motion.div>

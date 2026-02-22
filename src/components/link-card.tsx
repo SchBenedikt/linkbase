@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { GripVertical, MoreVertical, Trash2, Edit, ExternalLink } from 'lucide-react';
 import type { Link, AppearanceSettings } from '@/lib/types';
 import { Card } from './ui/card';
@@ -45,13 +44,11 @@ export function LinkCard({ link, onEdit, onDelete, appearance, isEditable = fals
             <span className="sr-only">Visit {link.title}</span>
         </a>
         <div className="relative flex-grow">
-            <Image
+            <img
                 src={link.thumbnailUrl}
                 alt={link.title}
                 data-ai-hint={link.thumbnailHint}
-                fill
-                sizes="(max-width: 640px) 100vw, 640px"
-                className="object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
+                className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
             />
         </div>
         <div className="relative flex flex-col justify-end p-5">

@@ -6,7 +6,9 @@ import type { Post as PostType } from '@/lib/types';
 import PublicPostPageComponent from './public-post-page';
 
 export async function generateStaticParams() {
-  return [];
+  // For static export, we need to return some params
+  // This will generate a fallback page that handles 404s gracefully
+  return [{ postId: '__fallback__' }];
 }
 
 type Props = {

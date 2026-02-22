@@ -12,7 +12,6 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import Image from 'next/image';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -163,7 +162,11 @@ export const HeroShowcase = () => {
                     variants={cardVariants}
                     className="relative col-span-2 row-span-1 h-full w-full overflow-hidden rounded-lg"
                 >
-                    <Image src={linkThumb1.imageUrl} alt="Link 1" fill className="object-cover" />
+                    <img 
+                        src={linkThumb1.imageUrl} 
+                        alt="Link 1" 
+                        className="absolute inset-0 h-full w-full object-cover rounded-lg" 
+                    />
                 </motion.div>
             )}
              {linkThumb2 && (
@@ -174,7 +177,11 @@ export const HeroShowcase = () => {
                     variants={cardVariants}
                     className="relative h-full w-full overflow-hidden rounded-lg"
                 >
-                    <Image src={linkThumb2.imageUrl} alt="Link 2" fill className="object-cover" />
+                    <img 
+                        src={linkThumb2.imageUrl} 
+                        alt="Link 2" 
+                        className="absolute inset-0 h-full w-full object-cover rounded-lg" 
+                    />
                 </motion.div>
              )}
             {linkThumb3 && (
@@ -185,7 +192,11 @@ export const HeroShowcase = () => {
                     variants={cardVariants}
                     className="relative h-full w-full overflow-hidden rounded-lg"
                 >
-                    <Image src={linkThumb3.imageUrl} alt="Link 3" fill className="object-cover" />
+                    <img 
+                        src={linkThumb3.imageUrl} 
+                        alt="Link 3" 
+                        className="absolute inset-0 h-full w-full object-cover rounded-lg" 
+                    />
                 </motion.div>
             )}
              <motion.div

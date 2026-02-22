@@ -25,10 +25,6 @@ import { Calendar } from '@/components/ui/calendar';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DashboardNav } from '@/components/dashboard-nav';
 
-// Add generateStaticParams at the top level before the component
-export async function generateStaticParams() {
-  return [{ postId: 'new' }];
-}
 
 const postSchema = z.object({
   title: z.string().min(1, 'Title is required.'),

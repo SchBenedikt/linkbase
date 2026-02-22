@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { GripVertical, MoreVertical, Trash2, Edit, ArrowRight, DollarSign } from 'lucide-react';
 import type { Link, AppearanceSettings } from '@/lib/types';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card';
@@ -47,13 +46,11 @@ export function ProductCard({ link, onEdit, onDelete, appearance, isEditable = f
        
         {link.thumbnailUrl && (
             <div className="relative aspect-video">
-                 <Image
+                 <img
                     src={link.thumbnailUrl}
                     alt={link.title}
                     data-ai-hint={link.thumbnailHint}
-                    fill
-                    sizes="(max-width: 640px) 100vw, 640px"
-                    className="object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
+                    className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
                 />
             </div>
         )}
