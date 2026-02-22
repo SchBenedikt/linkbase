@@ -1,10 +1,6 @@
-// This route requires dynamic rendering on Cloudflare Pages
-export const dynamic = 'force-dynamic'
-
 'use client';
-// This route requires dynamic rendering on Cloudflare Pages
-export const dynamic = 'force-dynamic'
 
+export const dynamic = 'force-dynamic';
 
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
