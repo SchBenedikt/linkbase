@@ -184,17 +184,17 @@ export default function DashboardPage() {
                                 <CardFooter className="flex justify-between items-center">
                                     <p className="text-sm text-muted-foreground truncate pr-4">{page.bio || 'No description.'}</p>
                                     <div className="flex items-center gap-2 flex-shrink-0">
-                                        <Button variant="outline" size="sm" onClick={() => togglePageStatus(page)}>
+                                        <Button variant="outline" onClick={() => togglePageStatus(page)}>
                                             {page.status === 'published' ? <ZapOff className="mr-2 h-4 w-4" /> : <Zap className="mr-2 h-4 w-4" />}
                                             {page.status === 'published' ? 'Unpublish' : 'Publish'}
                                         </Button>
-                                        <Button asChild size="sm">
+                                        <Button asChild>
                                             <Link href={`/edit/${page.id}`}>
                                                 <Edit className="mr-2 h-4 w-4" />
                                                 Edit
                                             </Link>
                                         </Button>
-                                        <Button variant="destructive" size="sm" onClick={() => setPageToDelete(page)}>
+                                        <Button variant="destructive" onClick={() => setPageToDelete(page)}>
                                             <Trash2 className="mr-2 h-4 w-4" />
                                             Delete
                                         </Button>
