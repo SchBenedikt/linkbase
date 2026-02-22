@@ -69,14 +69,14 @@ service cloud.firestore {
 
     // Analytics Data
     match /page_views/{viewId} {
-      allow get: if false;
-      allow list: if isSignedIn() && get(/databases/$(database)/documents/pages/$(request.query.pageId)).data.ownerId == request.auth.uid;
+      allow get: if isSignedIn() && get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId == request.auth.uid;
+      allow list: if isSignedIn();
       allow write: if true;
     }
 
     match /link_clicks/{clickId} {
-      allow get: if false;
-      allow list: if isSignedIn() && get(/databases/$(database)/documents/pages/$(request.query.pageId)).data.ownerId == request.auth.uid;
+      allow get: if isSignedIn() && get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId == request.auth.uid;
+      allow list: if isSignedIn();
       allow write: if true;
     }
   }
