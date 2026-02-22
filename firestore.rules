@@ -33,14 +33,14 @@ service cloud.firestore {
       // Analytics Data
       match /page_views/{viewId} {
         // Owner can read their own analytics
-        allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+        allow get, list: if isSignedIn() && exists(/databases/$(database)/documents/pages/$(pageId)) && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
         // Anyone can write (increment a counter)
         allow write: if true;
       }
 
       match /link_clicks/{clickId} {
         // Owner can read their own analytics
-        allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+        allow get, list: if isSignedIn() && exists(/databases/$(database)/documents/pages/$(pageId)) && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
         // Anyone can write (increment a counter)
         allow write: if true;
       }
