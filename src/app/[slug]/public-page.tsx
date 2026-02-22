@@ -67,18 +67,24 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
             effectiveAppearance.borderColor = '#374151';
         }
 
-        // Recalculate foregrounds if theme was transformed or if they were never set.
-        effectiveAppearance.foregroundColor = (!wasThemeTransformed && dbAppearance.foregroundColor) ? dbAppearance.foregroundColor : getContrastColor(effectiveAppearance.backgroundColor);
-        effectiveAppearance.cardForegroundColor = (!wasThemeTransformed && dbAppearance.cardForegroundColor) ? dbAppearance.cardForegroundColor : getContrastColor(effectiveAppearance.cardColor);
-        
-        setAppearance(effectiveAppearance);
+        // Get raw values (hex from DB or raw HSL from getContrastColor)
+        const rawFg = (!wasThemeTransformed && dbAppearance.foregroundColor) ? dbAppearance.foregroundColor : getContrastColor(effectiveAppearance.backgroundColor);
+        const rawCardFg = (!wasThemeTransformed && dbAppearance.cardForegroundColor) ? dbAppearance.cardForegroundColor : getContrastColor(effectiveAppearance.cardColor);
 
+        // Set appearance state with valid CSS color values for direct use in child components
+        setAppearance({
+          ...effectiveAppearance,
+          foregroundColor: isHex(rawFg) ? rawFg : `hsl(${rawFg})`,
+          cardForegroundColor: isHex(rawCardFg) ? rawCardFg : `hsl(${rawCardFg})`,
+        });
+
+        // Set dynamic styles with raw HSL values for use with `hsl(var(--...))` in CSS
         setDynamicStyles({
             '--radius': `${effectiveAppearance.borderRadius ?? 1.25}rem`,
             '--background': hexToHsl(effectiveAppearance.backgroundColor),
-            '--foreground': isHex(effectiveAppearance.foregroundColor) ? hexToHsl(effectiveAppearance.foregroundColor) : effectiveAppearance.foregroundColor,
+            '--foreground': isHex(rawFg) ? hexToHsl(rawFg) : rawFg,
             '--card': hexToHsl(effectiveAppearance.cardColor),
-            '--card-foreground': isHex(effectiveAppearance.cardForegroundColor) ? hexToHsl(effectiveAppearance.cardForegroundColor) : effectiveAppearance.cardForegroundColor,
+            '--card-foreground': isHex(rawCardFg) ? hexToHsl(rawCardFg) : rawCardFg,
             '--primary': hexToHsl(effectiveAppearance.primaryColor),
             '--primary-foreground': getContrastColor(effectiveAppearance.primaryColor),
             '--accent': hexToHsl(effectiveAppearance.accentColor),

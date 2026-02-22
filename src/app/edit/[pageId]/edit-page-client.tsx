@@ -50,6 +50,8 @@ const initialAppearance: AppearanceSettings = {
   fontFamily: 'Bricolage Grotesque',
 };
 
+const isHex = (s: string | undefined): s is string => !!s && s.startsWith('#');
+
 
 export default function EditPage() {
   const params = useParams();
@@ -110,21 +112,23 @@ export default function EditPage() {
         effectiveAppearance.borderColor = '#374151';
     }
 
-    effectiveAppearance.foregroundColor = (!wasThemeTransformed && dbAppearance.foregroundColor) ? dbAppearance.foregroundColor : getContrastColor(effectiveAppearance.backgroundColor);
-    effectiveAppearance.cardForegroundColor = (!wasThemeTransformed && dbAppearance.cardForegroundColor) ? dbAppearance.cardForegroundColor : getContrastColor(effectiveAppearance.cardColor);
-    
-    setAppearance(effectiveAppearance);
+    const rawFg = (!wasThemeTransformed && dbAppearance.foregroundColor) ? dbAppearance.foregroundColor : getContrastColor(effectiveAppearance.backgroundColor);
+    const rawCardFg = (!wasThemeTransformed && dbAppearance.cardForegroundColor) ? dbAppearance.cardForegroundColor : getContrastColor(effectiveAppearance.cardColor);
 
-    const isHex = (s: string | undefined): s is string => !!s && s.startsWith('#');
+    setAppearance({
+      ...effectiveAppearance,
+      foregroundColor: isHex(rawFg) ? rawFg : `hsl(${rawFg})`,
+      cardForegroundColor: isHex(rawCardFg) ? rawCardFg : `hsl(${rawCardFg})`,
+    });
 
     setDynamicStyles({
         '--radius': `${effectiveAppearance.borderRadius ?? 1.25}rem`,
         '--background': hexToHsl(effectiveAppearance.backgroundColor),
-        '--foreground': isHex(effectiveAppearance.foregroundColor) ? hexToHsl(effectiveAppearance.foregroundColor) : effectiveAppearance.foregroundColor,
+        '--foreground': isHex(rawFg) ? hexToHsl(rawFg) : rawFg,
         '--card': hexToHsl(effectiveAppearance.cardColor),
-        '--card-foreground': isHex(effectiveAppearance.cardForegroundColor) ? hexToHsl(effectiveAppearance.cardForegroundColor) : effectiveAppearance.cardForegroundColor,
+        '--card-foreground': isHex(rawCardFg) ? hexToHsl(rawCardFg) : rawCardFg,
         '--popover': hexToHsl(effectiveAppearance.cardColor),
-        '--popover-foreground': isHex(effectiveAppearance.cardForegroundColor) ? hexToHsl(effectiveAppearance.cardForegroundColor) : effectiveAppearance.cardForegroundColor,
+        '--popover-foreground': isHex(rawCardFg) ? hexToHsl(rawCardFg) : rawCardFg,
         '--primary': hexToHsl(effectiveAppearance.primaryColor),
         '--primary-foreground': getContrastColor(effectiveAppearance.primaryColor),
         '--accent': hexToHsl(effectiveAppearance.accentColor),
@@ -238,7 +242,6 @@ export default function EditPage() {
 
 
   const generateStylesFromAppearance = (settings: AppearanceSettings): React.CSSProperties => {
-    const isHex = (s: string | undefined): s is string => !!s && s.startsWith('#');
     return {
         '--radius': `${settings.borderRadius ?? 1.25}rem`,
         '--background': hexToHsl(settings.backgroundColor),
