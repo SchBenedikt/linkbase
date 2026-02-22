@@ -49,17 +49,17 @@ export function MapCard({ link, onEdit, onDelete, isEditable = false, appearance
             <div className="p-4 pb-2">
                 <h3 className="font-bold text-card-foreground truncate">{link.title}</h3>
             </div>
-            <iframe
-                title={link.title}
-                src={link.url}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="flex-grow"
-            ></iframe>
+            <div className="relative flex-grow">
+                <iframe
+                    title={link.title}
+                    src={link.url}
+                    style={{ border: 0 }}
+                    allowFullScreen={false}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="absolute inset-0 w-full h-full"
+                ></iframe>
+            </div>
 
             {isEditable && onEdit && onDelete && (
                  <div className="absolute top-2 right-2 z-20 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
