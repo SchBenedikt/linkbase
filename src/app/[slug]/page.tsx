@@ -6,9 +6,9 @@ import type { Page as PageType, Link as LinkType, SlugLookup } from '@/lib/types
 import PublicPageComponent from './public-page';
 
 export async function generateStaticParams() {
-  // For static export, we need to return some params
-  // This will generate a fallback page that handles 404s gracefully
-  return [{ slug: '__fallback__' }];
+  // For static builds, return empty array to avoid Firebase errors
+  // Dynamic routes will be handled at runtime
+  return [];
 }
 
 type Props = {
