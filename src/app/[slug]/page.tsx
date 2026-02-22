@@ -9,7 +9,7 @@ type Props = {
   params: { slug: string }
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://biobloom.co';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://linkbase.pro';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {

@@ -9,7 +9,7 @@ type Props = {
     params: { postId: string }
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://biobloom.co';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://linkbase.pro';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     try {
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         const publicUrl = `${siteUrl}/post/${postId}`;
 
         // Fetch author's name
-        let authorName = 'BioBloom User';
+        let authorName = 'Linkbase User';
         if (post.ownerId) {
             const pagesQuery = query(collection(serverFirestore, 'pages'), where('ownerId', '==', post.ownerId), limit(1));
             const pagesSnap = await getDocs(pagesQuery);
@@ -84,7 +84,7 @@ export default async function Page({ params }: Props) {
         const postDataRaw = postSnap.data() as PostType;
 
         // Fetch author's name
-        let authorName = 'BioBloom User';
+        let authorName = 'Linkbase User';
         if (postDataRaw.ownerId) {
             const pagesQuery = query(collection(serverFirestore, 'pages'), where('ownerId', '==', postDataRaw.ownerId), limit(1));
             const pagesSnap = await getDocs(pagesQuery);

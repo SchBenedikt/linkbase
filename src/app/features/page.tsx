@@ -6,7 +6,7 @@ export default function FeaturesPage() {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="container mx-auto px-4 py-6">
         <Link href="/" className="font-headline font-bold text-2xl text-primary">
-          BioBloom*
+          Linkbase*
         </Link>
       </header>
       <main className="flex-1 flex items-center justify-center">

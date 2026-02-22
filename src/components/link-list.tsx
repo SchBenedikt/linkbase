@@ -143,7 +143,7 @@ export function LinkList({
             {onAddLink && (
               <Button
                 variant="outline"
-                className="w-full h-full border-dashed hover:border-solid hover:bg-accent/20 transition-all duration-300 flex flex-col items-center justify-center text-lg"
+                className="w-full h-full hover:bg-accent/20 transition-all duration-300 flex flex-col items-center justify-center text-lg"
                 onClick={onAddLink}
                 style={{ gridRow: 'span 1', gridColumn: 'span 1' }}
               >

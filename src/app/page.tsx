@@ -88,7 +88,7 @@ export default function LandingPage() {
         <div className="container mx-auto">
           <nav className="bg-background/30 backdrop-blur-md w-full rounded-full border p-2 flex items-center justify-between">
             <Link href="/" className="font-headline font-bold text-xl pl-4 text-primary">
-              BioBloom*
+              Linkbase*
             </Link>
             {renderAuthButtons()}
           </nav>
@@ -108,7 +108,7 @@ export default function LandingPage() {
                     </p>
                     <form className="w-full max-w-md flex flex-col sm:flex-row gap-2 mt-4">
                         <div className="flex-1 relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent-foreground/60">biobloom.co/</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent-foreground/60">linkbase.pro/</span>
                         <Input
                             type="text"
                             placeholder="your-name"
@@ -154,7 +154,7 @@ export default function LandingPage() {
                 A canvas for your digital world
               </h2>
               <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
-                BioBloom gives you all the tools to design a page that is as unique as you are. Flexible, powerful, and beautiful.
+                Linkbase gives you all the tools to design a page that is as unique as you are. Flexible, powerful, and beautiful.
               </p>
             </div>
             
@@ -213,7 +213,7 @@ export default function LandingPage() {
                 Get started in minutes
               </h2>
               <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
-                Creating your own BioBloom page is simple and intuitive.
+                Creating your own Linkbase page is simple and intuitive.
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
@@ -236,7 +236,7 @@ export default function LandingPage() {
                    <span className="font-headline text-4xl font-bold">3</span>
                 </div>
                 <h3 className="font-headline text-2xl font-bold mb-2">Share your Link</h3>
-                <p className="text-muted-foreground">Your unique biobloom.co link is ready. Share it in your social media bios, email signatures, or anywhere you want.</p>
+                <p className="text-muted-foreground">Your unique linkbase.pro link is ready. Share it in your social media bios, email signatures, or anywhere you want.</p>
               </div>
             </div>
           </div>
@@ -250,7 +250,7 @@ export default function LandingPage() {
                         By creators, for creators.
                     </h2>
                     <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
-                        Thousands already trust BioBloom to bundle and share their digital identity.
+                        Thousands already trust Linkbase to bundle and share their digital identity.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -286,7 +286,7 @@ export default function LandingPage() {
                     </Card>
                     <Card className="bg-card p-6 rounded-2xl shadow-none border">
                         <CardContent className="p-0">
-                            <p className="text-foreground mb-6">"BioBloom exceeded my expectations. It's not just a 'link-in-bio', it's my digital business card."</p>
+                            <p className="text-foreground mb-6">"Linkbase exceeded my expectations. It's not just a 'link-in-bio', it's my digital business card."</p>
                             <div className="flex items-center gap-3">
                                 {testimonial3 && <Avatar>
                                     <AvatarImage src={testimonial3.imageUrl} alt="Clara S." />
@@ -309,7 +309,7 @@ export default function LandingPage() {
                     Ready to transform your online presence?
                 </h2>
                 <p className="mt-4 text-lg sm:text-xl text-primary-foreground/80 max-w-2xl mx-auto">
-                    Join thousands of creators who trust BioBloom to share their content.
+                    Join thousands of creators who trust Linkbase to share their content.
                 </p>
                 <div className="mt-8">
                     <Button size="lg" asChild className="h-14 rounded-full text-base font-bold px-8 bg-primary-foreground text-primary hover:bg-primary-foreground/90">
@@ -323,14 +323,14 @@ export default function LandingPage() {
       <footer className="bg-background">
         <div className="container mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <Link href="/" className="font-headline font-bold text-xl text-foreground">
-                BioBloom*
+                Linkbase*
             </Link>
             <nav className="flex gap-4 sm:gap-6 text-sm font-medium">
                 <Link href="/features" className="text-muted-foreground hover:text-foreground">Features</Link>
                 <Link href="/pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link>
                 <Link href="/contact" className="text-muted-foreground hover:text-foreground">Contact</Link>
             </nav>
-            <p className="text-sm text-muted-foreground">© 2024 BioBloom. All rights reserved.</p>
+            <p className="text-sm text-muted-foreground">© 2024 Linkbase. All rights reserved.</p>
         </div>
       </footer>
     </div>

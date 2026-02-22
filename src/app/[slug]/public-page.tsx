@@ -114,7 +114,7 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
                 </div>
                 <footer className="w-full max-w-7xl mx-auto mt-12 mb-6 text-center">
                     <a href="/" className="text-sm text-muted-foreground hover:text-primary font-semibold">
-                        Powered by BioBloom
+                        Powered by Linkbase
                     </a>
                 </footer>
             </main>

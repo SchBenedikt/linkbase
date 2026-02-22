@@ -219,7 +219,7 @@ export default function SettingsPage() {
                 <Card className="border-0 shadow-none bg-transparent">
                     <CardHeader>
                         <CardTitle>Your Username</CardTitle>
-                        <CardDescription>This is your unique @username for mentions across BioBloom.</CardDescription>
+                        <CardDescription>This is your unique @username for mentions across Linkbase.</CardDescription>
                     </CardHeader>
                     <Form {...usernameForm}>
                         <form onSubmit={usernameForm.handleSubmit(handleUpdateUsername)}>

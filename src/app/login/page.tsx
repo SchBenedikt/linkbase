@@ -101,7 +101,7 @@ export default function LoginPage() {
        <div className="hidden lg:flex flex-col items-center justify-center p-12 bg-secondary text-secondary-foreground">
             <div className="mx-auto w-[400px] space-y-6">
                 <Link href="/" className="font-headline font-bold text-4xl">
-                    BioBloom*
+                    Linkbase*
                 </Link>
                 <p className="text-xl">
                     Everything you are, in one simple link. Create your personal page in minutes.
@@ -111,7 +111,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-center p-6 sm:p-12 bg-background">
              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-md">
                 <Link href="/" className="font-headline font-bold text-3xl lg:hidden mb-8 block text-center text-primary">
-                    BioBloom*
+                    Linkbase*
                 </Link>
                 <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>

@@ -33,7 +33,7 @@ export default function PublicPostPageComponent({ post, authorName, publicUrl }:
         },
         'publisher': {
             '@type': 'Organization',
-            'name': 'BioBloom',
+            'name': 'Linkbase',
         },
         'datePublished': post.createdAt,
         'dateModified': post.updatedAt,
@@ -60,7 +60,7 @@ export default function PublicPostPageComponent({ post, authorName, publicUrl }:
                     </Button>
                      <Button variant="link" asChild className="font-headline font-bold text-xl text-primary">
                         <Link href="/">
-                           BioBloom*
+                           Linkbase*
                         </Link>
                     </Button>
                 </div>

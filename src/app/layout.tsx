@@ -4,22 +4,22 @@ import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { ThemeProvider } from '@/components/theme-provider';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://biobloom.co';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://linkbase.pro';
 const ogImageUrl = 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=630&fit=crop';
 
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'BioBloom | Your vibrant link-in-bio profile',
-    template: '%s | BioBloom',
+    default: 'Linkbase | Your vibrant link-in-bio profile',
+    template: '%s | Linkbase',
   },
-  description: 'BioBloom is the ultimate platform for creators to build a beautiful, customizable, and powerful link-in-bio page. Share your world, your way.',
+  description: 'Linkbase is the ultimate platform for creators to build a beautiful, customizable, and powerful link-in-bio page. Share your world, your way.',
   openGraph: {
-    title: 'BioBloom | Your vibrant link-in-bio profile',
+    title: 'Linkbase | Your vibrant link-in-bio profile',
     description: 'Everything you are, all in one place. Share your creations, your work, and your personality with the world.',
     url: siteUrl,
-    siteName: 'BioBloom',
+    siteName: 'Linkbase',
     images: [
       {
         url: ogImageUrl,
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'BioBloom | Your vibrant link-in-bio profile',
+    title: 'Linkbase | Your vibrant link-in-bio profile',
     description: 'Everything you are, all in one place. Share your creations, your work, and your personality with the world.',
     images: [ogImageUrl],
   },
@@ -55,7 +55,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "BioBloom",
+            "name": "Linkbase",
             "url": siteUrl,
           }) }}
         />
