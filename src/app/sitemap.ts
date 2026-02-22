@@ -3,8 +3,6 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { serverFirestore } from '@/firebase/server';
 import type { Page, Post } from '@/lib/types';
  
-export const dynamic = 'force-static';
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.xn--schchner-2za.de';
 
