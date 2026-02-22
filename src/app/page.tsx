@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { HeroShowcase } from '@/components/hero-showcase';
 
 const MarqueeItem = ({ image, shape = 'rounded-xl' }: { image: ImagePlaceholder, shape?: 'rounded-xl' | 'rounded-full' | 'rounded-lg' }) => (
     <div className={cn("relative h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40 flex-shrink-0", shape)}>
@@ -47,8 +48,6 @@ const Marquee = () => {
 
 export default function LandingPage() {
   const { user, isUserLoading } = useUser();
-  const heroImage1 = PlaceHolderImages.find(p => p.id === 'hero-1');
-  const heroImage2 = PlaceHolderImages.find(p => p.id === 'hero-2');
   const testimonial1 = PlaceHolderImages.find(p => p.id === 'testimonial-1');
   const testimonial2 = PlaceHolderImages.find(p => p.id === 'testimonial-2');
   const testimonial3 = PlaceHolderImages.find(p => p.id === 'testimonial-3');
@@ -120,17 +119,8 @@ export default function LandingPage() {
                         </Button>
                     </form>
                  </div>
-                 <div className="hidden md:block relative h-96">
-                    {heroImage1 && (
-                        <div className="absolute -top-8 right-0 w-72 h-80 rounded-3xl overflow-hidden transform rotate-12 transition-transform duration-300 ease-in-out hover:scale-105 hover:rotate-6">
-                             <Image src={heroImage1.imageUrl} alt={heroImage1.description} data-ai-hint={heroImage1.imageHint} fill sizes="288px" className="object-cover" priority />
-                        </div>
-                    )}
-                    {heroImage2 && (
-                        <div className="absolute bottom-0 right-20 w-64 h-72 rounded-3xl overflow-hidden transform -rotate-8 transition-transform duration-300 ease-in-out hover:scale-105 hover:-rotate-3">
-                            <Image src={heroImage2.imageUrl} alt={heroImage2.description} data-ai-hint={heroImage2.imageHint} fill sizes="256px" className="object-cover" priority />
-                        </div>
-                    )}
+                 <div className="hidden md:flex items-center justify-center">
+                    <HeroShowcase />
                  </div>
             </div>
         </section>
