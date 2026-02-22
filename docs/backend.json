@@ -15,7 +15,11 @@
         "avatarUrl": { "type": "string", "format": "uri", "description": "URL to the user's profile picture." },
         "avatarHint": { "type": "string", "description": "AI hint for the avatar image." },
         "openForWork": { "type": "boolean", "description": "Whether the user is available for work opportunities." },
-        "category": { "type": "string", "description": "A category or professional title for the user, e.g., 'Photographer', 'Tech Enthusiast'." },
+        "categories": {
+          "type": "array",
+          "description": "A list of professional categories for the user.",
+          "items": { "type": "string" }
+        },
         "socialLinks": {
           "type": "array",
           "description": "A list of social media links for the user.",

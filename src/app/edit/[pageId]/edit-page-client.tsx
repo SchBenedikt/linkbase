@@ -144,13 +144,23 @@ export default function EditPage() {
     const oldSlug = page.slug;
     const newSlug = data.slug;
 
-    setDocumentNonBlocking(pageRef, data, { merge: true });
+    const { categories, ...restData } = data;
+    const categoriesArray = categories
+      ? categories.split(',').map(c => c.trim()).filter(Boolean)
+      : [];
+    
+    const dataToSave = {
+        ...restData,
+        categories: categoriesArray
+    };
+
+    setDocumentNonBlocking(pageRef, dataToSave, { merge: true });
 
     if (newSlug && newSlug !== oldSlug) {
         if (oldSlug) {
             deleteDocumentNonBlocking(doc(firestore, 'slug_lookups', oldSlug));
         }
-        setDocumentNonBlocking(doc(firestore, 'slug_lookups', newSlug), { pageId: page.id }, {});
+        setDocumentNonBlocking(doc(firestore, 'slug_lookups', newSlug), { pageId: page.id });
     }
     
     closeSheet();
@@ -215,12 +225,14 @@ export default function EditPage() {
     
     setLinksData(newLinksOrder);
 
+    const batch = writeBatch(firestore);
     newLinksOrder.forEach((link, index) => {
         if (link.orderIndex !== index) {
             const linkRef = doc(linksRef, link.id);
-            updateDocumentNonBlocking(linkRef, { orderIndex: index });
+            batch.update(linkRef, { orderIndex: index });
         }
     });
+    batch.commit();
   };
 
 

@@ -4,20 +4,39 @@ import { Button } from '@/components/ui/button';
 export default function FeaturesPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="container mx-auto px-4 py-6">
-        <Link href="/" className="font-headline font-bold text-2xl text-primary">
-          Linkbase*
-        </Link>
+       <header className="border-b">
+        <div className="container mx-auto px-4 h-16 flex items-center">
+          <Link href="/" className="font-bold text-xl text-primary">Linkbase*</Link>
+        </div>
       </header>
-      <main className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold">Features</h1>
-          <p className="mt-4 text-lg text-muted-foreground">This page is under construction.</p>
-           <Button asChild className="mt-8">
-              <Link href="/">Back to Home</Link>
-            </Button>
+      <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
+        <h1 className="text-3xl font-extrabold tracking-tight mb-2">Features</h1>
+        <p className="text-muted-foreground mb-8">Discover what makes Linkbase special.</p>
+        
+        <div className="space-y-6 text-sm leading-relaxed">
+            <p>
+                We are hard at work building a platform that is both powerful and a joy to use.
+                This page will soon be updated with a detailed overview of all our features.
+            </p>
+            <p>
+                In the meantime, feel free to explore the app by creating a free account.
+            </p>
+            
+            <div className="pt-4">
+                <Button asChild>
+                    <Link href="/login">Get Started</Link>
+                </Button>
+            </div>
         </div>
       </main>
+      <footer className="border-t mt-12">
+        <div className="container mx-auto px-4 py-8 flex flex-wrap gap-4 text-sm text-muted-foreground">
+          <Link href="/impressum" className="hover:text-foreground">Legal Notice</Link>
+          <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+          <Link href="/cookies" className="hover:text-foreground">Cookie Policy</Link>
+          <Link href="/" className="hover:text-foreground">Home</Link>
+        </div>
+      </footer>
     </div>
   );
 }

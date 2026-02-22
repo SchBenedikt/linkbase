@@ -97,8 +97,10 @@ export function ProfileCard({ link, onEdit, onDelete, appearance, isEditable = f
         style={cardStyle}
     >
         {primaryPage && (
-            <NextLink href={`/${primaryPage.slug}`} target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
-                <span className="sr-only">View profile: {name}</span>
+            <NextLink href={`/${primaryPage.slug}`} passHref legacyBehavior>
+                <a target="_blank" rel="noopener noreferrer" className="absolute inset-0 z-10">
+                    <span className="sr-only">View profile: {name}</span>
+                </a>
             </NextLink>
         )}
         <div className="flex flex-col justify-between flex-grow relative z-20 space-y-3">
@@ -115,7 +117,9 @@ export function ProfileCard({ link, onEdit, onDelete, appearance, isEditable = f
            </div>
            <div className="flex flex-wrap items-center gap-2">
                 {mentionedUser.openForWork && <Badge variant="secondary"><Briefcase className="mr-1.5 h-3 w-3" />Open for work</Badge>}
-                {mentionedUser.category && <Badge variant="secondary">{mentionedUser.category}</Badge>}
+                {mentionedUser.categories?.map(category => (
+                  <Badge key={category} variant="secondary">{category}</Badge>
+                ))}
            </div>
            {primaryPage && (
                 <div className="!mt-auto pt-2">

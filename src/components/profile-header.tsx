@@ -106,9 +106,9 @@ export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeade
                 Open for work
             </Badge>
         )}
-        {page.category && (
-            <Badge variant="secondary">{page.category}</Badge>
-        )}
+        {page.categories && page.categories.map(category => (
+            <Badge key={category} variant="secondary">{category}</Badge>
+        ))}
     </div>
 
       <p className="max-w-md text-lg text-muted-foreground mt-3">{bio}</p>

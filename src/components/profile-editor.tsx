@@ -20,7 +20,7 @@ export const profileSchema = z.object({
   slug: z.string().min(3, 'Slug must be at least 3 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens.'),
   avatarUrl: z.string().url('Please enter a valid image URL').optional().or(z.literal('')),
   openForWork: z.boolean().optional(),
-  category: z.string().optional(),
+  categories: z.string().optional(),
   socialLinks: z.array(z.object({
     platform: z.string().min(1, "Platform is required."),
     url: z.string().url("Please enter a valid URL.").or(z.literal('')),
@@ -44,7 +44,7 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
       slug: page.slug || '',
       avatarUrl: page.avatarUrl || '',
       openForWork: page.openForWork || false,
-      category: page.category || '',
+      categories: page.categories?.join(', ') || '',
       socialLinks: page.socialLinks || [],
     },
   });
@@ -156,35 +156,16 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
         />
         <FormField
           control={form.control}
-          name="category"
+          name="categories"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category / Title</FormLabel>
+              <FormLabel>Categories</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="e.g. Photographer, Tech Enthusiast" list="category-suggestions" />
+                <Input {...field} placeholder="e.g. Photographer, Developer" />
               </FormControl>
-               <datalist id="category-suggestions">
-                  <option value="Photographer" />
-                  <option value="Developer" />
-                  <option value="Designer" />
-                  <option value="Musician" />
-                  <option value="Writer" />
-                  <option value="Artist" />
-                  <option value="Tech Enthusiast" />
-                  <option value="Filmmaker" />
-                  <option value="Entrepreneur" />
-                  <option value="Creator" />
-                  <option value="Influencer" />
-                  <option value="Blogger" />
-                  <option value="Vlogger" />
-                  <option value="Coach" />
-                  <option value="Consultant" />
-                  <option value="Speaker" />
-                  <option value="Engineer" />
-                  <option value="Scientist" />
-                  <option value="Educator" />
-                  <option value="Student" />
-              </datalist>
+              <FormDescription>
+                Enter multiple categories separated by commas.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

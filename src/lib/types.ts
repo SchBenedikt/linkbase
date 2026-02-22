@@ -37,7 +37,7 @@ export type UserProfile = {
   avatarUrl?: string;
   avatarHint?: string;
   openForWork?: boolean;
-  category?: string;
+  categories?: string[];
   socialLinks?: SocialLink[];
   createdAt: any;
   updatedAt: any;
@@ -49,7 +49,16 @@ export type Page = {
   slug: string;
   title: string;
   status: 'published' | 'draft';
-  // Appearance settings can be part of the profile
+  // Profile fields denormalized onto the page object
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  avatarUrl?: string;
+  avatarHint?: string;
+  openForWork?: boolean;
+  categories?: string[];
+  socialLinks?: SocialLink[];
+  // Appearance settings
   backgroundImage?: string;
   backgroundColor?: string;
   primaryColor?: string;
