@@ -66,5 +66,18 @@ service cloud.firestore {
       allow delete: if isOwner(resource.data.userId);
       allow update: if false; // Deleting and creating a new one is safer
     }
+
+    // Analytics Data
+    match /page_views/{viewId} {
+      allow get: if false;
+      allow list: if isSignedIn() && get(/databases/$(database)/documents/pages/$(request.query.pageId)).data.ownerId == request.auth.uid;
+      allow write: if true;
+    }
+
+    match /link_clicks/{clickId} {
+      allow get: if false;
+      allow list: if isSignedIn() && get(/databases/$(database)/documents/pages/$(request.query.pageId)).data.ownerId == request.auth.uid;
+      allow write: if true;
+    }
   }
 }

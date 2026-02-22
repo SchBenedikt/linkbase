@@ -131,6 +131,29 @@
         "userId": { "type": "string", "description": "The ID of the User this username points to." }
       },
       "required": ["userId"]
+    },
+    "PageView": {
+      "title": "Page View",
+      "type": "object",
+      "description": "Represents a single day's view count for a specific page.",
+      "properties": {
+        "pageId": { "type": "string", "description": "The ID of the page that was viewed." },
+        "date": { "type": "string", "format": "date", "description": "The date of the views in YYYY-MM-DD format." },
+        "count": { "type": "number", "description": "The total number of views for that day." }
+      },
+      "required": ["pageId", "date", "count"]
+    },
+    "LinkClick": {
+      "title": "Link Click",
+      "type": "object",
+      "description": "Represents a single day's click count for a specific link.",
+      "properties": {
+        "linkId": { "type": "string", "description": "The ID of the link that was clicked." },
+        "pageId": { "type": "string", "description": "The ID of the page the link belongs to." },
+        "date": { "type": "string", "format": "date", "description": "The date of the clicks in YYYY-MM-DD format." },
+        "count": { "type": "number", "description": "The total number of clicks for that day." }
+      },
+      "required": ["linkId", "pageId", "date", "count"]
     }
   },
   "auth": {
@@ -184,6 +207,22 @@
           "entityName": "UsernameLookup",
           "schema": { "$ref": "#/backend/entities/UsernameLookup" },
           "description": "A public lookup table to map unique @usernames to user IDs for mentions."
+        }
+      },
+      {
+        "path": "/page_views/{viewId}",
+        "definition": {
+          "entityName": "PageView",
+          "schema": { "$ref": "#/backend/entities/PageView" },
+          "description": "Stores daily view counts for pages. Writable by anyone, but only listable by page owner."
+        }
+      },
+      {
+        "path": "/link_clicks/{clickId}",
+        "definition": {
+          "entityName": "LinkClick",
+          "schema": { "$ref": "#/backend/entities/LinkClick" },
+          "description": "Stores daily click counts for links. Writable by anyone, but only listable by page owner."
         }
       }
     ]
