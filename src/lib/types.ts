@@ -8,7 +8,7 @@ export type Link = {
   pageId: string;
   orderIndex: number;
   title: string;
-  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile' | 'map';
+  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile' | 'map' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'clock' | 'countdown' | 'calendly' | 'github';
   colSpan?: number;
   rowSpan?: number;
   content?: string; // For text cards or product description
@@ -25,6 +25,8 @@ export type Link = {
   showExcerpts?: boolean;
   price?: string; // For product cards
   mentionedUserId?: string; // For profile cards
+  timezone?: string;        // For clock widget
+  countdownTarget?: string; // For countdown widget
 };
 
 export type UserProfile = {
@@ -121,4 +123,17 @@ export type AppearanceSettings = {
   borderWidth?: number;
   borderColor?: string;
   fontFamily?: string;
+};
+
+export type PageViewRecord = {
+  pageId: string;
+  date: string; // YYYY-MM-DD
+  count: number;
+};
+
+export type LinkClickRecord = {
+  linkId: string;
+  pageId: string;
+  date: string; // YYYY-MM-DD
+  count: number;
 };

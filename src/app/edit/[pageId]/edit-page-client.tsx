@@ -15,6 +15,7 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import { ShareButton } from '@/components/share-button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileEditor, profileSchema } from '@/components/profile-editor';
 import { AddContentDialog } from '@/components/add-content-dialog';
@@ -424,7 +425,7 @@ export default function EditPage() {
       </main>
 
       <Sheet open={sheetState.open} onOpenChange={(open) => !open && closeSheet()}>
-        <SheetContent>
+        <SheetContent className="flex flex-col">
           <SheetHeader>
             <SheetTitle>
                 {sheetState.open && sheetState.view === 'editProfile' && 'Edit your Page'}
@@ -437,7 +438,9 @@ export default function EditPage() {
                 {sheetState.open && sheetState.view === 'editContent' && "Update your content's details. Click save when you're done."}
             </SheetDescription>
           </SheetHeader>
-          <div className="py-4">{renderSheetContent()}</div>
+          <ScrollArea className="flex-1 mt-4">
+            <div className="pb-8 pr-1">{renderSheetContent()}</div>
+          </ScrollArea>
         </SheetContent>
       </Sheet>
 

@@ -39,6 +39,9 @@ yarn-error.log*
 .idea
 .vscode
 
+# TypeScript build info
+tsconfig.tsbuildinfo
+
 # genkit
 .genkit/
 .genkit-cache/

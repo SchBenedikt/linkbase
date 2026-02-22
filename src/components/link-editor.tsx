@@ -12,11 +12,13 @@ import { Slider } from './ui/slider';
 import { getWebsiteMeta } from '@/lib/actions';
 import { Loader2, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 
 export const linkSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   url: z.string().url('Please enter a valid URL'),
   thumbnailUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
+  content: z.string().optional(),
   colSpan: z.number().min(1).max(4).default(1),
   rowSpan: z.number().min(1).max(2).default(1),
 });
@@ -27,7 +29,7 @@ interface LinkEditorProps {
   link?: Link | null;
   onSave: (data: LinkEditorFormData) => void;
   onCancel: () => void;
-  mode?: 'link' | 'spotify' | 'youtube';
+  mode?: 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github';
 }
 
 export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditorProps) {
@@ -37,8 +39,9 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
       title: link?.title || '',
       url: link?.url || '',
       thumbnailUrl: link?.thumbnailUrl || '',
-      colSpan: link?.colSpan || (mode === 'spotify' ? 4 : (mode === 'youtube' ? 2 : 1)),
-      rowSpan: link?.rowSpan || (mode === 'youtube' ? 2 : 1),
+      content: link?.content || '',
+      colSpan: link?.colSpan || (mode === 'spotify' || mode === 'soundcloud' ? 4 : (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' ? 2 : 1)),
+      rowSpan: link?.rowSpan || (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' ? 2 : 1),
     },
   });
   
@@ -52,6 +55,12 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
     if (mode === 'youtube' && !form.getValues('title')) {
       form.setValue('title', 'YouTube Video');
     }
+    if (mode === 'instagram' && !form.getValues('title')) form.setValue('title', 'Instagram Post');
+    if (mode === 'tiktok' && !form.getValues('title')) form.setValue('title', 'TikTok Video');
+    if (mode === 'soundcloud' && !form.getValues('title')) form.setValue('title', 'SoundCloud Track');
+    if (mode === 'vimeo' && !form.getValues('title')) form.setValue('title', 'Vimeo Video');
+    if (mode === 'calendly' && !form.getValues('title')) form.setValue('title', 'Book a Meeting');
+    if (mode === 'github' && !form.getValues('title')) form.setValue('title', 'GitHub Repository');
   }, [mode, form]);
 
   const { toast } = useToast();
@@ -143,7 +152,6 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
             )}
           />
         )}
-        
         <FormField
           control={form.control}
           name="url"
@@ -155,6 +163,12 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
                   <Input placeholder={
                     mode === 'spotify' ? "https://open.spotify.com/track/..." 
                     : mode === 'youtube' ? "https://www.youtube.com/watch?v=..."
+                    : mode === 'instagram' ? "https://www.instagram.com/p/..."
+                    : mode === 'tiktok' ? "https://www.tiktok.com/@username/video/..."
+                    : mode === 'soundcloud' ? "https://soundcloud.com/artist/track"
+                    : mode === 'vimeo' ? "https://vimeo.com/123456789"
+                    : mode === 'calendly' ? "https://calendly.com/username/meeting-type"
+                    : mode === 'github' ? "https://github.com/owner/repo"
                     : "https://example.com"
                   } {...field} />
                 </FormControl>
@@ -174,6 +188,22 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
             </FormItem>
           )}
         />
+
+        {mode === 'github' && (
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Repository Description (Optional)</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="A short description of the repository..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
         
         {mode === 'link' && (
             <FormField

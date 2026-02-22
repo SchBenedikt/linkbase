@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Link as LinkIcon, Music, Youtube, BookText, Newspaper, Rss, Image as ImageIcon, ShoppingBag, User as UserIcon, MapPin } from 'lucide-react';
+import {
+  Link as LinkIcon, Music, Youtube, BookText, Newspaper, Rss,
+  Image as ImageIcon, ShoppingBag, User as UserIcon, MapPin,
+  Instagram, Video, Music2, Cloud, CalendarDays, Github,
+  Clock, Timer,
+} from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
 import { ArticleEditor, articleSchema } from './article-editor';
@@ -11,11 +16,23 @@ import { ProductEditor, productSchema } from './product-editor';
 import { ImageEditor, imageSchema } from './image-editor';
 import { ProfileCardEditor, profileCardSchema } from './profile-card-editor';
 import { MapEditor, mapSchema } from './map-editor';
+import { ClockEditor, clockSchema } from './clock-editor';
+import { CountdownEditor, countdownSchema } from './countdown-editor';
 import type { z } from 'zod';
 import type { Link } from '@/lib/types';
 
-
-type ContentFormData = (z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | z.infer<typeof blogOverviewSchema> | z.infer<typeof productSchema> | z.infer<typeof imageSchema> | z.infer<typeof profileCardSchema> | z.infer<typeof mapSchema>) & { type: Link['type'] };
+type ContentFormData = (
+  | z.infer<typeof linkSchema>
+  | z.infer<typeof textSchema>
+  | z.infer<typeof articleSchema>
+  | z.infer<typeof blogOverviewSchema>
+  | z.infer<typeof productSchema>
+  | z.infer<typeof imageSchema>
+  | z.infer<typeof profileCardSchema>
+  | z.infer<typeof mapSchema>
+  | z.infer<typeof clockSchema>
+  | z.infer<typeof countdownSchema>
+) & { type: Link['type'] };
 
 interface AddContentDialogProps {
   onSave: (data: ContentFormData) => void;
@@ -23,152 +40,138 @@ interface AddContentDialogProps {
   contentToEdit?: Link | null;
 }
 
+type ContentTypeButton = {
+  type: Link['type'];
+  label: string;
+  description: string;
+  icon: React.ElementType;
+};
+
+const CONTENT_SECTIONS: { label: string; items: ContentTypeButton[] }[] = [
+  {
+    label: 'Content',
+    items: [
+      { type: 'link', label: 'Standard Link', description: 'Link to any website', icon: LinkIcon },
+      { type: 'text', label: 'Text Block', description: 'Title and text content', icon: BookText },
+      { type: 'image', label: 'Image', description: 'Display a single image', icon: ImageIcon },
+      { type: 'article', label: 'Article', description: 'Feature an article', icon: Newspaper },
+      { type: 'product', label: 'Product', description: 'Feature a product', icon: ShoppingBag },
+      { type: 'profile', label: 'Profile Card', description: 'Mention another user', icon: UserIcon },
+    ],
+  },
+  {
+    label: 'Widgets',
+    items: [
+      { type: 'map', label: 'Map', description: 'Embed a Google Map', icon: MapPin },
+      { type: 'clock', label: 'Clock', description: 'Live world clock', icon: Clock },
+      { type: 'countdown', label: 'Countdown', description: 'Count down to a date', icon: Timer },
+      { type: 'blog-overview', label: 'Blog Overview', description: 'Display latest posts', icon: Rss },
+    ],
+  },
+  {
+    label: 'Video & Music',
+    items: [
+      { type: 'youtube', label: 'YouTube', description: 'Embed a YouTube video', icon: Youtube },
+      { type: 'vimeo', label: 'Vimeo', description: 'Embed a Vimeo video', icon: Video },
+      { type: 'tiktok', label: 'TikTok', description: 'Embed a TikTok video', icon: Music2 },
+      { type: 'instagram', label: 'Instagram', description: 'Embed an Instagram post', icon: Instagram },
+      { type: 'spotify', label: 'Spotify', description: 'Embed a Spotify track', icon: Music },
+      { type: 'soundcloud', label: 'SoundCloud', description: 'Embed a SoundCloud track', icon: Cloud },
+    ],
+  },
+  {
+    label: 'Tools',
+    items: [
+      { type: 'calendly', label: 'Calendly', description: 'Embed a booking page', icon: CalendarDays },
+      { type: 'github', label: 'GitHub', description: 'Show a GitHub repo', icon: Github },
+    ],
+  },
+];
+
 export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContentDialogProps) {
   const [contentType, setContentType] = useState<Link['type'] | null>(contentToEdit?.type || null);
 
   const handleBack = () => setContentType(null);
-  
-  const handleSave = (data: z.infer<typeof linkSchema> | z.infer<typeof textSchema> | z.infer<typeof articleSchema> | z.infer<typeof blogOverviewSchema> | z.infer<typeof productSchema> | z.infer<typeof imageSchema> | z.infer<typeof profileCardSchema> | z.infer<typeof mapSchema>, type: Link['type']) => {
-    onSave({ ...data, type });
+
+  const handleSave = (
+    data:
+      | z.infer<typeof linkSchema>
+      | z.infer<typeof textSchema>
+      | z.infer<typeof articleSchema>
+      | z.infer<typeof blogOverviewSchema>
+      | z.infer<typeof productSchema>
+      | z.infer<typeof imageSchema>
+      | z.infer<typeof profileCardSchema>
+      | z.infer<typeof mapSchema>
+      | z.infer<typeof clockSchema>
+      | z.infer<typeof countdownSchema>,
+    type: Link['type']
+  ) => {
+    onSave({ ...data, type } as ContentFormData);
   };
-  
-  // If we are editing, jump straight to the editor
+
+  // Editing existing content
   if (contentType && contentToEdit) {
-     if (contentToEdit.type === 'text') {
-        return <TextEditor onSave={(data) => handleSave(data, 'text')} onCancel={onCancel} content={contentToEdit} />;
-    }
-    if (contentToEdit.type === 'article') {
-        return <ArticleEditor onSave={(data) => handleSave(data, 'article')} onCancel={onCancel} article={contentToEdit} />;
-    }
-    if (contentToEdit.type === 'blog-overview') {
-      return <BlogOverviewEditor onSave={(data) => handleSave(data, 'blog-overview')} onCancel={onCancel} content={contentToEdit} />;
-    }
-    if (contentToEdit.type === 'product') {
-        return <ProductEditor onSave={(data) => handleSave(data, 'product')} onCancel={onCancel} product={contentToEdit} />;
-    }
-    if (contentToEdit.type === 'image') {
-        return <ImageEditor onSave={(data) => handleSave(data, 'image')} onCancel={onCancel} image={contentToEdit} />;
-    }
-    if (contentToEdit.type === 'profile') {
-        return <ProfileCardEditor onSave={(data) => handleSave(data, 'profile')} onCancel={onCancel} content={contentToEdit} />;
-    }
-    if (contentToEdit.type === 'map') {
-      return <MapEditor onSave={(data) => handleSave(data, 'map')} onCancel={onCancel} content={contentToEdit} />;
-    }
-    return <LinkEditor onSave={(data) => handleSave(data, contentToEdit.type as 'link' | 'spotify' | 'youtube')} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube'} link={contentToEdit} />;
+    if (contentToEdit.type === 'text') return <TextEditor onSave={(d) => handleSave(d, 'text')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'article') return <ArticleEditor onSave={(d) => handleSave(d, 'article')} onCancel={onCancel} article={contentToEdit} />;
+    if (contentToEdit.type === 'blog-overview') return <BlogOverviewEditor onSave={(d) => handleSave(d, 'blog-overview')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'product') return <ProductEditor onSave={(d) => handleSave(d, 'product')} onCancel={onCancel} product={contentToEdit} />;
+    if (contentToEdit.type === 'image') return <ImageEditor onSave={(d) => handleSave(d, 'image')} onCancel={onCancel} image={contentToEdit} />;
+    if (contentToEdit.type === 'profile') return <ProfileCardEditor onSave={(d) => handleSave(d, 'profile')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'map') return <MapEditor onSave={(d) => handleSave(d, 'map')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'clock') return <ClockEditor onSave={(d) => handleSave(d, 'clock')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'countdown') return <CountdownEditor onSave={(d) => handleSave(d, 'countdown')} onCancel={onCancel} content={contentToEdit} />;
+    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github'} link={contentToEdit} />;
   }
 
-  // If we are adding new content, show the correct editor after selection
+  // Adding new content
   if (contentType) {
-    if (contentType === 'text') {
-        return <TextEditor onSave={(data) => handleSave(data, 'text')} onCancel={handleBack} />;
-    }
-    if (contentType === 'article') {
-        return <ArticleEditor onSave={(data) => handleSave(data, 'article')} onCancel={handleBack} />;
-    }
-    if (contentType === 'blog-overview') {
-        return <BlogOverviewEditor onSave={(data) => handleSave(data, 'blog-overview')} onCancel={handleBack} />;
-    }
-     if (contentType === 'product') {
-        return <ProductEditor onSave={(data) => handleSave(data, 'product')} onCancel={handleBack} />;
-    }
-    if (contentType === 'image') {
-        return <ImageEditor onSave={(data) => handleSave(data, 'image')} onCancel={handleBack} />;
-    }
-    if (contentType === 'profile') {
-        return <ProfileCardEditor onSave={(data) => handleSave(data, 'profile')} onCancel={handleBack} />;
-    }
-    if (contentType === 'map') {
-      return <MapEditor onSave={(data) => handleSave(data, 'map')} onCancel={handleBack} />;
-    }
-    // link, spotify, youtube
+    if (contentType === 'text') return <TextEditor onSave={(d) => handleSave(d, 'text')} onCancel={handleBack} />;
+    if (contentType === 'article') return <ArticleEditor onSave={(d) => handleSave(d, 'article')} onCancel={handleBack} />;
+    if (contentType === 'blog-overview') return <BlogOverviewEditor onSave={(d) => handleSave(d, 'blog-overview')} onCancel={handleBack} />;
+    if (contentType === 'product') return <ProductEditor onSave={(d) => handleSave(d, 'product')} onCancel={handleBack} />;
+    if (contentType === 'image') return <ImageEditor onSave={(d) => handleSave(d, 'image')} onCancel={handleBack} />;
+    if (contentType === 'profile') return <ProfileCardEditor onSave={(d) => handleSave(d, 'profile')} onCancel={handleBack} />;
+    if (contentType === 'map') return <MapEditor onSave={(d) => handleSave(d, 'map')} onCancel={handleBack} />;
+    if (contentType === 'clock') return <ClockEditor onSave={(d) => handleSave(d, 'clock')} onCancel={handleBack} />;
+    if (contentType === 'countdown') return <CountdownEditor onSave={(d) => handleSave(d, 'countdown')} onCancel={handleBack} />;
     return (
       <LinkEditor
-        onSave={(data) => handleSave(data, contentType)}
+        onSave={(d) => handleSave(d, contentType)}
         onCancel={handleBack}
-        mode={contentType as 'link' | 'spotify' | 'youtube'}
+        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github'}
       />
     );
   }
 
-  // Initial view: show content type options
+  // Initial type selection view
   return (
-    <div className="grid grid-cols-1 gap-3 pt-4">
-      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('link')}>
-        <LinkIcon className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Standard Link</p>
-            <p className="text-sm font-normal text-muted-foreground">Add a link to any website.</p>
+    <div className="space-y-5 pt-2">
+      {CONTENT_SECTIONS.map((section) => (
+        <div key={section.label}>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">{section.label}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {section.items.map((item) => (
+              <Button
+                key={item.type}
+                variant="outline"
+                className="h-16 text-sm justify-start p-3 gap-2"
+                onClick={() => setContentType(item.type)}
+              >
+                <item.icon className="h-5 w-5 flex-shrink-0" />
+                <div className="text-left min-w-0">
+                  <p className="font-medium truncate">{item.label}</p>
+                  <p className="text-xs font-normal text-muted-foreground truncate">{item.description}</p>
+                </div>
+              </Button>
+            ))}
+          </div>
         </div>
-      </Button>
-       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('text')}>
-        <BookText className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Text Block</p>
-            <p className="text-sm font-normal text-muted-foreground">Add a title and some text.</p>
-        </div>
-      </Button>
-      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('image')}>
-        <ImageIcon className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Image</p>
-            <p className="text-sm font-normal text-muted-foreground">Display a single image.</p>
-        </div>
-      </Button>
-      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('map')}>
-        <MapPin className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Map</p>
-            <p className="text-sm font-normal text-muted-foreground">Embed a Google Map.</p>
-        </div>
-      </Button>
-       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('article')}>
-        <Newspaper className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Article Link</p>
-            <p className="text-sm font-normal text-muted-foreground">Feature an article with metadata.</p>
-        </div>
-      </Button>
-       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('product')}>
-        <ShoppingBag className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Product</p>
-            <p className="text-sm font-normal text-muted-foreground">Feature a product for sale.</p>
-        </div>
-      </Button>
-      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('profile')}>
-        <UserIcon className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Feature a Profile</p>
-            <p className="text-sm font-normal text-muted-foreground">Mention another user.</p>
-        </div>
-      </Button>
-      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('blog-overview')}>
-        <Rss className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Blog Overview</p>
-            <p className="text-sm font-normal text-muted-foreground">Display your latest posts.</p>
-        </div>
-      </Button>
-      <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('spotify')}>
-        <Music className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>Spotify Track</p>
-            <p className="text-sm font-normal text-muted-foreground">Embed a song from Spotify.</p>
-        </div>
-      </Button>
-       <Button variant="outline" className="h-24 text-lg justify-start p-6" onClick={() => setContentType('youtube')}>
-        <Youtube className="mr-4 h-8 w-8" />
-        <div className="text-left">
-            <p>YouTube Video</p>
-            <p className="text-sm font-normal text-muted-foreground">Embed a video from YouTube.</p>
-        </div>
-      </Button>
-      <div className="mt-4 flex justify-end">
-        <Button variant="ghost" onClick={onCancel}>
-          Cancel
-        </Button>
+      ))}
+      <div className="flex justify-end pt-2">
+        <Button variant="ghost" onClick={onCancel}>Cancel</Button>
       </div>
     </div>
   );
 }
+
