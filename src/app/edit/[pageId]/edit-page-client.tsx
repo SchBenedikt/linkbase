@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { doc, collection, writeBatch } from 'firebase/firestore';
 import { z } from 'zod';
-import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore, useDoc, useCollection, useMemoFirebase, addDocumentNonBlocking, deleteDocumentNonBlocking, setDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
 import type { Page, Link as LinkType, AITheme, AppearanceSettings } from '@/lib/types';
 import { arrayMove } from '@dnd-kit/sortable';
 
@@ -138,23 +138,21 @@ export default function EditPage() {
 
   const closeSheet = () => setSheetState({ open: false });
 
-  const handleSaveProfile = async (data: z.infer<typeof profileSchema>) => {
+  const handleSaveProfile = (data: z.infer<typeof profileSchema>) => {
     if (!pageRef || !page || !firestore) return;
 
     const oldSlug = page.slug;
     const newSlug = data.slug;
 
-    const batch = writeBatch(firestore);
-    batch.set(pageRef, data, { merge: true });
+    setDocumentNonBlocking(pageRef, data, { merge: true });
 
     if (newSlug && newSlug !== oldSlug) {
         if (oldSlug) {
-            batch.delete(doc(firestore, 'slug_lookups', oldSlug));
+            deleteDocumentNonBlocking(doc(firestore, 'slug_lookups', oldSlug));
         }
-        batch.set(doc(firestore, 'slug_lookups', newSlug), { pageId: page.id });
+        setDocumentNonBlocking(doc(firestore, 'slug_lookups', newSlug), { pageId: page.id }, {});
     }
     
-    await batch.commit();
     closeSheet();
   };
 
@@ -205,7 +203,7 @@ export default function EditPage() {
     }
   };
 
-  const handleDragEnd = async (activeId: string, overId: string) => {
+  const handleDragEnd = (activeId: string, overId: string) => {
     if (!links || !linksRef || !firestore) return;
 
     const oldIndex = links.findIndex(l => l.id === activeId);
@@ -217,20 +215,12 @@ export default function EditPage() {
     
     setLinksData(newLinksOrder);
 
-    const batch = writeBatch(firestore);
     newLinksOrder.forEach((link, index) => {
         if (link.orderIndex !== index) {
             const linkRef = doc(linksRef, link.id);
-            batch.update(linkRef, { orderIndex: index });
+            updateDocumentNonBlocking(linkRef, { orderIndex: index });
         }
     });
-
-    try {
-        await batch.commit();
-    } catch(e) {
-        console.error("Failed to reorder links", e);
-        setLinksData(links);
-    }
   };
 
 
