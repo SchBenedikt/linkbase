@@ -7,21 +7,21 @@ import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import type { Link, Page } from '@/lib/types';
+import type { Link, UserProfile } from '@/lib/types';
 import { Slider } from './ui/slider';
-import { searchPages } from '@/lib/actions';
+import { searchUsersByUsername } from '@/lib/actions';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Loader2 } from 'lucide-react';
 
 export const profileCardSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  mentionedPageId: z.string().min(1, 'You must select a profile to feature.'),
+  mentionedUserId: z.string().min(1, 'You must select a profile to feature.'),
   colSpan: z.number().min(1).max(4).default(2),
   rowSpan: z.number().min(1).max(2).default(1),
 });
 
 type ProfileCardFormData = z.infer<typeof profileCardSchema>;
-type SearchResult = Pick<Page, 'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'slug'>;
+type SearchResult = Pick<UserProfile, 'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'username'>;
 
 interface ProfileCardEditorProps {
   content?: Link | null;
@@ -39,7 +39,7 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
     resolver: zodResolver(profileCardSchema),
     defaultValues: {
       title: content?.title || 'Featured Profile',
-      mentionedPageId: content?.mentionedPageId || '',
+      mentionedUserId: content?.mentionedUserId || '',
       colSpan: content?.colSpan || 2,
       rowSpan: content?.rowSpan || 1,
     },
@@ -47,8 +47,8 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
 
   useEffect(() => {
     // If editing, we can't easily get the profile info, so user has to re-search
-    if (content?.mentionedPageId) {
-        form.setValue('mentionedPageId', content.mentionedPageId);
+    if (content?.mentionedUserId) {
+        form.setValue('mentionedUserId', content.mentionedUserId);
     }
   }, [content, form]);
 
@@ -56,7 +56,7 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
     const handler = setTimeout(() => {
       if (searchTerm.length > 1) {
         startSearchTransition(async () => {
-          const results = await searchPages(searchTerm);
+          const results = await searchUsersByUsername(searchTerm);
           setSearchResults(results);
         });
       } else {
@@ -68,7 +68,7 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
   }, [searchTerm]);
   
   const handleSelectProfile = (profile: SearchResult) => {
-    form.setValue('mentionedPageId', profile.id, { shouldValidate: true });
+    form.setValue('mentionedUserId', profile.id, { shouldValidate: true });
     setSelectedProfile(profile);
     setSearchTerm('');
     setSearchResults([]);
@@ -91,7 +91,7 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
         
         <FormField
           control={form.control}
-          name="mentionedPageId"
+          name="mentionedUserId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Search for a user</FormLabel>
@@ -100,14 +100,14 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
                   <Input 
                     placeholder="@username" 
                     value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => setSearchTerm(e.target.value.replace(/^@/, ''))}
                     autoComplete="off"
                   />
                   {isSearching && <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin" />}
                 </div>
               </FormControl>
                <FormDescription>
-                {selectedProfile ? `Selected: ${selectedProfile.firstName} ${selectedProfile.lastName} (@${selectedProfile.slug})` : 'Start typing to search for a user.'}
+                {selectedProfile ? `Selected: ${selectedProfile.firstName} ${selectedProfile.lastName} (@${selectedProfile.username})` : 'Start typing to search for a user.'}
                </FormDescription>
               <FormMessage />
             </FormItem>
@@ -124,7 +124,7 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
                 </Avatar>
                 <div>
                   <p className="font-medium">{profile.firstName} {profile.lastName}</p>
-                  <p className="text-sm text-muted-foreground">@{profile.slug}</p>
+                  <p className="text-sm text-muted-foreground">@{profile.username}</p>
                 </div>
               </div>
             ))}

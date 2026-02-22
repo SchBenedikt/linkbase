@@ -24,19 +24,30 @@ export type Link = {
   showCreationDate?: boolean;
   showExcerpts?: boolean;
   price?: string; // For product cards
-  mentionedPageId?: string; // For profile cards
+  mentionedUserId?: string; // For profile cards
 };
 
-export type Page = {
+export type UserProfile = {
   id: string; // Same as user.uid
+  username?: string;
+  title?: string;
+  firstName?: string;
+  lastName?: string;
+  bio?: string;
+  avatarUrl?: string;
+  avatarHint?: string;
+  openForWork?: boolean;
+  category?: string;
+  socialLinks?: SocialLink[];
+  createdAt: any;
+  updatedAt: any;
+}
+
+export type Page = {
+  id: string;
   ownerId: string;
   slug: string;
-  title?: string;
-  firstName: string;
-  lastName: string;
-  bio: string;
-  avatarUrl: string;
-  avatarHint: string;
+  title: string;
   status: 'published' | 'draft';
   // Appearance settings can be part of the profile
   backgroundImage?: string;
@@ -50,9 +61,8 @@ export type Page = {
   borderWidth?: number;
   borderColor?: string;
   fontFamily?: string;
-  openForWork?: boolean;
-  category?: string;
-  socialLinks?: SocialLink[];
+  createdAt: any;
+  updatedAt: any;
 };
 
 export type Post = {
@@ -74,6 +84,10 @@ export type Post = {
 export type SlugLookup = {
   pageId: string;
 };
+
+export type UsernameLookup = {
+  userId: string;
+}
 
 export type ColorPalette = {
   name: string;

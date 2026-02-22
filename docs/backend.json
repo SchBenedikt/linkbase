@@ -1,14 +1,37 @@
 {
   "entities": {
-    "User": {
+    "UserProfile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "User",
+      "title": "UserProfile",
       "type": "object",
-      "description": "Represents a registered user of the BioBloom application, primarily for authentication and access control. This entity stores minimal user identification data.",
+      "description": "Represents a registered user's profile information, separate from authentication details.",
       "properties": {
-        "id": { "type": "string", "description": "Unique identifier for the User entity (matches Firebase Auth UID)." }
+        "id": { "type": "string", "description": "Unique identifier for the User entity (matches Firebase Auth UID)." },
+        "username": { "type": "string", "description": "The user's unique, global @username for mentions." },
+        "title": { "type": "string", "description": "An optional academic or professional title (e.g., 'Dr.', 'Prof.')." },
+        "firstName": { "type": "string", "description": "The first name of the user." },
+        "lastName": { "type": "string", "description": "The last name of the user." },
+        "bio": { "type": "string", "description": "A short biography or description." },
+        "avatarUrl": { "type": "string", "format": "uri", "description": "URL to the user's profile picture." },
+        "avatarHint": { "type": "string", "description": "AI hint for the avatar image." },
+        "openForWork": { "type": "boolean", "description": "Whether the user is available for work opportunities." },
+        "category": { "type": "string", "description": "A category or professional title for the user, e.g., 'Photographer', 'Tech Enthusiast'." },
+        "socialLinks": {
+          "type": "array",
+          "description": "A list of social media links for the user.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "platform": { "type": "string", "description": "The social media platform name (e.g., 'instagram', 'x')." },
+              "url": { "type": "string", "format": "uri", "description": "The URL to the user's profile on the platform." }
+            },
+            "required": ["platform", "url"]
+          }
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id"]
+      "required": ["id", "createdAt", "updatedAt"]
     },
     "Page": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -19,12 +42,7 @@
         "id": { "type": "string", "description": "Unique identifier for the Page entity." },
         "ownerId": { "type": "string", "description": "The UID of the user who owns this page." },
         "slug": { "type": "string", "description": "The unique, user-defined URL slug for the page." },
-        "title": { "type": "string", "description": "An optional academic or professional title (e.g., 'Dr.', 'Prof.')." },
-        "firstName": { "type": "string", "description": "The first name of the page owner." },
-        "lastName": { "type": "string", "description": "The last name of the page owner." },
-        "bio": { "type": "string", "description": "A short biography or description displayed on the page." },
-        "avatarUrl": { "type": "string", "format": "uri", "description": "URL to the user's profile picture for this page." },
-        "avatarHint": { "type": "string", "description": "AI hint for the avatar image." },
+        "title": { "type": "string", "description": "The title of the page." },
         "status": { "type": "string", "enum": ["draft", "published"], "description": "The visibility status of the page." },
         "fontFamily": { "type": "string", "description": "The CSS font-family for the page." },
         "backgroundImage": { "type": "string", "format": "uri" },
@@ -38,23 +56,9 @@
         "borderWidth": { "type": "number" },
         "borderColor": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" },
-        "updatedAt": { "type": "string", "format": "date-time" },
-        "openForWork": { "type": "boolean", "description": "Whether the user is available for work opportunities." },
-        "category": { "type": "string", "description": "A category or professional title for the user, e.g., 'Photographer', 'Tech Enthusiast'." },
-        "socialLinks": {
-          "type": "array",
-          "description": "A list of social media links for the user's page.",
-          "items": {
-            "type": "object",
-            "properties": {
-              "platform": { "type": "string", "description": "The social media platform name (e.g., 'instagram', 'x')." },
-              "url": { "type": "string", "format": "uri", "description": "The URL to the user's profile on the platform." }
-            },
-            "required": ["platform", "url"]
-          }
-        }
+        "updatedAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "ownerId", "slug", "firstName", "lastName", "status", "createdAt", "updatedAt"]
+      "required": ["id", "ownerId", "slug", "title", "status", "createdAt", "updatedAt"]
     },
     "Link": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -77,7 +81,7 @@
         "showCreationDate": { "type": "boolean", "description": "Whether to show the creation date on the blog overview card." },
         "showExcerpts": { "type": "boolean", "description": "Whether to show post excerpts on the blog overview card." },
         "price": { "type": "string", "description": "The price of the product (e.g., '$19.99')." },
-        "mentionedPageId": { "type": "string", "description": "The ID of the Page being mentioned or featured." },
+        "mentionedUserId": { "type": "string", "description": "The ID of the User being mentioned or featured." },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },
@@ -108,11 +112,21 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "SlugLookup",
       "type": "object",
-      "description": "A lookup document to map a unique URL slug to a Page ID for fast public lookups.",
+      "description": "A lookup document to map a unique page URL slug to a Page ID for fast public lookups.",
       "properties": {
         "pageId": { "type": "string", "description": "The ID of the Page this slug points to." }
       },
       "required": ["pageId"]
+    },
+     "UsernameLookup": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "UsernameLookup",
+      "type": "object",
+      "description": "A lookup document to map a unique @username to a User ID for fast public lookups and mentions.",
+      "properties": {
+        "userId": { "type": "string", "description": "The ID of the User this username points to." }
+      },
+      "required": ["userId"]
     }
   },
   "auth": {
@@ -121,11 +135,11 @@
   "firestore": {
     "structure": [
       {
-        "path": "/users/{userId}",
+        "path": "/user_profiles/{userId}",
         "definition": {
-          "entityName": "User",
-          "schema": { "$ref": "#/backend/entities/User" },
-          "description": "Stores core authentication information. Document ID is the Firebase Auth UID. Private to the user."
+          "entityName": "UserProfile",
+          "schema": { "$ref": "#/backend/entities/UserProfile" },
+          "description": "Stores public profile information for a user. Document ID is the Firebase Auth UID."
         }
       },
       {
@@ -157,7 +171,15 @@
         "definition": {
           "entityName": "SlugLookup",
           "schema": { "$ref": "#/backend/entities/SlugLookup" },
-          "description": "A public lookup table to map unique URL slugs to page IDs. Writable only by the page owner."
+          "description": "A public lookup table to map unique page URL slugs to page IDs."
+        }
+      },
+      {
+        "path": "/username_lookups/{username}",
+        "definition": {
+          "entityName": "UsernameLookup",
+          "schema": { "$ref": "#/backend/entities/UsernameLookup" },
+          "description": "A public lookup table to map unique @usernames to user IDs for mentions."
         }
       }
     ]

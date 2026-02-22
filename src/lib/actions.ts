@@ -4,7 +4,7 @@ import { aiThemeSuggestion, type AIThemeSuggestionInput } from '@/ai/flows/ai-th
 import { z } from 'zod';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { serverFirestore } from '@/firebase/server';
-import type { Page } from '@/lib/types';
+import type { UserProfile } from '@/lib/types';
 
 const schema = z.object({
   keywords: z.string().min(3, { message: 'Please enter at least 3 characters.' }),
@@ -91,40 +91,38 @@ export async function getWebsiteMeta(url: string): Promise<{ title?: string; ima
   }
 }
 
-export async function searchPages(searchTerm: string): Promise<Pick<Page, 'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'slug'>[]> {
-  if (!searchTerm || searchTerm.length < 2) {
+export async function searchUsersByUsername(username: string): Promise<Pick<UserProfile, 'id' | 'firstName' | 'lastName' | 'avatarUrl' | 'username'>[]> {
+  if (!username || username.length < 1) {
     return [];
   }
   
-  const lowerCaseQuery = searchTerm.toLowerCase();
+  const lowerCaseQuery = username.toLowerCase();
 
   try {
-    const pagesRef = collection(serverFirestore, 'pages');
-    // Simple prefix search on slug. This is limited but works without extra indexing.
+    const profilesRef = collection(serverFirestore, 'user_profiles');
     const q = query(
-      pagesRef, 
-      where('status', '==', 'published'), 
-      where('slug', '>=', lowerCaseQuery), 
-      where('slug', '<=', lowerCaseQuery + '\uf8ff'),
+      profilesRef, 
+      where('username', '>=', lowerCaseQuery), 
+      where('username', '<=', lowerCaseQuery + '\uf8ff'),
       limit(10)
     );
     
     const querySnapshot = await getDocs(q);
-    const pages = querySnapshot.docs.map(doc => {
-      const data = doc.data() as Page;
+    const users = querySnapshot.docs.map(doc => {
+      const data = doc.data() as UserProfile;
       return {
         id: doc.id,
         firstName: data.firstName,
         lastName: data.lastName,
         avatarUrl: data.avatarUrl,
-        slug: data.slug,
+        username: data.username,
       };
     });
 
-    return pages;
+    return users;
 
   } catch (error) {
-    console.error("Error searching pages:", error);
+    console.error("Error searching users:", error);
     return [];
   }
 }

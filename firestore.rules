@@ -12,8 +12,9 @@ service cloud.firestore {
     }
     
     // User Profile
-    match /users/{userId} {
-      allow read, write: if isOwner(userId);
+    match /user_profiles/{userId} {
+      allow read: if true;
+      allow write: if isOwner(userId);
     }
 
     // Public Pages & Links
@@ -49,12 +50,20 @@ service cloud.firestore {
         allow update, delete: if isOwner(get(/databases/$(database)/documents/posts/$(postId)).data.ownerId);
     }
 
-    // Slug Lookups
+    // Page Slug Lookups
     match /slug_lookups/{slug} {
       allow get: if true;
       allow create: if !exists(/databases/$(database)/documents/slug_lookups/$(slug)) && isOwner(get(/databases/$(database)/documents/pages/$(request.resource.data.pageId)).data.ownerId);
       allow update: if isOwner(get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId);
       allow delete: if isOwner(get(/databases/$(database)/documents/pages/$(resource.data.pageId)).data.ownerId);
+    }
+
+    // Username Lookups
+    match /username_lookups/{username} {
+      allow get: if true;
+      allow create: if !exists(/databases/$(database)/documents/username_lookups/$(username)) && isOwner(request.resource.data.userId);
+      allow delete: if isOwner(resource.data.userId);
+      allow update: if false; // Deleting and creating a new one is safer
     }
   }
 }
