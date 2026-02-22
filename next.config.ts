@@ -40,6 +40,10 @@ const nextConfig: NextConfig = {
       ...config.optimization!.splitChunks,
       maxSize: 20 * 1024 * 1024,  // 20 MiB/Chunks
     };
+    
+    // Disable webpack cache for Cloudflare Pages deployment
+    config.cache = false;
+    
     return config;
   },
 };

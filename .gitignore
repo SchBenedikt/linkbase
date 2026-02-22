@@ -11,6 +11,11 @@
 # Next.js build output
 /.next
 /out
+/output
+
+# Cache directories
+/cache
+**/cache
 
 # Production
 /build
