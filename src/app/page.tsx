@@ -16,37 +16,6 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { HeroShowcase } from '@/components/hero-showcase';
 import { BlogShowcase } from '@/components/blog-showcase';
 
-const MarqueeItem = ({ image, shape = 'rounded-xl' }: { image: ImagePlaceholder, shape?: 'rounded-xl' | 'rounded-full' | 'rounded-lg' }) => (
-    <div className={cn("relative h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40 flex-shrink-0", shape)}>
-         <Image
-            src={image.imageUrl}
-            alt={image.description}
-            data-ai-hint={image.imageHint}
-            fill
-            sizes="(max-width: 768px) 128px, 160px"
-            className={cn("object-cover", shape)}
-        />
-    </div>
-);
-
-const Marquee = () => {
-    const marqueeImages = PlaceHolderImages.filter(p => p.id.startsWith('marquee-'));
-
-    const renderItems = (items: ImagePlaceholder[]) => items.map((img, i) => (
-        <MarqueeItem key={img.id} image={img} shape={i % 3 === 0 ? 'rounded-full' : (i % 3 === 1 ? 'rounded-3xl' : 'rounded-lg')} />
-    ));
-
-    return (
-         <div className="relative flex w-full overflow-x-hidden">
-            <div className="flex w-max animate-marquee items-center gap-6 py-4">
-                {renderItems(marqueeImages)}
-                {renderItems(marqueeImages)}
-            </div>
-        </div>
-    );
-};
-
-
 export default function LandingPage() {
   const { user, isUserLoading } = useUser();
   const testimonial1 = PlaceHolderImages.find(p => p.id === 'testimonial-1');
@@ -125,17 +94,6 @@ export default function LandingPage() {
                  </div>
             </div>
         </section>
-
-        {/* Marquee Section */}
-        <section className="py-8 bg-background">
-             <div className="text-center mb-4">
-                <h2 className="font-headline text-lg font-bold tracking-tight text-muted-foreground">
-                    TRUSTED BY 70M+ CREATORS
-                </h2>
-            </div>
-            <Marquee />
-        </section>
-
 
         {/* New Bento Grid Section */}
         <section className="py-16 sm:py-24 bg-background">
