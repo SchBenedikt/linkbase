@@ -15,7 +15,7 @@ import Link from 'next/link';
 import type { Page } from '@/lib/types';
 import { UserNav } from '@/components/user-nav';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { DashboardNav } from '@/components/dashboard-nav';
