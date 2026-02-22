@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import type { Link, UserProfile } from '@/lib/types';
 import { Slider } from './ui/slider';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, useUser } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
@@ -30,10 +30,11 @@ interface ProfileCardEditorProps {
 
 export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEditorProps) {
   const firestore = useFirestore();
+  const { user, isUserLoading } = useUser();
 
   const profilesQuery = useMemoFirebase(() =>
-    firestore ? collection(firestore, 'user_profiles') : null,
-    [firestore]
+    firestore && user ? collection(firestore, 'user_profiles') : null,
+    [firestore, user]
   );
   const { data: allProfiles, isLoading: areProfilesLoading } = useCollection<UserProfile>(profilesQuery);
 
@@ -46,6 +47,8 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
       rowSpan: content?.rowSpan || 1,
     },
   });
+
+  const isLoading = isUserLoading || areProfilesLoading;
 
   return (
     <Form {...form}>
@@ -71,11 +74,11 @@ export function ProfileCardEditor({ content, onSave, onCancel }: ProfileCardEdit
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  disabled={areProfilesLoading || !allProfiles}
+                  disabled={isLoading || !allProfiles}
                 >
                     <FormControl>
                         <SelectTrigger>
-                            <SelectValue placeholder={areProfilesLoading ? "Loading profiles..." : "Select a user"} />
+                            <SelectValue placeholder={isLoading ? "Loading profiles..." : "Select a user"} />
                         </SelectTrigger>
                     </FormControl>
                     <SelectContent>
