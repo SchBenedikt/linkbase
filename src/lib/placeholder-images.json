@@ -21,8 +21,8 @@
     {
       "id": "link-thumb-3",
       "description": "Thumbnail for a project link.",
-      "imageUrl": "https://images.unsplash.com/photo-1501854140801-50d01698950b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx2aWJyYW50JTIwbGFuZHNjYXBlfGVufDB8fHx8MTc3MTU5ODMwN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "vibrant landscape"
+      "imageUrl": "https://images.unsplash.com/photo-1765185205866-604b6f61b3f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwcm9qZWN0JTIwdGh1bWJuYWlsfGVufDB8fHx8MTc3MTc1MjYyOHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "project thumbnail"
     },
     {
       "id": "hero-1",

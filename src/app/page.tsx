@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
-import { Palette, Link as LinkIcon, Sparkles, BarChart3, MoveRight, BookOpen } from 'lucide-react';
+import { Palette, Link as LinkIcon, Sparkles, BarChart3, MoveRight, BookOpen, UserPlus, Share2 } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { UserNav } from '@/components/user-nav';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -230,28 +230,28 @@ export default function LandingPage() {
                 Creating your own Linkbase page is simple and intuitive.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div className="flex flex-col items-center">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <Card className="bg-background/50 p-8 text-center flex flex-col items-center rounded-3xl">
                 <div className="flex items-center justify-center h-20 w-20 rounded-full bg-primary text-primary-foreground mb-6">
-                  <span className="font-headline text-4xl font-bold">1</span>
+                  <UserPlus className="h-8 w-8" />
                 </div>
-                <h3 className="font-headline text-2xl font-bold mb-2">Create your Account</h3>
-                <p className="text-muted-foreground">Sign up for free in seconds. No credit card required. All you need is an email to get started on your creative journey.</p>
-              </div>
-              <div className="flex flex-col items-center">
+                <h3 className="font-headline text-2xl font-bold mb-2">1. Create Account</h3>
+                <p className="text-muted-foreground">Sign up for free in seconds. All you need is an email to get started on your creative journey.</p>
+              </Card>
+              <Card className="bg-background/50 p-8 text-center flex flex-col items-center rounded-3xl">
                 <div className="flex items-center justify-center h-20 w-20 rounded-full bg-secondary text-secondary-foreground mb-6">
-                  <span className="font-headline text-4xl font-bold">2</span>
+                  <Palette className="h-8 w-8" />
                 </div>
-                <h3 className="font-headline text-2xl font-bold mb-2">Design your Page</h3>
-                <p className="text-muted-foreground">Add your links, upload your avatar, and customize the design. Use our powerful editor or let our AI do the magic for you.</p>
-              </div>
-              <div className="flex flex-col items-center">
+                <h3 className="font-headline text-2xl font-bold mb-2">2. Design your Page</h3>
+                <p className="text-muted-foreground">Add your links and customize the design. Use our editor or let our AI do the magic for you.</p>
+              </Card>
+              <Card className="bg-background/50 p-8 text-center flex flex-col items-center rounded-3xl">
                 <div className="flex items-center justify-center h-20 w-20 rounded-full bg-destructive text-destructive-foreground mb-6">
-                   <span className="font-headline text-4xl font-bold">3</span>
+                  <Share2 className="h-8 w-8" />
                 </div>
-                <h3 className="font-headline text-2xl font-bold mb-2">Share your Link</h3>
-                <p className="text-muted-foreground">Your unique linkbase.pro link is ready. Share it in your social media bios, email signatures, or anywhere you want.</p>
-              </div>
+                <h3 className="font-headline text-2xl font-bold mb-2">3. Share your Link</h3>
+                <p className="text-muted-foreground">Share it on your social media, email signature, or anywhere you want.</p>
+              </Card>
             </div>
           </div>
         </section>
