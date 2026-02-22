@@ -1,6 +1,6 @@
 'use client';
 import { useState, useMemo } from 'react';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import type { Post } from '@/lib/types';
 import { Input } from '@/components/ui/input';
@@ -54,11 +54,20 @@ export function BlogExploreView() {
 
     const publicPostsQuery = useMemoFirebase(() => 
         firestore 
-        ? query(collection(firestore, 'posts'), where('status', '==', 'published'), orderBy('createdAt', 'desc'))
+        ? query(collection(firestore, 'posts'), where('status', '==', 'published'))
         : null,
     [firestore]);
 
-    const { data: posts, isLoading } = useCollection<Post>(publicPostsQuery);
+    const { data: unsortedPosts, isLoading } = useCollection<Post>(publicPostsQuery);
+    
+    const posts = useMemo(() => {
+        if (!unsortedPosts) return [];
+        return [...unsortedPosts].sort((a, b) => {
+            const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+            const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+            return dateB - dateA; // Sort descending
+        });
+    }, [unsortedPosts]);
 
     const categories = useMemo(() => {
         if (!posts) return [];
