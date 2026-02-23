@@ -5,6 +5,8 @@ import { serverFirestore } from '@/firebase/server';
 import type { Post as PostType } from '@/lib/types';
 import PublicPostPageComponent from './public-post-page';
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   try {
     if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {

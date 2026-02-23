@@ -2,6 +2,8 @@ import EditPageClient from './edit-page-client';
 import { collection, getDocs } from 'firebase/firestore';
 import { serverFirestore } from '@/firebase/server';
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   try {
     if (process.env.NODE_ENV === 'production') {

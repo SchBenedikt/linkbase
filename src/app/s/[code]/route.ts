@@ -4,6 +4,7 @@ import { serverFirestore } from '@/firebase/server';
 import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'edge';
 
 export async function GET(
   request: NextRequest,
