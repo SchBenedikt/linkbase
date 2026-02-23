@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { UserNav } from '@/components/user-nav';
 import {
   AlertDialog,
@@ -29,24 +29,8 @@ import {
 import { ThemeToggle } from '@/components/theme-toggle';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Schemas
-const profileSchema = z.object({
-  firstName: z.string().min(1, 'First name is required.'),
-  lastName: z.string().min(1, 'Last name is required.'),
-  title: z.string().optional(),
-  bio: z.string().max(160, 'Bio cannot be longer than 160 characters.').optional(),
-  avatarUrl: z.string().url('Please enter a valid URL.').optional().or(z.literal('')),
-  openForWork: z.boolean().default(false),
-  categories: z.string().optional(),
-  socialLinks: z.array(z.object({
-    platform: z.string().min(1, "Platform is required."),
-    url: z.string().url("Please enter a valid URL.").or(z.literal('')),
-  })).optional(),
-});
 const usernameSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters.').regex(/^[a-z0-9-]+$/, 'Username can only contain lowercase letters, numbers, and hyphens.'),
 });
@@ -56,8 +40,6 @@ const emailSchema = z.object({
 const passwordSchema = z.object({
   newPassword: z.string().min(6, 'Password must be at least 6 characters long.'),
 });
-
-const availablePlatforms = ["instagram", "x", "facebook", "linkedin", "tiktok", "pinterest", "soundcloud", "github", "youtube", "website"];
 
 export default function SettingsPage() {
   const { user, isUserLoading } = useUser();
@@ -75,25 +57,6 @@ export default function SettingsPage() {
   );
   const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
 
-  const profileForm = useForm<z.infer<typeof profileSchema>>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      title: '',
-      bio: '',
-      avatarUrl: '',
-      openForWork: false,
-      categories: '',
-      socialLinks: [],
-    },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control: profileForm.control,
-    name: "socialLinks"
-  });
-
   const usernameForm = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
     defaultValues: { username: '' },
@@ -109,63 +72,12 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (userProfile) {
-      profileForm.reset({
-        firstName: userProfile.firstName || '',
-        lastName: userProfile.lastName || '',
-        title: userProfile.title || '',
-        bio: userProfile.bio || '',
-        avatarUrl: userProfile.avatarUrl || '',
-        openForWork: userProfile.openForWork || false,
-        categories: userProfile.categories?.join(', ') || '',
-        socialLinks: userProfile.socialLinks || [],
-      });
       usernameForm.reset({ username: userProfile.username || '' });
     }
     if(user?.email) {
       emailForm.reset({ email: user.email });
     }
-  }, [user, userProfile, profileForm, emailForm, usernameForm]);
-
-  const handleUpdateProfile = async (data: z.infer<typeof profileSchema>) => {
-    if (!firestore || !user) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Could not update profile.' });
-        return;
-    }
-    setLoading('profile');
-    try {
-        const { categories, ...restData } = data;
-        const categoriesArray = categories ? categories.split(',').map(c => c.trim()).filter(Boolean) : [];
-        
-        const dataToSave: Partial<UserProfile> = {
-            ...restData,
-            categories: categoriesArray,
-            updatedAt: serverTimestamp(),
-        };
-
-        const profileRef = doc(firestore, 'user_profiles', user.uid);
-        const profileSnap = await getDoc(profileRef);
-
-        if (profileSnap.exists()) {
-            await setDoc(profileRef, dataToSave, { merge: true });
-        } else {
-            // First time saving, create the document
-            const newUserProfileData: UserProfile = {
-                id: user.uid,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                ...dataToSave,
-                createdAt: serverTimestamp(),
-            };
-            await setDoc(profileRef, newUserProfileData);
-        }
-
-        toast({ title: 'Success!', description: 'Your profile has been updated.' });
-    } catch (error: any) {
-        toast({ variant: 'destructive', title: 'Error', description: error.message || 'Could not update profile.' });
-    } finally {
-        setLoading('');
-    }
-  };
+  }, [user, userProfile, emailForm, usernameForm]);
 
   const handleUpdateUsername = async ({ username }: z.infer<typeof usernameSchema>) => {
     if (!firestore || !user) {
@@ -304,80 +216,17 @@ export default function SettingsPage() {
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h2 className="text-3xl font-bold tracking-tight mb-8">Settings</h2>
             
-            <Tabs defaultValue="profile" className="max-w-4xl mx-auto">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="profile">Public Profile</TabsTrigger>
+            <Tabs defaultValue="account" className="max-w-4xl mx-auto">
+              <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="account">Account</TabsTrigger>
                 <TabsTrigger value="security">Security</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="profile" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Public Profile</CardTitle>
-                    <CardDescription>This information will be displayed on your pages and profile.</CardDescription>
-                  </CardHeader>
-                  <Form {...profileForm}>
-                    <form onSubmit={profileForm.handleSubmit(handleUpdateProfile)}>
-                      <CardContent className="space-y-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <FormField control={profileForm.control} name="firstName" render={({ field }) => (
-                                <FormItem><FormLabel>First Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                            )} />
-                            <FormField control={profileForm.control} name="lastName" render={({ field }) => (
-                                <FormItem><FormLabel>Last Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                            )} />
-                        </div>
-                        <FormField control={profileForm.control} name="title" render={({ field }) => (
-                            <FormItem><FormLabel>Title (e.g. Dr., Prof.)</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={profileForm.control} name="avatarUrl" render={({ field }) => (
-                            <FormItem><FormLabel>Avatar URL</FormLabel><FormControl><Input placeholder="https://images.unsplash.com/..." {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={profileForm.control} name="bio" render={({ field }) => (
-                            <FormItem><FormLabel>Bio</FormLabel><FormControl><Textarea {...field} rows={3} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={profileForm.control} name="categories" render={({ field }) => (
-                            <FormItem><FormLabel>Categories</FormLabel><FormControl><Input placeholder="e.g. Photographer, Developer" {...field} /></FormControl><FormDescription>Enter multiple categories separated by commas.</FormDescription><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={profileForm.control} name="openForWork" render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm"><div className="space-y-0.5"><FormLabel>Open for work</FormLabel><FormDescription>Show a badge that you are available for hire.</FormDescription></div><FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
-                        )} />
-                        <div>
-                          <FormLabel>Social Links</FormLabel>
-                          <div className="space-y-4 pt-2">
-                              {fields.map((field, index) => (
-                                  <div key={field.id} className="flex items-center gap-2">
-                                      <FormField control={profileForm.control} name={`socialLinks.${index}.platform`} render={({ field }) => (
-                                          <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                              <FormControl><SelectTrigger className="w-[120px]"><SelectValue placeholder="Platform" /></SelectTrigger></FormControl>
-                                              <SelectContent>{availablePlatforms.map(p => <SelectItem key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</SelectItem>)}</SelectContent>
-                                          </Select>
-                                      )} />
-                                      <FormField control={profileForm.control} name={`socialLinks.${index}.url`} render={({ field }) => (<FormControl><Input {...field} placeholder="https://..." className="flex-1" /></FormControl>)} />
-                                      <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                  </div>
-                              ))}
-                              <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => append({ platform: '', url: '' })}>Add Social Link</Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                      <CardFooter>
-                          <Button type="submit" disabled={loading === 'profile'}>
-                              {loading === 'profile' && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                              Save Profile
-                          </Button>
-                      </CardFooter>
-                    </form>
-                  </Form>
-                </Card>
-              </TabsContent>
 
               <TabsContent value="account" className="mt-6">
                 <Card>
                     <CardHeader>
                         <CardTitle>Your Username</CardTitle>
-                        <CardDescription>This is your unique @username for mentions across Linkbase.</CardDescription>
+                        <CardDescription>This is your unique @username for mentions and profile discovery across Linkbase.</CardDescription>
                     </CardHeader>
                     <Form {...usernameForm}>
                         <form onSubmit={usernameForm.handleSubmit(handleUpdateUsername)}>
