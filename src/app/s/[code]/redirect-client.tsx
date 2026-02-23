@@ -24,7 +24,7 @@ export default function RedirectClient() {
 
     const resolve = async () => {
       try {
-        const linkRef = doc(firestore, 'short_links', code);
+        const linkRef = doc(firestore, 'short_link_public', code);
         const snap = await getDoc(linkRef);
 
         if (!snap.exists()) {
@@ -37,11 +37,7 @@ export default function RedirectClient() {
         setTargetUrl(url);
         setStatus('redirecting');
 
-        // Track click (fire-and-forget)
-        const today = new Date().toISOString().split('T')[0];
-        const clickRef = doc(firestore, 'short_links', code, 'clicks', today);
-        setDoc(clickRef, { code, date: today, count: increment(1) }, { merge: true }).catch(() => {});
-        // Also bump the top-level clickCount
+        // Track click (fire-and-forget) by incrementing the public counter
         setDoc(linkRef, { clickCount: increment(1) }, { merge: true }).catch(() => {});
 
         // Countdown then redirect

@@ -166,8 +166,7 @@ export type ShortLink = {
   updatedAt: any;
 };
 
-export type ShortLinkClickRecord = {
-  code: string;
-  date: string;  // YYYY-MM-DD
-  count: number;
+export type ShortLinkPublic = {
+  originalUrl: string;
+  clickCount: number;
 };

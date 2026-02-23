@@ -81,5 +81,28 @@ service cloud.firestore {
       allow delete: if isOwner(resource.data.userId);
       allow update: if false; // Deleting and creating a new one is safer
     }
+
+    // Short Links (Private management data)
+    match /short_links/{code} {
+      // Owner can read their own links. `read` covers `get` and `list`.
+      // The client query must contain `where('ownerId', '==', request.auth.uid)`.
+      allow read, update, delete: if isOwner(resource.data.ownerId);
+      
+      // Owner can create new links. Rule prevents overwriting.
+      allow create: if isOwner(request.resource.data.ownerId) && !exists(/databases/$(database)/documents/short_links/$(code));
+    }
+
+    // Short Links (Public data for redirection)
+    match /short_link_public/{code} {
+      // Anyone can get a link to be redirected.
+      allow get: if true;
+      
+      // Anyone can update the clickCount, but not the originalUrl.
+      allow update: if request.resource.data.originalUrl == resource.data.originalUrl;
+
+      // Creation/deletion only by owner of the corresponding private link.
+      // This requires the user to be signed in.
+      allow create, delete: if isSignedIn() && get(/databases/$(database)/documents/short_links/$(code)).data.ownerId == request.auth.uid;
+    }
   }
 }

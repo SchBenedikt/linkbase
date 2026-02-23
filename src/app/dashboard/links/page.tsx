@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { collection, query, where, doc, setDoc, deleteDoc, increment, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, getDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
@@ -15,12 +14,12 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Copy, ExternalLink, Link2, PlusCircle, Trash2, BarChart2 } from 'lucide-react';
+import { Link2, PlusCircle, Trash2 } from 'lucide-react';
 import type { ShortLink } from '@/lib/types';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { format } from 'date-fns';
+import { ShortLinkItem } from '@/components/short-link-item';
 
 /** Generates a random alphanumeric code of a given length */
 function generateCode(len = 6): string {
@@ -81,23 +80,25 @@ export default function LinksPage() {
     try {
       const code = customCode.trim() || generateCode(6);
 
-      // Validate custom code format
       if (customCode.trim() && !/^[a-z0-9-_]{3,32}$/.test(code)) {
         toast({ variant: 'destructive', title: 'Invalid code', description: 'Custom codes may only contain lowercase letters, numbers, hyphens and underscores (3–32 chars).' });
         setIsCreating(false);
         return;
       }
+      
+      const privateLinkRef = doc(firestore, 'short_links', code);
+      const publicLinkRef = doc(firestore, 'short_link_public', code);
 
-      // Check uniqueness
-      const ref = doc(firestore, 'short_links', code);
-      const existing = await import('firebase/firestore').then(({ getDoc }) => getDoc(ref));
+      const existing = await getDoc(privateLinkRef);
       if (existing.exists()) {
         toast({ variant: 'destructive', title: 'Code taken', description: `The code "${code}" is already in use. Try a different one.` });
         setIsCreating(false);
         return;
       }
 
-      await setDoc(ref, {
+      const batch = writeBatch(firestore);
+
+      batch.set(privateLinkRef, {
         code,
         originalUrl: trimmedUrl,
         title: newTitle.trim() || trimmedUrl,
@@ -106,6 +107,13 @@ export default function LinksPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+      
+      batch.set(publicLinkRef, {
+        originalUrl: trimmedUrl,
+        clickCount: 0
+      });
+      
+      await batch.commit();
 
       toast({ title: 'Short link created!', description: `${siteUrl}/s/${code}` });
       setNewUrl('');
@@ -121,7 +129,11 @@ export default function LinksPage() {
   const handleDelete = useCallback(async () => {
     if (!linkToDelete || !firestore) return;
     try {
-      await deleteDoc(doc(firestore, 'short_links', linkToDelete.code));
+      const batch = writeBatch(firestore);
+      batch.delete(doc(firestore, 'short_links', linkToDelete.code));
+      batch.delete(doc(firestore, 'short_link_public', linkToDelete.code));
+      await batch.commit();
+
       toast({ title: 'Link deleted.' });
     } catch (err: any) {
       toast({ variant: 'destructive', title: 'Error', description: err.message });
@@ -135,8 +147,6 @@ export default function LinksPage() {
     navigator.clipboard.writeText(url);
     toast({ title: 'Copied!', description: url });
   };
-
-  const totalClicks = useMemo(() => links.reduce((s, l) => s + (l.clickCount || 0), 0), [links]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -155,22 +165,16 @@ export default function LinksPage() {
           <Link2 className="h-7 w-7 text-primary" />
           <h1 className="text-3xl font-bold tracking-tight">Link Shortener</h1>
         </div>
-
-        {/* Summary stats */}
+        
         {links.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             <Card>
               <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Total Links</CardTitle></CardHeader>
               <CardContent><p className="text-3xl font-bold">{links.length}</p></CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Total Clicks</CardTitle></CardHeader>
-              <CardContent><p className="text-3xl font-bold">{totalClicks.toLocaleString()}</p></CardContent>
-            </Card>
           </div>
         )}
 
-        {/* Create new link */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><PlusCircle className="h-5 w-5" /> Create Short Link</CardTitle>
@@ -219,7 +223,6 @@ export default function LinksPage() {
           </CardContent>
         </Card>
 
-        {/* Link list */}
         {isUserLoading || isLoading ? (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 rounded-lg" />)}
@@ -231,51 +234,15 @@ export default function LinksPage() {
           </div>
         ) : (
           <div className="space-y-3">
-            {links.map((link) => {
-              const shortUrl = `${siteUrl}/s/${link.code}`;
-              const createdDate = link.createdAt?.toDate ? format(link.createdAt.toDate(), 'MMM d, yyyy') : '';
-              return (
-                <Card key={link.id} className="shadow-none border">
-                  <CardContent className="flex items-center gap-4 p-4">
-                    {/* Short URL */}
-                    <div className="flex-1 min-w-0">
-                      <button
-                        className="font-mono text-primary font-semibold text-sm hover:underline truncate block"
-                        onClick={() => copyToClipboard(link.code)}
-                        title="Click to copy"
-                      >
-                        /s/{link.code}
-                      </button>
-                      <p className="text-xs text-muted-foreground truncate mt-0.5">{link.title || link.originalUrl}</p>
-                      <p className="text-xs text-muted-foreground/60 truncate">{link.originalUrl}</p>
-                      {createdDate && <p className="text-xs text-muted-foreground/50 mt-0.5">{createdDate}</p>}
-                    </div>
-
-                    {/* Clicks badge */}
-                    <div className="flex-shrink-0 flex flex-col items-center gap-1 min-w-[60px]">
-                      <BarChart2 className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-lg font-bold">{(link.clickCount || 0).toLocaleString()}</span>
-                      <span className="text-[10px] text-muted-foreground">clicks</span>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <Button variant="ghost" size="icon" title="Copy short URL" onClick={() => copyToClipboard(link.code)}>
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" title="Open original URL" asChild>
-                        <a href={link.originalUrl} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      </Button>
-                      <Button variant="ghost" size="icon" title="Delete" onClick={() => setLinkToDelete(link)} className="text-destructive hover:text-destructive hover:bg-destructive/10">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {links.map((link) => (
+              <ShortLinkItem
+                key={link.id}
+                link={link}
+                siteUrl={siteUrl}
+                onCopy={() => copyToClipboard(link.code)}
+                onDelete={() => setLinkToDelete(link)}
+              />
+            ))}
           </div>
         )}
       </main>

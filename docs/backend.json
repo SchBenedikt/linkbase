@@ -154,6 +154,33 @@
         "count": { "type": "number", "description": "The total number of clicks for that day." }
       },
       "required": ["linkId", "pageId", "date", "count"]
+    },
+    "ShortLink": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ShortLink",
+      "type": "object",
+      "description": "Stores private management data for a short link, including the owner ID.",
+      "properties": {
+        "code": { "type": "string", "description": "The unique short code for the link." },
+        "originalUrl": { "type": "string", "format": "uri" },
+        "title": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "clickCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "originalUrl", "ownerId", "createdAt", "updatedAt"]
+    },
+    "ShortLinkPublic": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ShortLinkPublic",
+      "type": "object",
+      "description": "A public lookup for a short link containing only the destination URL and click count.",
+      "properties": {
+        "originalUrl": { "type": "string", "format": "uri" },
+        "clickCount": { "type": "number" }
+      },
+      "required": ["originalUrl"]
     }
   },
   "auth": {
@@ -223,6 +250,22 @@
           "entityName": "UsernameLookup",
           "schema": { "$ref": "#/backend/entities/UsernameLookup" },
           "description": "A public lookup table to map unique @usernames to user IDs for mentions."
+        }
+      },
+      {
+        "path": "/short_links/{code}",
+        "definition": {
+          "entityName": "ShortLink",
+          "schema": { "$ref": "#/backend/entities/ShortLink" },
+          "description": "Stores private management data for short links. Writable only by owner."
+        }
+      },
+      {
+        "path": "/short_link_public/{code}",
+        "definition": {
+          "entityName": "ShortLinkPublic",
+          "schema": { "$ref": "#/backend/entities/ShortLinkPublic" },
+          "description": "Stores public data for short links for redirection. Publicly readable."
         }
       }
     ]
