@@ -10,7 +10,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  const { code } = params;
+  const code = params.code;
   if (!code) {
     notFound();
   }
@@ -21,17 +21,19 @@ export async function GET(
 
     // Use a transaction to safely increment the click count
     const originalUrl = await runTransaction(serverFirestore, async (transaction) => {
+      // --- ALL READS FIRST ---
       const publicSnap = await transaction.get(publicLinkRef);
-      
+      const privateSnap = await transaction.get(privateLinkRef);
+
+      // --- LOGIC AND WRITES AFTER ---
       if (!publicSnap.exists()) {
         return null; // Link not found
       }
-
-      // Increment public click count
+      
+      // Update public click count
       transaction.update(publicLinkRef, { clickCount: (publicSnap.data().clickCount || 0) + 1 });
       
-      // Also try to increment private click count for consistency
-      const privateSnap = await transaction.get(privateLinkRef);
+      // Also update private click count for consistency
       if (privateSnap.exists()) {
           transaction.update(privateLinkRef, { clickCount: (privateSnap.data().clickCount || 0) + 1 });
       }
