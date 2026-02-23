@@ -82,21 +82,21 @@ service cloud.firestore {
       allow update: if false; // Deleting and creating a new one is safer
     }
 
-    // Short Links (Private management data) - FINAL FIX
+    // Short Links (Private management data) - DEFINITIVE FIX
     match /short_links/{code} {
       // GET Rule: A single link can only be read by its owner.
-      allow get: if isOwner(resource.data.ownerId);
-
-      // LIST Rule: Allow querying the collection. The 'get' rule above will be enforced
-      // by Firestore on the query, requiring a `where('ownerId', '==', ...)` clause from the client.
-      allow list: if true;
+      allow get: if 'ownerId' in resource.data && isOwner(resource.data.ownerId);
+    
+      // LIST Rule: Allow querying the collection if signed in. The 'get' rule is then
+      // enforced by Firestore on the query, which must contain `where('ownerId', '==', ...)`.
+      allow list: if isSignedIn();
 
       // CREATE Rule: On create, the new document's ownerId must match the user.
       allow create: if isOwner(request.resource.data.ownerId) 
                    && !exists(/databases/$(database)/documents/short_links/$(code));
                    
       // UPDATE/DELETE Rules: The existing document's ownerId must match the user.
-      allow update, delete: if isOwner(get(/databases/$(database)/documents/short_links/$(code)).data.ownerId);
+      allow update, delete: if 'ownerId' in get(/databases/$(database)/documents/short_links/$(code)).data && isOwner(get(/databases/$(database)/documents/short_links/$(code)).data.ownerId);
     }
 
 
