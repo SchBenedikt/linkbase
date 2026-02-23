@@ -5,8 +5,6 @@ import { serverFirestore } from '@/firebase/server';
 import type { Page as PageType, Link as LinkType, SlugLookup } from '@/lib/types';
 import PublicPageComponent from './public-page';
 
-export const dynamicParams = false;
-
 export async function generateStaticParams() {
   try {
     if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {

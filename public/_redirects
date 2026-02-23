@@ -1,3 +1,2 @@
-# Cloudflare Pages redirects for Next.js hybrid deployment
-# Handle all routes with Next.js routing
-/* /index.html 200
+# Routing is handled by the Cloudflare Worker (opennextjs-cloudflare).
+# Do not add catch-all rules here as they conflict with the worker routing.
