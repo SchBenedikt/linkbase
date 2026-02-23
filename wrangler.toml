@@ -4,10 +4,6 @@ pages_build_output_dir = ".open-next"
 compatibility_date = "2024-12-30"
 compatibility_flags = ["nodejs_compat"]
 
-[assets]
-directory = ".open-next/assets"
-binding = "ASSETS"
-
 [[services]]
 binding = "WORKER_SELF_REFERENCE"
 service = "linkbase"
