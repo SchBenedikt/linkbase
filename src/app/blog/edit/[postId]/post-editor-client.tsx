@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter, useParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc, addDoc, setDoc, serverTimestamp, collection, query, where, getDocs, limit } from 'firebase/firestore';
+import { doc, addDoc, setDoc, serverTimestamp, collection, query, where, getDocs, limit, getDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { UserNav } from '@/components/user-nav';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CalendarIcon, Eye, EyeOff, Sparkles, Save } from 'lucide-react';
-import type { Post, Page } from '@/lib/types';
+import type { Post, Page, UserProfile } from '@/lib/types';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -103,18 +103,38 @@ export default function PostEditorPage() {
         let authorInfo: Partial<Post> = {};
         if (status === 'published' && user && firestore) {
             try {
+                const userProfileRef = doc(firestore, 'user_profiles', user.uid);
                 const pagesQuery = query(collection(firestore, 'pages'), where('ownerId', '==', user.uid), limit(1));
-                const pagesSnap = await getDocs(pagesQuery);
+                
+                const [profileSnap, pagesSnap] = await Promise.all([
+                    getDoc(userProfileRef),
+                    getDocs(pagesQuery)
+                ]);
+                
+                let pageSlug: string | undefined;
                 if (!pagesSnap.empty) {
-                    const pageData = pagesSnap.docs[0].data() as Page;
+                    pageSlug = pagesSnap.docs[0].data().slug;
+                }
+
+                if (profileSnap.exists()) {
+                    const profileData = profileSnap.data() as UserProfile;
                     authorInfo = {
-                        authorName: [pageData.firstName, pageData.lastName].filter(Boolean).join(' '),
+                        authorName: [profileData.firstName, profileData.lastName].filter(Boolean).join(' ') || 'User',
+                        authorAvatarUrl: profileData.avatarUrl,
+                        authorPageSlug: pageSlug,
+                    };
+                } else if (pageSlug) {
+                    // Fallback to page data if profile doesn't exist
+                    const pageData = pagesSnap.docs[0].data() as Page;
+                     authorInfo = {
+                        authorName: [pageData.firstName, pageData.lastName].filter(Boolean).join(' ') || 'User',
                         authorAvatarUrl: pageData.avatarUrl,
                         authorPageSlug: pageData.slug,
                     };
                 }
+
             } catch (e) {
-                console.error("Could not fetch author page data", e);
+                console.error("Could not fetch author data", e);
             }
         }
         const autoExcerpt = data.content.substring(0, 250).replace(/\s+/g, ' ').trim() + (data.content.length > 250 ? '\u2026' : '');
