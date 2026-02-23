@@ -30,6 +30,12 @@ type Props = {
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.xn--schchner-2za.de';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    if (params.postId === '_placeholder') {
+        return {
+          title: 'Linkbase Post',
+          description: 'Post content will be available once published.',
+        };
+    }
     // Guard clause for build environments without Firebase credentials.
     if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
         console.warn(`Firebase config not found. Skipping metadata generation for /post/${params.postId}.`);
@@ -97,6 +103,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Page({ params }: Props) {
     const { postId } = params;
+    if (postId === '_placeholder') {
+        notFound();
+    }
 
     try {
         const postRef = doc(serverFirestore, 'posts', postId);
