@@ -135,10 +135,10 @@ export default function LinksPage() {
     } catch (err: any) {
       console.error('Short link creation failed', {
         message: err?.message,
-        code: err?.code,
+        errorCode: err?.code,
         userId: user?.uid,
         ownerId: user?.uid,
-        code: customCode.trim() || 'auto-generated',
+        customCode: customCode.trim() || 'auto-generated',
         originalUrl: trimmedUrl,
       });
       toast({ variant: 'destructive', title: 'Error', description: err.message || 'Could not create link.' });
