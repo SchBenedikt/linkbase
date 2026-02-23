@@ -30,34 +30,24 @@ service cloud.firestore {
         allow write: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
       }
 
-      // Analytics Data - DEFINITIVE FIX
+      // Analytics Data
       match /page_views/{viewId} {
-        // Owner can read their own analytics by querying the collection
         allow get, list: if isSignedIn() && exists(/databases/$(database)/documents/pages/$(pageId)) && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
-        // Anyone can write (increment a counter)
         allow write: if true;
       }
 
       match /link_clicks/{clickId} {
-        // Owner can read their own analytics by querying the collection
         allow get, list: if isSignedIn() && exists(/databases/$(database)/documents/pages/$(pageId)) && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
-        // Anyone can write (increment a counter)
         allow write: if true;
       }
     }
 
     // Blog Posts - DEFINITIVE FIX
     match /posts/{postId} {
-        // GET Rule: A single post can be read if it's published OR if the user is the owner.
-        // This is secure because it checks the document's actual data.
-        allow get: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
-
-        // LIST Rule: A query on the collection is allowed.
-        // For public queries (unauthenticated), Firestore will verify that the query's constraints 
-        // (e.g., `where('status', '==', 'published')`) ensure that only documents permitted 
-        // by the `get` rule are returned.
-        // For private queries (e.g., by owner), Firestore verifies those constraints too.
-        allow list: if true;
+        // READ Rule (GET + LIST): A user can read a post if it is published OR they are the owner.
+        // This single rule securely covers both public queries (where status == 'published')
+        // and private queries by the owner (where ownerId == auth.uid).
+        allow read: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
 
         // WRITE Rules:
         // On create, the new document's ownerId must match the user.
@@ -84,21 +74,17 @@ service cloud.firestore {
 
     // Short Links (Private management data) - DEFINITIVE FIX
     match /short_links/{code} {
-      // GET Rule: A single link can only be read by its owner.
-      allow get: if 'ownerId' in resource.data && isOwner(resource.data.ownerId);
+      // READ (GET + LIST): A user can only read documents where the `ownerId` field matches their own UID.
+      // The client query MUST include `where('ownerId', '==', request.auth.uid)` to satisfy this rule.
+      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
     
-      // LIST Rule: Allow querying the collection if signed in. The 'get' rule is then
-      // enforced by Firestore on the query, which must contain `where('ownerId', '==', ...)`.
-      allow list: if isSignedIn();
-
-      // CREATE Rule: On create, the new document's ownerId must match the user.
+      // CREATE Rule: On create, the new document's ownerId must match the user and the code must not exist.
       allow create: if isOwner(request.resource.data.ownerId) 
                    && !exists(/databases/$(database)/documents/short_links/$(code));
                    
       // UPDATE/DELETE Rules: The existing document's ownerId must match the user.
-      allow update, delete: if 'ownerId' in get(/databases/$(database)/documents/short_links/$(code)).data && isOwner(get(/databases/$(database)/documents/short_links/$(code)).data.ownerId);
+      allow update, delete: if isOwner(get(/databases/$(database)/documents/short_links/$(code)).data.ownerId);
     }
-
 
     // Short Links (Public data for redirection)
     match /short_link_public/{code} {
