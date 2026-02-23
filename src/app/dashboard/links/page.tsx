@@ -14,12 +14,13 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Link2, PlusCircle, Trash2 } from 'lucide-react';
+import { Info, Link2, PlusCircle, Trash2 } from 'lucide-react';
 import type { ShortLink } from '@/lib/types';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { ShortLinkItem } from '@/components/short-link-item';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 /** Generates a random alphanumeric code of a given length */
 function generateCode(len = 6): string {
@@ -186,6 +187,14 @@ export default function LinksPage() {
           <h1 className="text-3xl font-bold tracking-tight">Link Shortener</h1>
         </div>
         <p className="text-muted-foreground mb-8">Create and manage short links for sharing.</p>
+
+        <Alert className="mb-8 border-orange-300 bg-orange-50 text-orange-800 dark:border-orange-700 dark:bg-orange-950 dark:text-orange-200 [&>svg]:text-orange-500">
+          <Info className="h-4 w-4" />
+          <AlertTitle>Beta-Funktion</AlertTitle>
+          <AlertDescription>
+            Diese Funktion befindet sich derzeit in der Entwicklung und funktioniert möglicherweise nicht zuverlässig. Weiterleitungen können fehlschlagen.
+          </AlertDescription>
+        </Alert>
 
         <Card className="mb-8">
           <CardHeader>
