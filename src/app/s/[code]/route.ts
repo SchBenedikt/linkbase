@@ -12,7 +12,7 @@ export async function GET(
   { params }: { params: { code: string } }
 ) {
   // NOTE: In Next.js 15, `params` is a thenable. Avoid destructuring.
-  const code = params.code;
+  const code = await params.code;
   if (!code) {
     notFound();
   }
