@@ -189,11 +189,11 @@ export default function LinksPage() {
         <p className="text-muted-foreground mb-8">Create and manage short links for sharing.</p>
 
         <Alert className="mb-8 border-orange-300 bg-orange-50 text-orange-800 dark:border-orange-700 dark:bg-orange-950 dark:text-orange-200 [&>svg]:text-orange-500">
-          <Info className="h-4 w-4" />
-          <AlertTitle>Beta-Funktion</AlertTitle>
-          <AlertDescription>
-            Diese Funktion befindet sich derzeit in der Entwicklung und funktioniert möglicherweise nicht zuverlässig. Weiterleitungen können fehlschlagen.
-          </AlertDescription>
+            <Info className="h-4 w-4" />
+            <AlertTitle>Beta Feature</AlertTitle>
+            <AlertDescription>
+                This feature is currently under development and may not work reliably. Redirects might fail.
+            </AlertDescription>
         </Alert>
 
         <Card className="mb-8">
