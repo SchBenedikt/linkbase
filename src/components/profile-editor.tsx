@@ -20,6 +20,7 @@ export const profileSchema = z.object({
   slug: z.string().min(3, 'Slug must be at least 3 characters').regex(/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens.'),
   avatarUrl: z.string().url('Please enter a valid image URL').optional().or(z.literal('')),
   openForWork: z.boolean().optional(),
+  sensitiveContent: z.boolean().optional(),
   categories: z.string().optional(),
   socialLinks: z.array(z.object({
     platform: z.string().min(1, "Platform is required."),
@@ -44,6 +45,7 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
       slug: page.slug || '',
       avatarUrl: page.avatarUrl || '',
       openForWork: page.openForWork || false,
+      sensitiveContent: page.sensitiveContent || false,
       categories: page.categories?.join(', ') || '',
       socialLinks: page.socialLinks || [],
     },
@@ -179,6 +181,26 @@ export function ProfileEditor({ page, onSave, onCancel }: ProfileEditorProps) {
                 <FormLabel>Open for work</FormLabel>
                 <FormDescription>
                   Show a badge on your profile that you are available for hire.
+                </FormDescription>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="sensitiveContent"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm bg-background">
+              <div className="space-y-0.5">
+                <FormLabel>Sensitive Content (18+)</FormLabel>
+                <FormDescription>
+                  Visitors must confirm their age before viewing this page.
                 </FormDescription>
               </div>
               <FormControl>

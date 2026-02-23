@@ -76,7 +76,7 @@ const renderSocialLink = (link: SocialLink) => {
 };
 
 export function ProfileHeader({ page, onEdit, isEditable = false }: ProfileHeaderProps) {
-  const name = [page.title, page.firstName, page.lastName].filter(Boolean).join(' ') || 'User';
+  const name = [page.firstName, page.lastName].filter(Boolean).join(' ') || page.title || 'User';
   const bio = page.bio || '';
   const avatarUrl = page.avatarUrl || '';
   const avatarHint = page.avatarHint || '';

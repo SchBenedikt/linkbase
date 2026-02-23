@@ -19,7 +19,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileEditor, profileSchema } from '@/components/profile-editor';
 import { AddContentDialog } from '@/components/add-content-dialog';
-import { hexToHsl, getContrastColor, isColorLight } from '@/lib/utils';
+import { hexToHsl, getContrastColor, isColorLight, resolveReadableFg } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserNav } from '@/components/user-nav';
 import { Button } from '@/components/ui/button';
@@ -112,8 +112,12 @@ export default function EditPage() {
         effectiveAppearance.borderColor = '#374151';
     }
 
-    const rawFg = (!wasThemeTransformed && dbAppearance.foregroundColor) ? dbAppearance.foregroundColor : getContrastColor(effectiveAppearance.backgroundColor);
-    const rawCardFg = (!wasThemeTransformed && dbAppearance.cardForegroundColor) ? dbAppearance.cardForegroundColor : getContrastColor(effectiveAppearance.cardColor);
+    const rawFg = wasThemeTransformed
+        ? getContrastColor(effectiveAppearance.backgroundColor)
+        : resolveReadableFg(dbAppearance.foregroundColor, effectiveAppearance.backgroundColor);
+    const rawCardFg = wasThemeTransformed
+        ? getContrastColor(effectiveAppearance.cardColor)
+        : resolveReadableFg(dbAppearance.cardForegroundColor, effectiveAppearance.cardColor);
 
     setAppearance({
       ...effectiveAppearance,
@@ -238,6 +242,13 @@ export default function EditPage() {
         }
     });
     batch.commit();
+  };
+
+  const handleResizeLink = (linkId: string, colSpan: number, rowSpan: number) => {
+    if (!linksRef) return;
+    setLinksData(prev => prev!.map(l => l.id === linkId ? { ...l, colSpan, rowSpan } : l));
+    const linkRef = doc(linksRef, linkId);
+    setDocumentNonBlocking(linkRef, { colSpan, rowSpan }, { merge: true });
   };
 
 
@@ -419,6 +430,7 @@ export default function EditPage() {
                 onEditLink={(link) => setSheetState({ view: 'editContent', open: true, content: link })}
                 onDeleteLink={setLinkToDelete}
                 onDragEnd={handleDragEnd}
+                onResizeLink={handleResizeLink}
                 appearance={appearance}
                 isEditable={true}
               />
@@ -442,7 +454,15 @@ export default function EditPage() {
             </SheetDescription>
           </SheetHeader>
           <ScrollArea className="flex-1 mt-4">
-            <div className="pb-8 pr-1">{renderSheetContent()}</div>
+            {/* key forces a full remount when view/content changes, preventing stale form state */}
+            <div
+              key={sheetState.open
+                ? `${sheetState.view}-${sheetState.view === 'editContent' ? sheetState.content.id : ''}`
+                : 'closed'}
+              className="pb-8 pr-1"
+            >
+              {renderSheetContent()}
+            </div>
           </ScrollArea>
         </SheetContent>
       </Sheet>
