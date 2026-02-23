@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Copy, ExternalLink, Trash2, BarChart2 } from 'lucide-react';
 import { format } from 'date-fns';
 
-export function ShortLinkItem({ link, onCopy, onDelete }: {
+export function ShortLinkItem({ link, siteUrl, onCopy, onDelete }: {
     link: ShortLink,
+    siteUrl: string,
     onCopy: () => void,
     onDelete: () => void,
 }) {
@@ -32,7 +33,7 @@ export function ShortLinkItem({ link, onCopy, onDelete }: {
                 onClick={onCopy}
                 title="Click to copy"
               >
-                /s/{link.code}
+                {siteUrl.replace(/^https?:\/\//, '')}/s?code={link.code}
               </button>
               <p className="text-xs text-muted-foreground truncate mt-0.5">{link.title || link.originalUrl}</p>
               <p className="text-xs text-muted-foreground/60 truncate">{link.originalUrl}</p>
