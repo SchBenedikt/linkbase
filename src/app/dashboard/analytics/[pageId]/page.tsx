@@ -4,6 +4,9 @@ import { serverFirestore } from '@/firebase/server';
 
 export async function generateStaticParams() {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      return [{ pageId: '_placeholder' }];
+    }
     if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
       console.warn('Firebase config not found. Returning fallback params for analytics/[pageId].');
       return [{ pageId: '_placeholder' }];

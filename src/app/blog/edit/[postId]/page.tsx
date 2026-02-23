@@ -4,6 +4,9 @@ import { serverFirestore } from '@/firebase/server';
 
 export async function generateStaticParams() {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      return [{ postId: 'new' }];
+    }
     if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
       console.warn('Firebase config not found. Returning fallback params for blog/edit/[postId].');
       return [{ postId: 'new' }];
