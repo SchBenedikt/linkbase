@@ -4,6 +4,35 @@
 
 Your application is now deployed at: **https://linkbase.schaechner.workers.dev**
 
+## 🚀 AUTOMATIC DEPLOYMENT SETUP
+
+### GitHub Actions CI/CD Pipeline
+
+Das Repository ist jetzt mit GitHub Actions für automatisches Deployment konfiguriert!
+
+**Was passiert automatisch:**
+- Jeder Push zum `main` Branch wird automatisch deployed
+- Build und Deployment laufen ohne manuelle Eingriffe
+- Deployment-Status ist in GitHub sichtbar
+- Fehler werden automatisch gemeldet
+
+**Benötigte GitHub Secrets:**
+Siehe `.github/secrets-template.md` für die vollständige Anleitung
+
+### Manuelles Deployment (Fallback)
+
+Falls das automatische Deployment nicht funktioniert:
+
+```bash
+./deploy.sh
+```
+
+### Option 2: Manual deployment
+```bash
+npm run build:cloudflare
+npx opennextjs-cloudflare deploy
+```
+
 ## Latest Fix - 500 Internal Server Error Resolution
 
 ### Root Cause
