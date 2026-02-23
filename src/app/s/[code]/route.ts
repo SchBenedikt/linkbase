@@ -4,7 +4,6 @@ import { doc, runTransaction } from 'firebase/firestore';
 import { serverFirestore } from '@/firebase/server';
 import type { ShortLinkPublic } from '@/lib/types';
 
-export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export async function GET(
