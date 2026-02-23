@@ -18,6 +18,12 @@ import {FirestorePermissionError} from '@/firebase/errors';
  */
 export function setDocumentNonBlocking(docRef: DocumentReference, data: any, options: SetOptions) {
   setDoc(docRef, data, options).catch(error => {
+    console.error('Firestore setDoc error', {
+      path: docRef.path,
+      operation: 'write',
+      message: error?.message,
+      code: error?.code,
+    });
     errorEmitter.emit(
       'permission-error',
       new FirestorePermissionError({
@@ -39,6 +45,12 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
 export function addDocumentNonBlocking(colRef: CollectionReference, data: any) {
   const promise = addDoc(colRef, data)
     .catch(error => {
+      console.error('Firestore addDoc error', {
+        path: colRef.path,
+        operation: 'create',
+        message: error?.message,
+        code: error?.code,
+      });
       errorEmitter.emit(
         'permission-error',
         new FirestorePermissionError({
@@ -59,6 +71,12 @@ export function addDocumentNonBlocking(colRef: CollectionReference, data: any) {
 export function updateDocumentNonBlocking(docRef: DocumentReference, data: any) {
   updateDoc(docRef, data)
     .catch(error => {
+      console.error('Firestore updateDoc error', {
+        path: docRef.path,
+        operation: 'update',
+        message: error?.message,
+        code: error?.code,
+      });
       errorEmitter.emit(
         'permission-error',
         new FirestorePermissionError({
@@ -78,6 +96,12 @@ export function updateDocumentNonBlocking(docRef: DocumentReference, data: any) 
 export function deleteDocumentNonBlocking(docRef: DocumentReference) {
   deleteDoc(docRef)
     .catch(error => {
+      console.error('Firestore deleteDoc error', {
+        path: docRef.path,
+        operation: 'delete',
+        message: error?.message,
+        code: error?.code,
+      });
       errorEmitter.emit(
         'permission-error',
         new FirestorePermissionError({

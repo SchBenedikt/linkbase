@@ -45,6 +45,7 @@ export default function LinksPage() {
   const [customCode, setCustomCode] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<ShortLink | null>(null);
+  const [search, setSearch] = useState('');
 
   const shortLinksQuery = useMemoFirebase(
     () => (user && firestore && !isUserLoading)
@@ -63,6 +64,17 @@ export default function LinksPage() {
       return tb - ta;
     });
   }, [unsortedLinks]);
+
+  const filteredLinks = useMemo(() => {
+    if (!search.trim()) return links;
+    const needle = search.trim().toLowerCase();
+    return links.filter((link) => {
+      const title = link.title?.toLowerCase() || '';
+      const url = link.originalUrl?.toLowerCase() || '';
+      const code = link.code?.toLowerCase() || '';
+      return title.includes(needle) || url.includes(needle) || code.includes(needle);
+    });
+  }, [links, search]);
 
   const handleCreate = useCallback(async () => {
     if (!user || !firestore) return;
@@ -89,7 +101,7 @@ export default function LinksPage() {
       const privateLinkRef = doc(firestore, 'short_links', code);
       const publicLinkRef = doc(firestore, 'short_link_public', code);
 
-      const existing = await getDoc(privateLinkRef);
+      const existing = await getDoc(publicLinkRef);
       if (existing.exists()) {
         toast({ variant: 'destructive', title: 'Code taken', description: `The code "${code}" is already in use. Try a different one.` });
         setIsCreating(false);
@@ -120,6 +132,14 @@ export default function LinksPage() {
       setNewTitle('');
       setCustomCode('');
     } catch (err: any) {
+      console.error('Short link creation failed', {
+        message: err?.message,
+        code: err?.code,
+        userId: user?.uid,
+        ownerId: user?.uid,
+        code: customCode.trim() || 'auto-generated',
+        originalUrl: trimmedUrl,
+      });
       toast({ variant: 'destructive', title: 'Error', description: err.message || 'Could not create link.' });
     } finally {
       setIsCreating(false);
@@ -161,23 +181,18 @@ export default function LinksPage() {
       </header>
 
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex items-center gap-3 mb-8">
+        <div className="flex items-center gap-3 mb-2">
           <Link2 className="h-7 w-7 text-primary" />
           <h1 className="text-3xl font-bold tracking-tight">Link Shortener</h1>
         </div>
-        
-        {links.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Total Links</CardTitle></CardHeader>
-              <CardContent><p className="text-3xl font-bold">{links.length}</p></CardContent>
-            </Card>
-          </div>
-        )}
+        <p className="text-muted-foreground mb-8">Create and manage short links for sharing.</p>
 
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><PlusCircle className="h-5 w-5" /> Create Short Link</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <PlusCircle className="h-5 w-5 text-primary" />
+              Create short link
+            </CardTitle>
             <CardDescription>Paste any URL to generate a short, shareable link.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -205,8 +220,8 @@ export default function LinksPage() {
             <div className="flex items-end gap-3">
               <div className="space-y-1.5 flex-1 max-w-xs">
                 <Label htmlFor="custom-code">Custom code (optional)</Label>
-                <div className="flex items-center gap-1">
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">/s/</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">{siteUrl}/s/</span>
                   <Input
                     id="custom-code"
                     placeholder="my-code"
@@ -223,6 +238,22 @@ export default function LinksPage() {
           </CardContent>
         </Card>
 
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-bold">Your links</h2>
+            <p className="text-muted-foreground">Search, copy, and delete your short links.</p>
+          </div>
+          <div className="w-full sm:w-80">
+            <Label htmlFor="link-search" className="sr-only">Search links</Label>
+            <Input
+              id="link-search"
+              placeholder="Search by title, URL, or code"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
         {isUserLoading || isLoading ? (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-20 rounded-lg" />)}
@@ -232,9 +263,14 @@ export default function LinksPage() {
             <h3 className="text-xl font-semibold">No links yet</h3>
             <p className="text-muted-foreground mt-2">Create your first short link above.</p>
           </div>
+        ) : filteredLinks.length === 0 ? (
+          <div className="text-center py-12 border rounded-lg">
+            <h3 className="text-lg font-semibold">No matching links</h3>
+            <p className="text-muted-foreground mt-2">Try a different keyword or clear the search.</p>
+          </div>
         ) : (
           <div className="space-y-3">
-            {links.map((link) => (
+            {filteredLinks.map((link) => (
               <ShortLinkItem
                 key={link.id}
                 link={link}
