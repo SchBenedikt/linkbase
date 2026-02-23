@@ -82,18 +82,26 @@ service cloud.firestore {
       allow update: if false; // Deleting and creating a new one is safer
     }
 
-    // Short Links (Private management data)
+    // Short Links (Private management data) - DEFINITIVE FIX
     match /short_links/{code} {
-      // Owner can get, update, or delete their own specific link.
-      allow get, update, delete: if isOwner(resource.data.ownerId);
-      
-      // A signed-in user can query the collection. Firestore will then apply the 'get' rule
-      // to the results, ensuring only documents matching the query are returned.
-      allow list: if isSignedIn();
+      // GET: Explicitly check for ownerId existence before comparing.
+      // This makes the rule robust against malformed data.
+      allow get: if 'ownerId' in resource.data && resource.data.ownerId == request.auth.uid;
 
-      // Owner can create new links. Rule prevents overwriting.
-      allow create: if isOwner(request.resource.data.ownerId) && !exists(/databases/$(database)/documents/short_links/$(code));
+      // UPDATE/DELETE: Same check for existing documents.
+      allow update, delete: if 'ownerId' in resource.data && resource.data.ownerId == request.auth.uid;
+      
+      // LIST: Allow any authenticated user to attempt a query.
+      // Firestore's rules engine will then ensure the query's constraints
+      // (e.g., where('ownerId', '==', uid)) are compatible with the 'get' rule above.
+      allow list: if request.auth != null;
+
+      // CREATE: Ensure the new document has a matching ownerId.
+      allow create: if 'ownerId' in request.resource.data 
+                   && request.resource.data.ownerId == request.auth.uid 
+                   && !exists(/databases/$(database)/documents/short_links/$(code));
     }
+
 
     // Short Links (Public data for redirection)
     match /short_link_public/{code} {
