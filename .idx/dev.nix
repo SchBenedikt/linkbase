@@ -18,7 +18,7 @@
     # Disabling because we are using prod backends right now
     detect = false;
     projectId = "demo-app";
-    services = ["auth", "firestore"];
+    services = [ "auth" "firestore" ];
   };
   idx = {
     # Search for the extensions you want on https://open-vsx.org/ and use "publisher.id"
@@ -37,7 +37,7 @@
       enable = true;
       previews = {
         web = {
-          command = ["npm", "run", "dev", "--", "--port", "$PORT", "--hostname", "0.0.0.0"];
+          command = [ "npm" "run" "dev" "--" "--port" "$PORT" "--hostname" "0.0.0.0" ];
           manager = "web";
         };
       };
