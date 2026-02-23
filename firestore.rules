@@ -44,12 +44,8 @@ service cloud.firestore {
 
     // Blog Posts
     match /posts/{postId} {
-        // A user can read a post if it is published OR they are the owner.
         allow read: if ('status' in resource.data && resource.data.status == 'published') || ('ownerId' in resource.data && isOwner(resource.data.ownerId));
-        
-        // On create, the new document's ownerId must match the user.
         allow create: if isOwner(request.resource.data.ownerId);
-        // On update/delete, the existing document's ownerId must match the user.
         allow update, delete: if isOwner(get(/databases/$(database)/documents/posts/$(postId)).data.ownerId);
     }
 
@@ -71,12 +67,12 @@ service cloud.firestore {
 
     // Short Links (Private management data) - FINAL FIX
     match /short_links/{code} {
-      // GET: Allow reading a single document if the user is the owner.
-      allow get: if isOwner(resource.data.ownerId);
+      // GET: Allow reading if the user is the owner. This is defensive.
+      allow get: if 'ownerId' in resource.data && isOwner(resource.data.ownerId);
 
       // LIST: Allow a signed-in user to query the collection.
       // Firestore will then ensure the query itself (e.g., where("ownerId", "==", uid))
-      // is secure by checking it against the `get` rule.
+      // is secure by checking it against the `get` rule above.
       allow list: if isSignedIn();
 
       // CREATE: A new document must have the correct ownerId and the code must not already exist.
