@@ -305,11 +305,10 @@ export default function PostEditorPage() {
                                         name="title"
                                         render={({ field }) => (
                                             <FormItem>
+                                                <FormLabel>Title</FormLabel>
                                                 <FormControl>
-                                                    <Textarea
+                                                    <Input
                                                         {...field}
-                                                        className="text-3xl font-extrabold resize-none bg-transparent border-none shadow-none p-0 focus-visible:ring-0 leading-tight placeholder:text-muted-foreground/40"
-                                                        rows={2}
                                                         placeholder="Post title…"
                                                     />
                                                 </FormControl>
@@ -323,7 +322,7 @@ export default function PostEditorPage() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <FormLabel className="text-xs text-muted-foreground">Content</FormLabel>
+                                                    <FormLabel>Content</FormLabel>
                                                     <span className="text-xs text-muted-foreground">
                                                         {wordCount} words · {readingTimeDisplay}
                                                     </span>
@@ -332,7 +331,7 @@ export default function PostEditorPage() {
                                                     <Textarea
                                                         placeholder="Write your story…"
                                                         {...field}
-                                                        className="text-base resize-none min-h-[420px] bg-transparent border-none shadow-none p-0 focus-visible:ring-0 leading-relaxed placeholder:text-muted-foreground/40"
+                                                        className="min-h-[420px]"
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
