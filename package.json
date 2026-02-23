@@ -6,12 +6,11 @@
     "dev": "next dev --turbopack -p 9002",
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "NODE_ENV=production next build && NEXT_ON_PAGES=1 npx @cloudflare/next-on-pages && rm -rf output && mkdir output && cp -R .vercel/output/* output/",
-    "pages:build": "NODE_ENV=production next build && NEXT_ON_PAGES=1 npx @cloudflare/next-on-pages && rm -rf output && mkdir output && cp -R .vercel/output/* output/",
+    "build": "NODE_ENV=production next build && NEXT_ON_PAGES=1 npx @cloudflare/next-on-pages --skip-build && rm -rf output && mkdir output && cp -R .vercel/output/* output/",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
