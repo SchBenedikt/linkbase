@@ -47,10 +47,10 @@ export default function LinksPage() {
   const [linkToDelete, setLinkToDelete] = useState<ShortLink | null>(null);
 
   const shortLinksQuery = useMemoFirebase(
-    () => user && firestore
+    () => (user && firestore && !isUserLoading)
       ? query(collection(firestore, 'short_links'), where('ownerId', '==', user.uid))
       : null,
-    [user, firestore]
+    [user, firestore, isUserLoading]
   );
 
   const { data: unsortedLinks, isLoading } = useCollection<ShortLink>(shortLinksQuery);

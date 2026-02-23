@@ -92,9 +92,13 @@ service cloud.firestore {
       allow update: if request.resource.data.keys().hasOnly(['originalUrl', 'clickCount']) 
                    && request.resource.data.originalUrl == resource.data.originalUrl;
 
-      // Creation/deletion only by owner of the corresponding private link.
-      // This requires the user to be signed in.
-      allow create, delete: if isSignedIn() && get(/databases/$(database)/documents/short_links/$(code)).data.ownerId == request.auth.uid;
+      // Creation/deletion only by signed-in users.
+      // Creation is restricted to the minimal public fields to prevent abuse.
+      allow create: if isSignedIn()
+           && request.resource.data.keys().hasOnly(['originalUrl', 'clickCount'])
+           && request.resource.data.originalUrl is string
+           && request.resource.data.clickCount is int;
+      allow delete: if isSignedIn() && get(/databases/$(database)/documents/short_links/$(code)).data.ownerId == request.auth.uid;
     }
   }
 }
