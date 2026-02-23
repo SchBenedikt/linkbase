@@ -19,7 +19,7 @@ export async function generateTheme(prevState: any, formData: FormData) {
   }
 
   try {
-    const response = await fetch('/api/generate-theme', {
+    const response = await fetch('/functions/generate-theme', {
       method: 'POST',
       body: formData,
     });
@@ -39,7 +39,7 @@ export async function getWebsiteMeta(url: string): Promise<{ title?: string; ima
     if (!url || !url.startsWith('http')) {
       return { error: 'Please enter a valid URL.' };
     }
-    const response = await fetch(`/api/website-meta?url=${encodeURIComponent(url)}`);
+    const response = await fetch(`/functions/website-meta?url=${encodeURIComponent(url)}`);
     const result = await response.json();
     if (!response.ok && !result.error) {
       return { error: 'Failed to fetch meta data from the URL.' };
@@ -86,4 +86,3 @@ export async function searchUsersByUsername(username: string): Promise<Pick<User
     return [];
   }
 }
-
