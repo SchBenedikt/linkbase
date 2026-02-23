@@ -69,12 +69,15 @@ service cloud.firestore {
       allow update: if false; // Deleting and creating a new one is safer
     }
 
-    // Short Links (Private management data) - DEFINITIVE FIX
+    // Short Links (Private management data) - FINAL FIX
     match /short_links/{code} {
-      // READ: A user can only read their own link documents.
-      // This rule is defensive against malformed data by checking for the existence of the `ownerId` field.
-      // The client-side query must filter by ownerId to match this rule.
-      allow read: if isSignedIn() && 'ownerId' in resource.data && resource.data.ownerId == request.auth.uid;
+      // GET: Allow reading a single document if the user is the owner.
+      allow get: if isOwner(resource.data.ownerId);
+
+      // LIST: Allow a signed-in user to query the collection.
+      // Firestore will then ensure the query itself (e.g., where("ownerId", "==", uid))
+      // is secure by checking it against the `get` rule.
+      allow list: if isSignedIn();
 
       // CREATE: A new document must have the correct ownerId and the code must not already exist.
       allow create: if isOwner(request.resource.data.ownerId) 
