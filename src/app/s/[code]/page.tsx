@@ -6,6 +6,6 @@ export async function generateStaticParams() {
   return [{ code: '_placeholder' }];
 }
 
-export default function Page() {
+export default function Page({ params }: { params: { code: string } }) {
   return <RedirectClient />;
 }
