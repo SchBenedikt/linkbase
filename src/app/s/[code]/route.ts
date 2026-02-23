@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse, notFound } from 'next/server';
+import { notFound } from 'next/navigation';
+import { NextRequest, NextResponse } from 'next/server';
 import { doc, runTransaction } from 'firebase/firestore';
 import { serverFirestore } from '@/firebase/server';
 import type { ShortLinkPublic } from '@/lib/types';
@@ -23,7 +24,6 @@ export async function GET(
     const originalUrl = await runTransaction(serverFirestore, async (transaction) => {
       // 1. All reads must happen before all writes.
       const publicSnap = await transaction.get(publicLinkRef);
-      const privateSnap = await transaction.get(privateLinkRef);
       
       if (!publicSnap.exists()) {
         return null; // Signals not found, will be caught and handled.
@@ -31,6 +31,7 @@ export async function GET(
       
       const linkData = publicSnap.data() as ShortLinkPublic;
       const currentClicks = linkData.clickCount || 0;
+      const privateSnap = await transaction.get(privateLinkRef);
 
       // 2. Now, perform all writes.
       transaction.update(publicLinkRef, { clickCount: currentClicks + 1 });
