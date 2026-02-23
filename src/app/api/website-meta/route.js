@@ -1,13 +1,18 @@
+
+import { NextResponse } from 'next/server';
+
+export const runtime = 'edge';
+
 /**
- * Cloudflare Pages Function: GET /api/website-meta?url=...
+ * API Route: GET /api/website-meta?url=...
  * Fetches Open Graph title and image from a given URL server-side to avoid CORS.
  */
-export async function onRequestGet(context) {
-  const { request } = context;
-  const url = new URL(request.url).searchParams.get('url');
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const url = searchParams.get('url');
 
   if (!url || !url.startsWith('http')) {
-    return Response.json({ error: 'Please enter a valid URL.' }, { status: 400 });
+    return NextResponse.json({ error: 'Please enter a valid URL.' }, { status: 400 });
   }
 
   try {
@@ -23,7 +28,7 @@ export async function onRequestGet(context) {
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      return Response.json({ error: `Could not fetch the URL. Status: ${response.status}` }, { status: 502 });
+      return NextResponse.json({ error: `Could not fetch the URL. Status: ${response.status}` }, { status: 502 });
     }
 
     const html = await response.text();
@@ -49,12 +54,12 @@ export async function onRequestGet(context) {
       }
     }
 
-    return Response.json({ title, imageUrl });
+    return NextResponse.json({ title, imageUrl });
   } catch (error) {
     if (error.name === 'AbortError') {
-      return Response.json({ error: 'Request timed out.' }, { status: 504 });
+      return NextResponse.json({ error: 'Request timed out.' }, { status: 504 });
     }
     console.error('Error fetching website meta:', error);
-    return Response.json({ error: 'Failed to fetch meta data from the URL.' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch meta data from the URL.' }, { status: 500 });
   }
 }

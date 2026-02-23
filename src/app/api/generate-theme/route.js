@@ -1,26 +1,29 @@
-/**
- * Cloudflare Pages Function: POST /api/generate-theme
- * Calls the Gemini REST API to generate a theme from keywords.
- * The GEMINI_API_KEY environment variable must be set in Cloudflare Pages.
- */
-export async function onRequestPost(context) {
-  const { request, env } = context;
 
+import { NextResponse } from 'next/server';
+
+export const runtime = 'edge';
+
+/**
+ * API Route: POST /api/generate-theme
+ * Calls the Gemini REST API to generate a theme from keywords.
+ * The GEMINI_API_KEY environment variable must be set.
+ */
+export async function POST(request) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json({ error: 'AI service not configured.' }, { status: 503 });
+  }
+  
   let keywords;
   try {
     const formData = await request.formData();
     keywords = formData.get('keywords');
   } catch {
-    return Response.json({ error: 'Invalid request body.' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
   if (!keywords || String(keywords).length < 3) {
-    return Response.json({ error: 'Please enter at least 3 characters.' }, { status: 400 });
-  }
-
-  const apiKey = env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return Response.json({ error: 'AI service not configured.' }, { status: 503 });
+    return NextResponse.json({ error: 'Please enter at least 3 characters.' }, { status: 400 });
   }
 
   const prompt = `You are an AI assistant specialized in generating aesthetically pleasing themes and color palettes for "Link-in-Bio" profiles, similar to bento.me or Linktree.
@@ -53,20 +56,20 @@ Respond with a JSON object in this exact format:
     );
 
     if (!response.ok) {
-      return Response.json({ error: 'AI service error.' }, { status: 502 });
+      return NextResponse.json({ error: 'AI service error.' }, { status: 502 });
     }
 
     const result = await response.json();
     const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text) {
-      return Response.json({ error: 'No response from AI service.' }, { status: 502 });
+      return NextResponse.json({ error: 'No response from AI service.' }, { status: 502 });
     }
 
     const theme = JSON.parse(text);
-    return Response.json({ data: theme });
+    return NextResponse.json({ data: theme });
   } catch (error) {
     console.error('Error generating theme:', error);
-    return Response.json({ error: 'Failed to generate theme. Please try again.' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to generate theme. Please try again.' }, { status: 500 });
   }
 }
