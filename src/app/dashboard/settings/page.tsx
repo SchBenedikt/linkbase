@@ -231,9 +231,9 @@ export default function SettingsPage() {
     try {
       await reauthenticateWithCredential(user, credential);
       if (reauthAction.type === 'email') {
-        await handleUpdateEmail({ email: reauthAction.value });
+        await handleEmailUpdate({ email: reauthAction.value });
       } else if (reauthAction.type === 'password') {
-        await handleUpdatePassword({ newPassword: reauthAction.value });
+        await handlePasswordUpdate({ newPassword: reauthAction.value });
       }
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Authentication Error', description: 'The password you entered is incorrect.' });
@@ -370,7 +370,7 @@ export default function SettingsPage() {
                         <CardDescription>Choose a strong, new password to protect your account.</CardDescription>
                     </CardHeader>
                     <Form {...passwordForm}>
-                        <form onSubmit={passwordForm.handleSubmit(handleUpdatePassword)}>
+                        <form onSubmit={passwordForm.handleSubmit(handlePasswordUpdate)}>
                             <CardContent>
                                 <FormField control={passwordForm.control} name="newPassword" render={({ field }) => (
                                     <FormItem><FormLabel>New Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
