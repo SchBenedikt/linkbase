@@ -1,8 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  output: 'export',
-  distDir: 'output',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -10,7 +8,6 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -33,21 +30,6 @@ const nextConfig: NextConfig = {
     ],
   },
   excludeDefaultMomentLocales: true,
-  experimental: {
-    webpackBuildWorker: false,  // Vermeidet große Packs
-  },
-  webpack: (config) => {
-    // KEIN Preact-Alias – dnd-kit braucht echtes React
-    config.optimization!.splitChunks = {
-      ...config.optimization!.splitChunks,
-      maxSize: 20 * 1024 * 1024,  // 20 MiB/Chunks
-    };
-    
-    // Disable webpack cache for Cloudflare Pages deployment
-    config.cache = false;
-    
-    return config;
-  },
 };
 
 export default nextConfig;

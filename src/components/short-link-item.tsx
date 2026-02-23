@@ -33,7 +33,7 @@ export function ShortLinkItem({ link, siteUrl, onCopy, onDelete }: {
                 onClick={onCopy}
                 title="Click to copy"
               >
-                {siteUrl.replace(/^https?:\/\//, '')}/s?code={link.code}
+                {siteUrl.replace(/^https?:\/\//, '')}/s/{link.code}
               </button>
               <p className="text-xs text-muted-foreground truncate mt-0.5">{link.title || link.originalUrl}</p>
               <p className="text-xs text-muted-foreground/60 truncate">{link.originalUrl}</p>

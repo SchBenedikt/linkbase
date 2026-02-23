@@ -127,7 +127,7 @@ export default function LinksPage() {
       
       await batch.commit();
 
-      toast({ title: 'Short link created!', description: `${siteUrl}/s?code=${code}` });
+      toast({ title: 'Short link created!', description: `${siteUrl}/s/${code}` });
       setNewUrl('');
       setNewTitle('');
       setCustomCode('');
@@ -163,7 +163,7 @@ export default function LinksPage() {
   }, [linkToDelete, firestore, toast]);
 
   const copyToClipboard = (code: string) => {
-    const url = `${siteUrl}/s?code=${code}`;
+    const url = `${siteUrl}/s/${code}`;
     navigator.clipboard.writeText(url);
     toast({ title: 'Copied!', description: url });
   };
@@ -221,7 +221,7 @@ export default function LinksPage() {
               <div className="space-y-1.5 flex-1 max-w-xs">
                 <Label htmlFor="custom-code">Custom code (optional)</Label>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">{siteUrl}/s?code=</span>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">{siteUrl}/s/</span>
                   <Input
                     id="custom-code"
                     placeholder="my-code"
@@ -288,7 +288,7 @@ export default function LinksPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete short link?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete <strong>/s?code={linkToDelete?.code}</strong> and all its click data. This cannot be undone.
+              This will permanently delete <strong>/s/{linkToDelete?.code}</strong> and all its click data. This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
