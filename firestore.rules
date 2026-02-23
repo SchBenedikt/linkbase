@@ -42,14 +42,11 @@ service cloud.firestore {
       }
     }
 
-    // Blog Posts - DEFINITIVE FIX
+    // Blog Posts
     match /posts/{postId} {
-        // READ Rule (GET + LIST): A user can read a post if it is published OR they are the owner.
-        // This single rule securely covers both public queries (where status == 'published')
-        // and private queries by the owner (where ownerId == auth.uid).
-        allow read: if resource.data.status == 'published' || isOwner(resource.data.ownerId);
-
-        // WRITE Rules:
+        // A user can read a post if it is published OR they are the owner.
+        allow read: if ('status' in resource.data && resource.data.status == 'published') || ('ownerId' in resource.data && isOwner(resource.data.ownerId));
+        
         // On create, the new document's ownerId must match the user.
         allow create: if isOwner(request.resource.data.ownerId);
         // On update/delete, the existing document's ownerId must match the user.
@@ -74,15 +71,16 @@ service cloud.firestore {
 
     // Short Links (Private management data) - DEFINITIVE FIX
     match /short_links/{code} {
-      // READ (GET + LIST): A user can only read documents where the `ownerId` field matches their own UID.
-      // The client query MUST include `where('ownerId', '==', request.auth.uid)` to satisfy this rule.
-      allow read: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-    
-      // CREATE Rule: On create, the new document's ownerId must match the user and the code must not exist.
+      // READ: A user can only read their own link documents.
+      // This rule is defensive against malformed data by checking for the existence of the `ownerId` field.
+      // The client-side query must filter by ownerId to match this rule.
+      allow read: if isSignedIn() && 'ownerId' in resource.data && resource.data.ownerId == request.auth.uid;
+
+      // CREATE: A new document must have the correct ownerId and the code must not already exist.
       allow create: if isOwner(request.resource.data.ownerId) 
                    && !exists(/databases/$(database)/documents/short_links/$(code));
                    
-      // UPDATE/DELETE Rules: The existing document's ownerId must match the user.
+      // UPDATE/DELETE: The existing document's ownerId must match the user.
       allow update, delete: if isOwner(get(/databases/$(database)/documents/short_links/$(code)).data.ownerId);
     }
 
