@@ -11,7 +11,6 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  // NOTE: In Next.js 15, `params` is a thenable. Avoid destructuring.
   const code = await params.code;
   if (!code) {
     notFound();
@@ -19,28 +18,20 @@ export async function GET(
 
   try {
     const publicLinkRef = doc(serverFirestore, 'short_link_public', code);
-    const privateLinkRef = doc(serverFirestore, 'short_links', code);
 
     const originalUrl = await runTransaction(serverFirestore, async (transaction) => {
-      // 1. All reads must happen before all writes.
       const publicSnap = await transaction.get(publicLinkRef);
       
       if (!publicSnap.exists()) {
         return null; // Signals not found, will be caught and handled.
       }
-
-      const privateSnap = await transaction.get(privateLinkRef);
       
       const linkData = publicSnap.data() as ShortLinkPublic;
       const currentClicks = linkData.clickCount || 0;
 
-      // 2. Now, perform all writes.
+      // Update only the public click counter.
       transaction.update(publicLinkRef, { clickCount: currentClicks + 1 });
       
-      if (privateSnap.exists()) {
-        transaction.update(privateLinkRef, { clickCount: currentClicks + 1 });
-      }
-
       return linkData.originalUrl;
     });
 
