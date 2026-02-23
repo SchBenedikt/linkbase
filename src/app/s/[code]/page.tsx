@@ -4,6 +4,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AlertCircle } from 'lucide-react';
 
+export async function generateStaticParams() {
+  // This is required for `output: 'export'`. Since the route is deprecated
+  // and we don't want to pre-build any pages for it, we return an empty array.
+  return [];
+}
+
 export default function DeprecatedRedirectPage() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.18),transparent_60%)] text-foreground">
