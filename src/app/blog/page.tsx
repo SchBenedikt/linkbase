@@ -2,12 +2,12 @@
 
 import { useMemo, useState } from 'react';
 import { collection, query, where, doc } from 'firebase/firestore';
-import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PlusCircle, Edit, BookOpen, Trash2 } from 'lucide-react';
+import { PlusCircle, Edit, BookOpen, Trash2, EyeOff, Clock } from 'lucide-react';
 import Link from 'next/link';
 import type { Post } from '@/lib/types';
 import { UserNav } from '@/components/user-nav';
@@ -19,12 +19,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { BlogExploreView } from '@/components/blog-explore-view';
 
-
 export default function BlogDashboardPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
-
     const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
     const postsQuery = useMemoFirebase(() =>
@@ -33,29 +31,32 @@ export default function BlogDashboardPage() {
     );
 
     const { data: unsortedPosts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
-    
+
     const posts = useMemo(() => {
         if (!unsortedPosts) return [];
         return [...unsortedPosts].sort((a, b) => {
             const dateA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
             const dateB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-            return dateB - dateA; // Sort descending
+            return dateB - dateA;
         });
     }, [unsortedPosts]);
 
     const handleConfirmDelete = () => {
         if (!postToDelete || !firestore) return;
-
         try {
-            const postRef = doc(firestore, 'posts', postToDelete.id);
-            deleteDocumentNonBlocking(postRef);
+            deleteDocumentNonBlocking(doc(firestore, 'posts', postToDelete.id));
         } catch (error) {
             console.error("Error deleting post:", error);
         } finally {
-            setPostToDelete(null); 
+            setPostToDelete(null);
         }
     };
 
+    const handleTogglePublish = (post: Post) => {
+        if (!firestore) return;
+        const newStatus = post.status === 'published' ? 'draft' : 'published';
+        setDocumentNonBlocking(doc(firestore, 'posts', post.id), { status: newStatus }, { merge: true });
+    };
 
     if (isUserLoading || arePostsLoading) {
         return (
@@ -64,13 +65,13 @@ export default function BlogDashboardPage() {
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                         <Skeleton className="h-8 w-64" />
                         <div className="flex items-center gap-2">
-                           <Skeleton className="h-8 w-8 rounded-full" />
-                           <Skeleton className="h-8 w-8 rounded-full" />
+                            <Skeleton className="h-8 w-8 rounded-full" />
+                            <Skeleton className="h-8 w-8 rounded-full" />
                         </div>
                     </div>
                 </header>
                 <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                     <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center justify-between mb-8">
                         <Skeleton className="h-10 w-96" />
                         <Skeleton className="h-10 w-36" />
                     </div>
@@ -80,7 +81,7 @@ export default function BlogDashboardPage() {
                     </div>
                 </main>
             </div>
-        )
+        );
     }
 
     return (
@@ -101,7 +102,7 @@ export default function BlogDashboardPage() {
                             <TabsTrigger value="manage">Manage Posts</TabsTrigger>
                             <TabsTrigger value="explore">Explore All Posts</TabsTrigger>
                         </TabsList>
-                         <Button asChild>
+                        <Button asChild>
                             <Link href="/blog/edit/new">
                                 <PlusCircle className="mr-2 h-4 w-4" />
                                 New Post
@@ -110,42 +111,68 @@ export default function BlogDashboardPage() {
                     </div>
                     <TabsContent value="manage">
                         {posts && posts.length > 0 ? (
-                            <div className="grid gap-6">
+                            <div className="grid gap-4">
                                 {posts.map((post) => (
-                                    <Card key={post.id} className="shadow-none border">
-                                        <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-2">
-                                            <div>
-                                                <CardTitle className="text-2xl font-bold">{post.title}</CardTitle>
-                                                <CardDescription className="pt-2">
-                                                    {post.createdAt?.toDate ? format(post.createdAt.toDate(), 'PPP') : '...'}
-                                                </CardDescription>
-                                            </div>
-                                            <Badge variant={post.status === 'published' ? 'default' : 'secondary'} className="capitalize">
-                                                {post.status}
-                                            </Badge>
-                                        </CardHeader>
-                                        <CardFooter className="flex justify-end items-center">
-                                            <div className="flex items-center gap-2 flex-shrink-0">
-                                                {post.status === 'published' && (
-                                                    <Button variant="outline" asChild>
-                                                        <Link href={`/post/${post.id}`} target="_blank">
-                                                            <BookOpen className="mr-2 h-4 w-4" />
-                                                            View
+                                    <Card key={post.id} className="shadow-none border overflow-hidden">
+                                        <div className="flex flex-col sm:flex-row">
+                                            {/* Cover image thumbnail */}
+                                            {post.coverImage && (
+                                                <div className="sm:w-40 sm:h-auto h-32 flex-shrink-0 overflow-hidden bg-muted">
+                                                    <img
+                                                        src={post.coverImage}
+                                                        alt={post.title}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                </div>
+                                            )}
+                                            <div className="flex flex-col flex-1 min-w-0">
+                                                <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-2">
+                                                    <div className="min-w-0">
+                                                        <CardTitle className="text-xl font-bold truncate">{post.title}</CardTitle>
+                                                        <CardDescription className="pt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                                                            <span>{post.createdAt?.toDate ? format(post.createdAt.toDate(), 'PPP') : '...'}</span>
+                                                            {post.readingTime && (
+                                                                <span className="flex items-center gap-1">
+                                                                    <Clock className="h-3 w-3" />
+                                                                    {post.readingTime}
+                                                                </span>
+                                                            )}
+                                                            {post.category && <Badge variant="outline" className="text-xs">{post.category}</Badge>}
+                                                        </CardDescription>
+                                                        {post.excerpt && (
+                                                            <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>
+                                                        )}
+                                                    </div>
+                                                    <Badge variant={post.status === 'published' ? 'default' : 'secondary'} className="capitalize flex-shrink-0">
+                                                        {post.status}
+                                                    </Badge>
+                                                </CardHeader>
+                                                <CardFooter className="flex justify-end items-center gap-2 flex-wrap">
+                                                    {post.status === 'published' && (
+                                                        <Button variant="outline" size="sm" asChild>
+                                                            <Link href={`/post/${post.id}`} target="_blank">
+                                                                <BookOpen className="mr-2 h-4 w-4" />
+                                                                View
+                                                            </Link>
+                                                        </Button>
+                                                    )}
+                                                    <Button variant="outline" size="sm" onClick={() => handleTogglePublish(post)}>
+                                                        <EyeOff className="mr-2 h-4 w-4" />
+                                                        {post.status === 'published' ? 'Unpublish' : 'Publish'}
+                                                    </Button>
+                                                    <Button asChild size="sm">
+                                                        <Link href={`/blog/edit/${post.id}`}>
+                                                            <Edit className="mr-2 h-4 w-4" />
+                                                            Edit
                                                         </Link>
                                                     </Button>
-                                                )}
-                                                <Button asChild>
-                                                    <Link href={`/blog/edit/${post.id}`}>
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Edit
-                                                    </Link>
-                                                </Button>
-                                                <Button variant="destructive" onClick={() => setPostToDelete(post)}>
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </Button>
+                                                    <Button variant="destructive" size="sm" onClick={() => setPostToDelete(post)}>
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Delete
+                                                    </Button>
+                                                </CardFooter>
                                             </div>
-                                        </CardFooter>
+                                        </div>
                                     </Card>
                                 ))}
                             </div>
@@ -163,24 +190,24 @@ export default function BlogDashboardPage() {
                         )}
                     </TabsContent>
                     <TabsContent value="explore">
-                       <BlogExploreView />
+                        <BlogExploreView />
                     </TabsContent>
                 </Tabs>
             </main>
-             <AlertDialog open={!!postToDelete} onOpenChange={(open) => !open && setPostToDelete(null)}>
+            <AlertDialog open={!!postToDelete} onOpenChange={(open) => !open && setPostToDelete(null)}>
                 <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the post "{postToDelete?.title}".
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setPostToDelete(null)}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDelete}>Delete</AlertDialogAction>
-                  </AlertDialogFooter>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the post "{postToDelete?.title}".
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setPostToDelete(null)}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
                 </AlertDialogContent>
-              </AlertDialog>
+            </AlertDialog>
         </div>
     );
 }

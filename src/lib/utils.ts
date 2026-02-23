@@ -5,6 +5,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+/**
+ * Returns a "safe" foreground colour that has enough contrast against the
+ * given background. Falls back to auto-calculated contrast when the stored
+ * foreground and the background would be poorly readable together.
+ */
+export function resolveReadableFg(
+  storedFg: string | undefined,
+  bgHex: string | undefined,
+): string {
+  const fallback = getContrastColor(bgHex); // handles undefined bgHex safely
+  if (!storedFg) return fallback;
+  const bgDark = !isColorLight(bgHex);
+  const fgDark = !isColorLight(storedFg);
+  // Same luminance bracket → guaranteed bad contrast
+  if (bgDark === fgDark) return fallback;
+  return storedFg;
+}
+
 export function isColorLight(H: string | undefined): boolean {
   if (!H) return true; // Assume undefined/empty is light, so it gets transformed in dark mode.
   if (!/^#([A-Fa-f0-9]{3}){1,2}$/.test(H)) return true;

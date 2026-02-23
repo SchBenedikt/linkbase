@@ -8,7 +8,7 @@ export type Link = {
   pageId: string;
   orderIndex: number;
   title: string;
-  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile' | 'map' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'clock' | 'countdown' | 'calendly' | 'github';
+  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile' | 'map' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'clock' | 'countdown' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'donation' | 'contact-info' | 'audio' | 'appdownload';
   colSpan?: number;
   rowSpan?: number;
   content?: string; // For text cards or product description
@@ -27,6 +27,19 @@ export type Link = {
   mentionedUserId?: string; // For profile cards
   timezone?: string;        // For clock widget
   countdownTarget?: string; // For countdown widget
+  // Scheduling
+  scheduledStart?: string;  // ISO date string – link visible from this date
+  scheduledEnd?: string;    // ISO date string – link visible until this date
+  // Contact info card
+  email?: string;
+  phone?: string;
+  // App download card
+  appStoreUrl?: string;
+  playStoreUrl?: string;
+  // Audio card
+  audioUrl?: string;
+  // Donation card
+  donationButtonText?: string;
 };
 
 export type UserProfile = {
@@ -72,6 +85,7 @@ export type Page = {
   borderWidth?: number;
   borderColor?: string;
   fontFamily?: string;
+  sensitiveContent?: boolean; // Age/content gate on public page
   createdAt: any;
   updatedAt: any;
 };
@@ -85,6 +99,9 @@ export type Post = {
   slug: string;
   status: 'draft' | 'published';
   category?: string;
+  coverImage?: string;
+  excerpt?: string;
+  readingTime?: string;
   createdAt: any;
   updatedAt: any;
   authorName?: string;
@@ -135,5 +152,22 @@ export type LinkClickRecord = {
   linkId: string;
   pageId: string;
   date: string; // YYYY-MM-DD
+  count: number;
+};
+
+export type ShortLink = {
+  id: string;
+  code: string;          // e.g. "abc123"
+  originalUrl: string;
+  title?: string;
+  ownerId: string;
+  clickCount: number;
+  createdAt: any;
+  updatedAt: any;
+};
+
+export type ShortLinkClickRecord = {
+  code: string;
+  date: string;  // YYYY-MM-DD
   count: number;
 };

@@ -6,7 +6,7 @@ import {
   Link as LinkIcon, Music, Youtube, BookText, Newspaper, Rss,
   Image as ImageIcon, ShoppingBag, User as UserIcon, MapPin,
   Instagram, Video, Music2, Cloud, CalendarDays, Github,
-  Clock, Timer,
+  Clock, Timer, Twitter, Tv, Heart, Mail, Smartphone, Headphones,
 } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
@@ -18,6 +18,10 @@ import { ProfileCardEditor, profileCardSchema } from './profile-card-editor';
 import { MapEditor, mapSchema } from './map-editor';
 import { ClockEditor, clockSchema } from './clock-editor';
 import { CountdownEditor, countdownSchema } from './countdown-editor';
+import { DonationEditor, donationSchema } from './donation-editor';
+import { ContactInfoEditor, contactInfoSchema } from './contact-info-editor';
+import { AudioEditor, audioSchema } from './audio-editor';
+import { AppDownloadEditor, appDownloadSchema } from './appdownload-editor';
 import type { z } from 'zod';
 import type { Link } from '@/lib/types';
 
@@ -32,6 +36,10 @@ type ContentFormData = (
   | z.infer<typeof mapSchema>
   | z.infer<typeof clockSchema>
   | z.infer<typeof countdownSchema>
+  | z.infer<typeof donationSchema>
+  | z.infer<typeof contactInfoSchema>
+  | z.infer<typeof audioSchema>
+  | z.infer<typeof appDownloadSchema>
 ) & { type: Link['type'] };
 
 interface AddContentDialogProps {
@@ -84,6 +92,17 @@ const CONTENT_SECTIONS: { label: string; items: ContentTypeButton[] }[] = [
     items: [
       { type: 'calendly', label: 'Calendly', description: 'Embed a booking page', icon: CalendarDays },
       { type: 'github', label: 'GitHub', description: 'Show a GitHub repo', icon: Github },
+      { type: 'twitter', label: 'Twitter / X', description: 'Embed a tweet or post', icon: Twitter },
+      { type: 'twitch', label: 'Twitch', description: 'Embed a live stream', icon: Tv },
+    ],
+  },
+  {
+    label: 'More',
+    items: [
+      { type: 'donation', label: 'Support / Donate', description: 'PayPal, Ko-fi, BMAC…', icon: Heart },
+      { type: 'contact-info', label: 'Contact Info', description: 'Email & phone card', icon: Mail },
+      { type: 'audio', label: 'Audio Player', description: 'Embed an audio file', icon: Headphones },
+      { type: 'appdownload', label: 'App Download', description: 'App Store & Play Store', icon: Smartphone },
     ],
   },
 ];
@@ -121,7 +140,11 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentToEdit.type === 'map') return <MapEditor onSave={(d) => handleSave(d, 'map')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'clock') return <ClockEditor onSave={(d) => handleSave(d, 'clock')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'countdown') return <CountdownEditor onSave={(d) => handleSave(d, 'countdown')} onCancel={onCancel} content={contentToEdit} />;
-    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github'} link={contentToEdit} />;
+    if (contentToEdit.type === 'donation') return <DonationEditor onSave={(d) => handleSave(d, 'donation')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'contact-info') return <ContactInfoEditor onSave={(d) => handleSave(d, 'contact-info')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'audio') return <AudioEditor onSave={(d) => handleSave(d, 'audio')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'appdownload') return <AppDownloadEditor onSave={(d) => handleSave(d, 'appdownload')} onCancel={onCancel} content={contentToEdit} />;
+    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch'} link={contentToEdit} />;
   }
 
   // Adding new content
@@ -135,11 +158,15 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentType === 'map') return <MapEditor onSave={(d) => handleSave(d, 'map')} onCancel={handleBack} />;
     if (contentType === 'clock') return <ClockEditor onSave={(d) => handleSave(d, 'clock')} onCancel={handleBack} />;
     if (contentType === 'countdown') return <CountdownEditor onSave={(d) => handleSave(d, 'countdown')} onCancel={handleBack} />;
+    if (contentType === 'donation') return <DonationEditor onSave={(d) => handleSave(d, 'donation')} onCancel={handleBack} />;
+    if (contentType === 'contact-info') return <ContactInfoEditor onSave={(d) => handleSave(d, 'contact-info')} onCancel={handleBack} />;
+    if (contentType === 'audio') return <AudioEditor onSave={(d) => handleSave(d, 'audio')} onCancel={handleBack} />;
+    if (contentType === 'appdownload') return <AppDownloadEditor onSave={(d) => handleSave(d, 'appdownload')} onCancel={handleBack} />;
     return (
       <LinkEditor
         onSave={(d) => handleSave(d, contentType)}
         onCancel={handleBack}
-        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github'}
+        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch'}
       />
     );
   }

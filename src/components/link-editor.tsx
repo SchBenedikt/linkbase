@@ -21,6 +21,8 @@ export const linkSchema = z.object({
   content: z.string().optional(),
   colSpan: z.number().min(1).max(4).default(1),
   rowSpan: z.number().min(1).max(2).default(1),
+  scheduledStart: z.string().optional(),
+  scheduledEnd: z.string().optional(),
 });
 
 type LinkEditorFormData = z.infer<typeof linkSchema>;
@@ -29,7 +31,7 @@ interface LinkEditorProps {
   link?: Link | null;
   onSave: (data: LinkEditorFormData) => void;
   onCancel: () => void;
-  mode?: 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github';
+  mode?: 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch';
 }
 
 export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditorProps) {
@@ -40,8 +42,10 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
       url: link?.url || '',
       thumbnailUrl: link?.thumbnailUrl || '',
       content: link?.content || '',
-      colSpan: link?.colSpan || (mode === 'spotify' || mode === 'soundcloud' ? 4 : (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' ? 2 : 1)),
-      rowSpan: link?.rowSpan || (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' ? 2 : 1),
+      colSpan: link?.colSpan || (mode === 'spotify' || mode === 'soundcloud' ? 4 : (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' || mode === 'twitch' ? 2 : 1)),
+      rowSpan: link?.rowSpan || (mode === 'youtube' || mode === 'vimeo' || mode === 'instagram' || mode === 'tiktok' || mode === 'twitch' ? 2 : 1),
+      scheduledStart: link?.scheduledStart || '',
+      scheduledEnd: link?.scheduledEnd || '',
     },
   });
   
@@ -61,6 +65,8 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
     if (mode === 'vimeo' && !form.getValues('title')) form.setValue('title', 'Vimeo Video');
     if (mode === 'calendly' && !form.getValues('title')) form.setValue('title', 'Book a Meeting');
     if (mode === 'github' && !form.getValues('title')) form.setValue('title', 'GitHub Repository');
+    if (mode === 'twitter' && !form.getValues('title')) form.setValue('title', 'Tweet / X Post');
+    if (mode === 'twitch' && !form.getValues('title')) form.setValue('title', 'Twitch Stream');
   }, [mode, form]);
 
   const { toast } = useToast();
@@ -169,6 +175,8 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
                     : mode === 'vimeo' ? "https://vimeo.com/123456789"
                     : mode === 'calendly' ? "https://calendly.com/username/meeting-type"
                     : mode === 'github' ? "https://github.com/owner/repo"
+                    : mode === 'twitter' ? "https://x.com/username/status/123456789"
+                    : mode === 'twitch' ? "https://www.twitch.tv/channel-name"
                     : "https://example.com"
                   } {...field} />
                 </FormControl>
@@ -260,6 +268,41 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
             )}
             />
         </div>
+
+        {/* Optional scheduling */}
+        <details className="border rounded-lg p-3 text-sm">
+          <summary className="cursor-pointer font-medium text-muted-foreground select-none">
+            Schedule visibility (optional)
+          </summary>
+          <div className="grid grid-cols-2 gap-4 mt-3">
+            <FormField
+              control={form.control}
+              name="scheduledStart"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Visible from</FormLabel>
+                  <FormControl>
+                    <Input type="datetime-local" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="scheduledEnd"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Visible until</FormLabel>
+                  <FormControl>
+                    <Input type="datetime-local" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </details>
 
         <div className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
