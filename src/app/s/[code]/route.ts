@@ -28,10 +28,11 @@ export async function GET(
       if (!publicSnap.exists()) {
         return null; // Signals not found, will be caught and handled.
       }
+
+      const privateSnap = await transaction.get(privateLinkRef);
       
       const linkData = publicSnap.data() as ShortLinkPublic;
       const currentClicks = linkData.clickCount || 0;
-      const privateSnap = await transaction.get(privateLinkRef);
 
       // 2. Now, perform all writes.
       transaction.update(publicLinkRef, { clickCount: currentClicks + 1 });
