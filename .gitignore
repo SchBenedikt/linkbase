@@ -45,3 +45,6 @@ tsconfig.tsbuildinfo
 # genkit
 .genkit/
 .genkit-cache/
+
+# OpenNext build output
+.open-next/
