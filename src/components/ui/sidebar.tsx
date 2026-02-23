@@ -32,7 +32,7 @@ type SidebarContext = {
   setOpen: (open: boolean) => void
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
-  isMobile: boolean
+  isMobile: boolean | undefined
   toggleSidebar: () => void
 }
 
@@ -91,6 +91,7 @@ const SidebarProvider = React.forwardRef<
 
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
+      if (isMobile === undefined) return
       return isMobile
         ? setOpenMobile((open) => !open)
         : setOpen((open) => !open)
@@ -176,6 +177,10 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+
+    if (isMobile === undefined) {
+      return null
+    }
 
     if (collapsible === "none") {
       return (
@@ -583,7 +588,7 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== "collapsed" || isMobile}
+          hidden={(state !== "collapsed" && !isMobile) || isMobile === undefined}
           {...tooltip}
         />
       </Tooltip>
