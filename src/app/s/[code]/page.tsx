@@ -1,11 +1,3 @@
-import RedirectClient from './redirect-client';
-
-// This is a placeholder to satisfy Next.js's static export requirements.
-// The actual redirect logic is handled client-side.
-export function generateStaticParams() {
-  return [];
-}
-
-export default function Page() {
-  return <RedirectClient />;
-}
+// This file is intentionally left blank.
+// Its functionality has been replaced by the route handler in /s/[code]/route.ts
+// to resolve a build conflict.
