@@ -3,8 +3,11 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase';
 import { ThemeProvider } from '@/components/theme-provider';
+import { ErrorBoundary } from '@/components/error-boundary';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
+import { ClientOnly } from '@/components/client-only';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.xn--schchner-2za.de';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.schächner.de';
 const ogImageUrl = 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=630&fit=crop';
 
 
@@ -64,12 +67,17 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased">
-        <ThemeProvider>
-          <FirebaseClientProvider>
-            {children}
-          </FirebaseClientProvider>
-          <Toaster />
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider>
+            <ClientOnly fallback={<div className="min-h-screen bg-background"></div>}>
+              <FirebaseClientProvider>
+                <FirebaseErrorListener />
+                {children}
+              </FirebaseClientProvider>
+            </ClientOnly>
+            <Toaster />
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

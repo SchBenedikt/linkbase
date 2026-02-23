@@ -1,8 +1,17 @@
 name = "linkbase"
-pages_build_output_dir = ".open-next"
+main = ".open-next/worker.js"
 compatibility_date = "2024-12-30"
 compatibility_flags = ["nodejs_compat"]
 
-[[services]]
-binding = "WORKER_SELF_REFERENCE"
-service = "linkbase"
+[vars]
+GEMINI_API_KEY = "AIzaSyASyfHbUSQBh-EVkTC4eqX8JpD_Km3fa8E"
+NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyCMJYTvIjtuDaiRyLKOyEf-lTcgD_n-SVY"
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "studio-1788933160-b748f.firebaseapp.com"
+NEXT_PUBLIC_FIREBASE_PROJECT_ID = "studio-1788933160-b748f"
+NEXT_PUBLIC_FIREBASE_APP_ID = "1:732127475016:web:3e40e6b80866d9c91e6f7d"
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "732127475016"
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID = ""
+NEXT_PUBLIC_SITE_URL = "https://links.schächner.de"
+
+[assets]
+directory = ".open-next/assets"

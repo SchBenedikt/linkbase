@@ -29,8 +29,11 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+    unoptimized: true,
   },
   excludeDefaultMomentLocales: true,
+  trailingSlash: true,
+  serverExternalPackages: ['firebase-admin'],
 };
 
 export default nextConfig;
