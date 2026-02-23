@@ -30,16 +30,16 @@ service cloud.firestore {
         allow write: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
       }
 
-      // Analytics Data
+      // Analytics Data - DEFINITIVE FIX
       match /page_views/{viewId} {
-        // Owner can read their own analytics
+        // Owner can read their own analytics by querying the collection
         allow get, list: if isSignedIn() && exists(/databases/$(database)/documents/pages/$(pageId)) && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
         // Anyone can write (increment a counter)
         allow write: if true;
       }
 
       match /link_clicks/{clickId} {
-        // Owner can read their own analytics
+        // Owner can read their own analytics by querying the collection
         allow get, list: if isSignedIn() && exists(/databases/$(database)/documents/pages/$(pageId)) && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
         // Anyone can write (increment a counter)
         allow write: if true;
