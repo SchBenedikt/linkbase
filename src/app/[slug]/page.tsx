@@ -6,22 +6,8 @@ import type { Page as PageType, Link as LinkType, SlugLookup } from '@/lib/types
 import PublicPageComponent from './public-page';
 
 export async function generateStaticParams() {
-  try {
-    if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-      console.warn("Firebase config not found. Returning fallback params.");
-      return [{ slug: '_placeholder' }];
-    }
-    const pagesQuery = query(collection(serverFirestore, 'pages'), where('status', '==', 'published'));
-    const pagesSnap = await getDocs(pagesQuery);
-    const params = pagesSnap.docs.map(doc => {
-        const data = doc.data();
-        return { slug: data.slug };
-    });
-    return params.length > 0 ? params : [{ slug: '_placeholder' }];
-  } catch (error) {
-    console.error('Error generating static params for [slug]:', error);
-    return [{ slug: '_placeholder' }];
-  }
+  // Return static params only - no Firebase access during build
+  return [{ slug: '_placeholder' }];
 }
 
 type Props = {
@@ -31,75 +17,11 @@ type Props = {
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // Guard clause for build environments without Firebase credentials.
-  if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-    console.warn(`Firebase config not found. Skipping metadata generation for /${params.slug}.`);
-    return {
-      title: 'Linkbase Page',
-    };
-  }
-
-  try {
-    const { slug } = params;
-    const slugRef = doc(serverFirestore, 'slug_lookups', slug);
-    const slugSnap = await getDoc(slugRef);
-
-    if (!slugSnap.exists()) {
-      return {
-        title: 'Page Not Found',
-        description: 'The page you are looking for does not exist.',
-      };
-    }
-
-    const { pageId } = slugSnap.data() as SlugLookup;
-    const pageRef = doc(serverFirestore, 'pages', pageId);
-    const pageSnap = await getDoc(pageRef);
-
-    if (!pageSnap.exists() || pageSnap.data().status !== 'published') {
-       return {
-        title: 'Page Not Found',
-        description: 'The page you are looking for does not exist.',
-      };
-    }
-
-    const page = pageSnap.data() as PageType;
-    const displayName = [page.firstName, page.lastName].filter(Boolean).join(' ');
-    const publicUrl = `${siteUrl}/${slug}`;
-
-    const metadata: Metadata = {
-        title: displayName,
-        description: page.bio,
-        alternates: {
-          canonical: publicUrl,
-        },
-        openGraph: {
-            title: displayName,
-            description: page.bio,
-            url: publicUrl,
-            images: page.avatarUrl ? [
-            {
-                url: page.avatarUrl,
-                width: 200,
-                height: 200,
-            },
-            ] : [],
-        },
-        twitter: {
-            card: 'summary',
-            title: displayName,
-            description: page.bio,
-            images: page.avatarUrl ? [page.avatarUrl] : [],
-        },
-    }
-    return metadata;
-
-  } catch (error) {
-    console.error('Error generating metadata for page:', error);
-    return {
-      title: 'Error',
-      description: 'Could not load page information.',
-    };
-  }
+  // Return static metadata - no Firebase access during build
+  return {
+    title: 'Linkbase Page',
+    description: 'A beautiful link-in-bio page created with Linkbase.',
+  };
 }
 
 export default async function Page({ params }: Props) {

@@ -8,21 +8,8 @@ import PublicPostPageComponent from './public-post-page';
 export const dynamicParams = false;
 
 export async function generateStaticParams() {
-  try {
-    if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-      console.warn("Firebase config not found. Returning fallback params.");
-      return [{ postId: '_placeholder' }];
-    }
-    const postsQuery = query(collection(serverFirestore, 'posts'), where('status', '==', 'published'));
-    const postsSnap = await getDocs(postsQuery);
-    const params = postsSnap.docs.map(doc => {
-        return { postId: doc.id };
-    });
-    return params.length > 0 ? params : [{ postId: '_placeholder' }];
-  } catch (error) {
-    console.error('Error generating static params for [postId]:', error);
-    return [{ postId: '_placeholder' }];
-  }
+  // Return static params only - no Firebase access during build
+  return [{ postId: '_placeholder' }];
 }
 
 type Props = {
@@ -33,9 +20,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (params.postId === '_placeholder') {
+        // Return static metadata - no Firebase access during build
         return {
           title: 'Linkbase Post',
-          description: 'Post content will be available once published.',
+          description: 'A blog post created with Linkbase.',
         };
     }
     // Guard clause for build environments without Firebase credentials.
