@@ -6,7 +6,7 @@ import type { Page, Post } from '@/lib/types';
 export const dynamic = 'force-static'
  
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.schächner.de';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
 
   const staticRoutes = [
     '',
@@ -23,7 +23,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     '/impressum',
     '/cookies'
   ].map((route) => ({
-    url: `${siteUrl}${route}`,
+    url: siteUrl ? `${siteUrl}${route}` : `/${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: route === '' ? 1.0 : route === '/blog' ? 0.8 : 0.6,
@@ -48,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     pagesSnapshot.forEach((doc) => {
       const page = doc.data() as Page;
       dynamicRoutes.push({
-        url: `${siteUrl}/${page.slug}`,
+        url: siteUrl ? `${siteUrl}/${page.slug}` : `/${page.slug}`,
         lastModified: page.updatedAt?.toDate() || new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
@@ -65,7 +65,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     postsSnapshot.forEach((doc) => {
       const post = doc.data() as Post;
       dynamicRoutes.push({
-        url: `${siteUrl}/blog/${post.slug}`,
+        url: siteUrl ? `${siteUrl}/blog/${post.slug}` : `/blog/${post.slug}`,
         lastModified: post.updatedAt?.toDate() || new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.8,

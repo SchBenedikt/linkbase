@@ -29,7 +29,7 @@ type Props = {
     params: { postId: string }
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.schächner.de';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     if (params.postId === '_placeholder') {

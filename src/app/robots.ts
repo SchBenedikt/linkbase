@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next'
 export const dynamic = 'force-static'
 
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.schächner.de';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
   return {
     rules: {
       userAgent: '*',
@@ -12,12 +12,9 @@ export default function robots(): MetadataRoute.Robots {
         '/dashboard/',
         '/edit/',
         '/blog/edit/',
-        '/api/',
-        '/_next/',
-        '/admin/',
       ],
     },
-    sitemap: `${siteUrl}/sitemap.xml`,
-    host: siteUrl,
+    sitemap: siteUrl ? `${siteUrl}/sitemap.xml` : undefined,
+    host: siteUrl || undefined,
   }
 }

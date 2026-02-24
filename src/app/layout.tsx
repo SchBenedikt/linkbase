@@ -7,12 +7,12 @@ import { ErrorBoundary } from '@/components/error-boundary';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { ClientOnly } from '@/components/client-only';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.schächner.de';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
 const ogImageUrl = 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=630&fit=crop';
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: siteUrl ? new URL(siteUrl) : undefined,
   title: {
     default: 'Linkbase | Your vibrant link-in-bio profile',
     template: '%s | Linkbase',
