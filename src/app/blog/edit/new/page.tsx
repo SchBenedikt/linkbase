@@ -21,9 +21,11 @@ function NewPostContent() {
     try {
       // Create a new post document with proper collection structure
       const postsCollection = collection(firestore, 'posts');
-      const newPostRef = doc(postsCollection);
+      const postId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const newPostRef = doc(postsCollection, postId);
       
       const postToSave = {
+        id: postId,
         title: postData.title || '',
         content: postData.content || '',
         slug: postData.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || '',
