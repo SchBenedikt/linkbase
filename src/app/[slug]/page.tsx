@@ -1,76 +1,145 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { doc, getDoc, collection, getDocs, query, orderBy, where } from 'firebase/firestore';
-import { serverFirestore } from '@/firebase/server';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, notFound } from 'next/navigation';
+import { doc, getDoc, collection, query, orderBy, where, getDocs } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 import type { Page as PageType, Link as LinkType, SlugLookup } from '@/lib/types';
 import PublicPageComponent from './public-page';
+import { ClientOnly } from '@/components/client-only';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
 
-export async function generateStaticParams() {
-  // Return static params only - no Firebase access during build
-  return [{ slug: '_placeholder' }];
-}
+export const dynamic = 'force-dynamic';
 
 type Props = {
   params: { slug: string }
-}
+};
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+function PageContent({ slug }: { slug: string }) {
+  const firestore = useFirestore();
+  const [page, setPage] = useState<PageType | null>(null);
+  const [links, setLinks] = useState<LinkType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  // Return static metadata - no Firebase access during build
-  return {
-    title: 'Linkbase Page',
-    description: 'A beautiful link-in-bio page created with Linkbase.',
-  };
-}
+  useEffect(() => {
+    if (!firestore || !slug) {
+      setLoading(false);
+      return;
+    }
 
-export default async function Page({ params }: Props) {
-    const { slug } = params;
-    
-    try {
-        const slugRef = doc(serverFirestore, 'slug_lookups', slug);
+    const fetchPageData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Get slug lookup
+        const slugRef = doc(firestore, 'slug_lookups', slug);
         const slugSnap = await getDoc(slugRef);
 
         if (!slugSnap.exists()) {
-            notFound();
+          notFound();
+          return;
         }
 
-        const { pageId } = slugSnap.data() as SlugLookup;
-        const pageRef = doc(serverFirestore, 'pages', pageId);
-        const linksQuery = query(collection(serverFirestore, 'pages', pageId, 'links'), orderBy('orderIndex'));
+        const slugData = slugSnap.data() as SlugLookup;
+        const pageRef = doc(firestore, 'pages', slugData.pageId);
+        const pageSnap = await getDoc(pageRef);
 
-        const [pageSnap, linksSnap] = await Promise.all([
-            getDoc(pageRef),
-            getDocs(linksQuery)
-        ]);
-
-        if (!pageSnap.exists() || pageSnap.data().status !== 'published') {
-            notFound();
+        if (!pageSnap.exists()) {
+          notFound();
+          return;
         }
 
-        const rawPageData = pageSnap.data();
-        const pageData = { 
-            id: pageSnap.id, 
-            ...rawPageData,
-            createdAt: rawPageData.createdAt?.toDate ? rawPageData.createdAt.toDate().toISOString() : null,
-            updatedAt: rawPageData.updatedAt?.toDate ? rawPageData.updatedAt.toDate().toISOString() : null,
-        } as PageType;
+        const pageData = pageSnap.data() as PageType;
+        setPage(pageData);
 
-        const linksData = linksSnap.docs.map(d => {
-            const rawLinkData = d.data();
-            return { 
-                id: d.id,
-                ...rawLinkData,
-                createdAt: rawLinkData.createdAt?.toDate ? rawLinkData.createdAt.toDate().toISOString() : null,
-                updatedAt: rawLinkData.updatedAt?.toDate ? rawLinkData.updatedAt.toDate().toISOString() : null,
-            } as LinkType
-        });
-        
-        const publicUrl = `${siteUrl}/${slug}`;
-        
-        return <PublicPageComponent page={pageData} links={linksData} publicUrl={publicUrl} />;
-    } catch(error) {
-        console.error("Error fetching public page data", error);
-        notFound();
-    }
+        // Get links
+        const linksQuery = query(
+          collection(firestore, 'links'),
+          where('pageId', '==', pageData.id),
+          orderBy('orderIndex', 'asc')
+        );
+        const linksSnap = await getDocs(linksQuery);
+        const linksData = linksSnap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as LinkType[];
+        setLinks(linksData);
+
+      } catch (err) {
+        console.error('Error fetching page data:', err);
+        setError('Failed to load page. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPageData();
+  }, [firestore, slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.12),transparent_60%)] text-foreground">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading page...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--destructive)/0.12),transparent_60%)] text-foreground">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Error</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!page) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--destructive)/0.12),transparent_60%)] text-foreground">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Page Not Found</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">The page you are looking for does not exist.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return <PublicPageComponent page={page} links={links} publicUrl={typeof window !== 'undefined' ? window.location.origin : ''} />;
+}
+
+export default function Page({ params }: Props) {
+  return (
+    <ClientOnly
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.12),transparent_60%)] text-foreground">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-muted-foreground">Loading...</p>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <PageContent slug={params.slug} />
+    </ClientOnly>
+  );
 }

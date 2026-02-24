@@ -6,6 +6,7 @@ import { ArrowLeft, Clock, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import JsonLdScript from '@/components/json-ld-script';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 
@@ -40,7 +41,7 @@ export default function PublicPostPageComponent({ post, authorName, publicUrl }:
 
     return (
         <div className="bg-background min-h-screen">
-            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <JsonLdScript data={jsonLd} />
 
             <header className="py-4 border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">

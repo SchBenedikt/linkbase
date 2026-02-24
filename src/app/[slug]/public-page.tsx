@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import type { Page, Link as LinkType, AppearanceSettings } from '@/lib/types';
 import { hexToHsl, getContrastColor, isColorLight, resolveReadableFg } from '@/lib/utils';
+import JsonLdScript from '@/components/json-ld-script';
 import { ProfileHeader } from '@/components/profile-header';
 import { LinkList } from '@/components/link-list';
 import { useTheme } from '@/components/theme-provider';
@@ -96,7 +97,7 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
             '--accent': hexToHsl(effectiveAppearance.accentColor),
             '--accent-foreground': getContrastColor(effectiveAppearance.accentColor),
             '--border': hexToHsl(effectiveAppearance.borderColor),
-        });
+        } as React.CSSProperties);
 
     }, [page, theme, isClient]);
 
@@ -143,10 +144,7 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
 
     return (
         <div style={dynamicStyles}>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            <JsonLdScript data={jsonLd} />
              <main className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 bg-background text-foreground" style={mainStyle}>
                 <div className="w-full max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
                     <aside className="md:col-span-1 md:sticky md:top-8 h-fit">

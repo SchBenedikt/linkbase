@@ -1,136 +1,121 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { doc, getDoc, collection, query, where, limit, getDocs } from 'firebase/firestore';
-import { serverFirestore } from '@/firebase/server';
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams, notFound } from 'next/navigation';
+import { doc, getDoc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 import type { Post as PostType } from '@/lib/types';
 import PublicPostPageComponent from './public-post-page';
+import { ClientOnly } from '@/components/client-only';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
 
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  // Return static params only - no Firebase access during build
-  return [{ postId: '_placeholder' }];
-}
+export const dynamic = 'force-dynamic';
 
 type Props = {
     params: { postId: string }
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+function PostContent({ postId }: { postId: string }) {
+  const firestore = useFirestore();
+  const [post, setPost] = useState<PostType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    if (params.postId === '_placeholder') {
-        // Return static metadata - no Firebase access during build
-        return {
-          title: 'Linkbase Post',
-          description: 'A blog post created with Linkbase.',
-        };
-    }
-    // Guard clause for build environments without Firebase credentials.
-    if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
-        console.warn(`Firebase config not found. Skipping metadata generation for /post/${params.postId}.`);
-        return {
-          title: 'Linkbase Post',
-        };
+  useEffect(() => {
+    if (!firestore || !postId || postId === '_placeholder') {
+      setLoading(false);
+      return;
     }
 
-    try {
-        const { postId } = params;
-        const postRef = doc(serverFirestore, 'posts', postId);
+    const fetchPostData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const postRef = doc(firestore, 'posts', postId);
         const postSnap = await getDoc(postRef);
 
-        if (!postSnap.exists() || postSnap.data().status !== 'published') {
-            return {
-                title: 'Post Not Found',
-                description: 'The post you are looking for does not exist or is not published.',
-            };
+        if (!postSnap.exists()) {
+          notFound();
+          return;
         }
 
-        const post = postSnap.data() as PostType;
-        const excerpt = post.content.substring(0, 155).replace(/\s+/g, ' ').trim() + '...';
-        const publicUrl = `${siteUrl}/post/${postId}`;
+        const postData = postSnap.data() as PostType;
+        setPost(postData);
 
-        // Fetch author's name
-        let authorName = 'Linkbase User';
-        if (post.ownerId) {
-            const pagesQuery = query(collection(serverFirestore, 'pages'), where('ownerId', '==', post.ownerId), limit(1));
-            const pagesSnap = await getDocs(pagesQuery);
-            if (!pagesSnap.empty) {
-                const pageData = pagesSnap.docs[0].data();
-                authorName = [pageData.firstName, pageData.lastName].filter(Boolean).join(' ');
-            }
-        }
+      } catch (error) {
+        console.error('Error fetching post data:', error);
+        setError('Failed to load post. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        return {
-            title: post.title,
-            description: excerpt,
-            alternates: {
-              canonical: publicUrl,
-            },
-            openGraph: {
-                title: post.title,
-                description: excerpt,
-                url: publicUrl,
-                type: 'article',
-                publishedTime: post.createdAt.toDate().toISOString(),
-                authors: [authorName],
-            },
-            twitter: {
-                card: 'summary_large_image',
-                title: post.title,
-                description: excerpt,
-            },
-        }
+    fetchPostData();
+  }, [firestore, postId]);
 
-    } catch (error) {
-        console.error('Error generating metadata for post:', error);
-        return {
-            title: 'Error',
-            description: 'Could not load post information.',
-        };
-    }
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.12),transparent_60%)] text-foreground">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-6 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading post...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--destructive)/0.12),transparent_60%)] text-foreground">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Error</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">{error}</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--destructive)/0.12),transparent_60%)] text-foreground">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Post Not Found</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">The post you are looking for does not exist.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return <PublicPostPageComponent post={post} authorName="" publicUrl={typeof window !== 'undefined' ? window.location.origin : ''} />;
 }
 
-export default async function Page({ params }: Props) {
-    const { postId } = params;
-    if (postId === '_placeholder') {
-        notFound();
-    }
-
-    try {
-        const postRef = doc(serverFirestore, 'posts', postId);
-        const postSnap = await getDoc(postRef);
-
-        if (!postSnap.exists() || postSnap.data().status !== 'published') {
-            notFound();
-        }
-        
-        const publicUrl = `${siteUrl}/post/${postId}`;
-        const postDataRaw = postSnap.data() as PostType;
-
-        // Fetch author's name
-        let authorName = 'Linkbase User';
-        if (postDataRaw.ownerId) {
-            const pagesQuery = query(collection(serverFirestore, 'pages'), where('ownerId', '==', postDataRaw.ownerId), limit(1));
-            const pagesSnap = await getDocs(pagesQuery);
-            if (!pagesSnap.empty) {
-                const pageData = pagesSnap.docs[0].data();
-                authorName = [pageData.firstName, pageData.lastName].filter(Boolean).join(' ');
-            }
-        }
-        
-        // Serialize Firestore Timestamps to strings to pass to client component
-        const postData = {
-            ...postDataRaw,
-            id: postSnap.id,
-            createdAt: postDataRaw.createdAt.toDate().toISOString(),
-            updatedAt: postDataRaw.updatedAt.toDate().toISOString(),
-        }
-
-        return <PublicPostPageComponent post={postData as any} authorName={authorName} publicUrl={publicUrl} />;
-
-    } catch (error) {
-        console.error("Error fetching public post data", error);
-        notFound();
-    }
+export default function Page({ params }: Props) {
+  return (
+    <ClientOnly
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.12),transparent_60%)] text-foreground">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-muted-foreground">Loading...</p>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <PostContent postId={params.postId} />
+    </ClientOnly>
+  );
 }

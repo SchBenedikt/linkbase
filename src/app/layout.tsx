@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { ClientOnly } from '@/components/client-only';
+import JsonLdScript from '@/components/json-ld-script';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
 const ogImageUrl = 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=1200&h=630&fit=crop';
@@ -56,15 +57,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Inter:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&family=Source+Code+Pro:wght@400;700&display=swap" rel="stylesheet" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Linkbase",
-            "url": siteUrl,
-          }) }}
-        />
+        <JsonLdScript data={{
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Linkbase",
+          "url": siteUrl,
+        }} />
       </head>
       <body className="font-body antialiased">
         <ErrorBoundary>
