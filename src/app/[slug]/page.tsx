@@ -28,7 +28,7 @@ type Props = {
   params: { slug: string }
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.xn--schchner-2za.de';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.schächner.de';
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // Guard clause for build environments without Firebase credentials.
