@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, notFound } from 'next/navigation';
-import { doc, getDoc, collection, query, orderBy, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, orderBy, where, getDocs, limit } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import type { Page as PageType, Link as LinkType, SlugLookup } from '@/lib/types';
 import PublicPageComponent from './public-page';
@@ -34,20 +34,34 @@ function PageContent({ slug }: { slug: string }) {
         setLoading(true);
         setError(null);
 
-        // Get slug lookup
-        const slugRef = doc(firestore, 'slug_lookups', slug);
-        const slugSnap = await getDoc(slugRef);
+        const resolvePageFromSlug = async () => {
+          try {
+            const slugRef = doc(firestore, 'slug_lookups', slug);
+            const slugSnap = await getDoc(slugRef);
 
-        if (!slugSnap.exists()) {
-          notFound();
-          return;
-        }
+            if (!slugSnap.exists()) {
+              return null;
+            }
 
-        const slugData = slugSnap.data() as SlugLookup;
-        const pageRef = doc(firestore, 'pages', slugData.pageId);
-        const pageSnap = await getDoc(pageRef);
+            const slugData = slugSnap.data() as SlugLookup;
+            const pageRef = doc(firestore, 'pages', slugData.pageId);
+            const pageSnap = await getDoc(pageRef);
+            return pageSnap.exists() ? pageSnap : null;
+          } catch (err) {
+            console.error('Slug lookup failed, falling back to pages query:', err);
+            const fallbackQuery = query(
+              collection(firestore, 'pages'),
+              where('slug', '==', slug),
+              limit(1)
+            );
+            const fallbackSnap = await getDocs(fallbackQuery);
+            return fallbackSnap.docs[0] ?? null;
+          }
+        };
 
-        if (!pageSnap.exists()) {
+        const pageSnap = await resolvePageFromSlug();
+
+        if (!pageSnap || !pageSnap.exists()) {
           notFound();
           return;
         }
