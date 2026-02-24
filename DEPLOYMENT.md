@@ -3,6 +3,7 @@
 ## ✅ DEPLOYMENT SUCCESSFUL - 500 ERRORS FIXED!
 
 Your application is now deployed at: **https://linkbase.schaechner.workers.dev**
+**Target Domain:** **https://links.schächner.de**
 
 ## 🚀 AUTOMATIC DEPLOYMENT SETUP
 
@@ -103,7 +104,7 @@ npx opennextjs-cloudflare deploy
 ## Environment Variables
 
 Make sure these are set in your Cloudflare environment:
-- `NEXT_PUBLIC_SITE_URL=https://links.xn--schchner-2za.de`
+- `NEXT_PUBLIC_SITE_URL=https://links.schächner.de`
 - Firebase configuration variables
 - Any other required environment variables
 
@@ -126,7 +127,7 @@ The successful deployment created:
 
 ## Next Steps
 
-1. **Custom Domain**: Configure your custom domain `links.xn--schchner-2za.de` in Cloudflare dashboard
+1. **Custom Domain**: Configure your custom domain `links.schächner.de` in Cloudflare dashboard
 2. **Environment Variables**: Add any missing environment variables in Cloudflare Workers dashboard
 3. **Testing**: Test all functionality including Firebase integration
 4. **Monitoring**: Set up Cloudflare analytics and monitoring

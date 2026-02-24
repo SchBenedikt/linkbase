@@ -8,45 +8,73 @@ export const dynamic = 'force-static'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://links.schächner.de';
 
-  const routes = ['', '/features', '/pricing', '/contact', '/login'].map((route) => ({
+  const staticRoutes = [
+    '',
+    '/features', 
+    '/pricing', 
+    '/contact', 
+    '/login',
+    '/blog',
+    '/dashboard',
+    '/dashboard/links',
+    '/dashboard/analytics',
+    '/dashboard/settings',
+    '/privacy',
+    '/impressum',
+    '/cookies'
+  ].map((route) => ({
     url: `${siteUrl}${route}`,
     lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: route === '' ? 1.0 : route === '/blog' ? 0.8 : 0.6,
   }));
 
   // Guard clause to prevent build errors if Firebase ENV vars are not set.
   if (!process.env.NEXT_PUBLIC_FIREBASE_API_KEY) {
     console.warn("Firebase environment variables not set. Generating a static sitemap only.");
-    return routes;
+    return staticRoutes;
   }
 
   try {
-    const pagesQuery = query(collection(serverFirestore, 'pages'), where('status', '==', 'published'));
-    const pagesSnap = await getDocs(pagesQuery);
-    const pageUrls = pagesSnap.docs.map(doc => {
-        const data = doc.data();
-        return {
-            url: `${siteUrl}/${data.slug}`,
-            lastModified: data.updatedAt?.toDate() || new Date(),
-        }
+    const dynamicRoutes: MetadataRoute.Sitemap = [];
+
+    // Add published pages
+    const pagesQuery = query(
+      collection(serverFirestore, 'pages'),
+      where('status', '==', 'published')
+    );
+    const pagesSnapshot = await getDocs(pagesQuery);
+    
+    pagesSnapshot.forEach((doc) => {
+      const page = doc.data() as Page;
+      dynamicRoutes.push({
+        url: `${siteUrl}/${page.slug}`,
+        lastModified: page.updatedAt?.toDate() || new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+      });
     });
 
-    const postsQuery = query(collection(serverFirestore, 'posts'), where('status', '==', 'published'));
-    const postsSnap = await getDocs(postsQuery);
-    const postUrls = postsSnap.docs.map(doc => {
-        const data = doc.data();
-        return {
-            url: `${siteUrl}/post/${doc.id}`,
-            lastModified: data.updatedAt?.toDate() || new Date(),
-        }
+    // Add published posts
+    const postsQuery = query(
+      collection(serverFirestore, 'posts'),
+      where('published', '==', true)
+    );
+    const postsSnapshot = await getDocs(postsQuery);
+    
+    postsSnapshot.forEach((doc) => {
+      const post = doc.data() as Post;
+      dynamicRoutes.push({
+        url: `${siteUrl}/blog/${post.slug}`,
+        lastModified: post.updatedAt?.toDate() || new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      });
     });
 
-    return [
-      ...routes,
-      ...pageUrls,
-      ...postUrls,
-    ]
+    return [...staticRoutes, ...dynamicRoutes];
   } catch (error) {
-    console.error("Error generating sitemap:", error);
-    return routes;
+    console.error('Error generating dynamic sitemap:', error);
+    return staticRoutes;
   }
 }

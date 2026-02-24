@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react';
 import { useFirestore, useUser } from '@/firebase';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, collection } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { ClientOnly } from '@/components/client-only';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,16 +19,21 @@ function NewPostContent() {
     }
 
     try {
-      // Create a new post document
-      const newPostRef = doc(firestore, 'posts', crypto.randomUUID());
+      // Create a new post document with proper collection structure
+      const postsCollection = collection(firestore, 'posts');
+      const newPostRef = doc(postsCollection);
       
       const postToSave = {
-        ...postData,
-        id: newPostRef.id,
+        title: postData.title || '',
+        content: postData.content || '',
+        slug: postData.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || '',
+        excerpt: postData.content?.substring(0, 200) || '',
         authorId: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         published: false, // Start as draft
+        tags: [],
+        featuredImage: '',
       };
 
       await setDoc(newPostRef, postToSave);
