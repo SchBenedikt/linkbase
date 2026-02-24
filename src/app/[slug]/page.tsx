@@ -55,10 +55,9 @@ function PageContent({ slug }: { slug: string }) {
         const pageData = { id: pageSnap.id, ...pageSnap.data() } as PageType;
         setPage(pageData);
 
-        // Get links
+        // Get links from subcollection
         const linksQuery = query(
-          collection(firestore, 'links'),
-          where('pageId', '==', pageSnap.id),
+          collection(firestore, 'pages', pageSnap.id, 'links'),
           orderBy('orderIndex', 'asc')
         );
         const linksSnap = await getDocs(linksQuery);
