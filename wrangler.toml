@@ -14,3 +14,10 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID = ""
 
 [assets]
 directory = ".open-next/assets"
+
+[observability]
+enabled = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
