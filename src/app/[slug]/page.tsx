@@ -52,13 +52,13 @@ function PageContent({ slug }: { slug: string }) {
           return;
         }
 
-        const pageData = pageSnap.data() as PageType;
+        const pageData = { id: pageSnap.id, ...pageSnap.data() } as PageType;
         setPage(pageData);
 
         // Get links
         const linksQuery = query(
           collection(firestore, 'links'),
-          where('pageId', '==', pageData.id),
+          where('pageId', '==', pageSnap.id),
           orderBy('orderIndex', 'asc')
         );
         const linksSnap = await getDocs(linksQuery);
