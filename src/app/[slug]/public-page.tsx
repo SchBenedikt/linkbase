@@ -52,7 +52,12 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
         if (!isClient || !page?.id || !firestore) return;
         const today = new Date().toISOString().split('T')[0];
         const viewRef = doc(firestore, 'pages', page.id, 'page_views', today);
-        setDoc(viewRef, { pageId: page.id, date: today, count: increment(1) }, { merge: true }).catch((err) => console.warn('Failed to track page view:', err));
+        setDoc(viewRef, { pageId: page.id, date: today, count: increment(1) }, { merge: true }).catch((err) => {
+            console.error('Failed to track page view:', err);
+            if (err instanceof Error) {
+                console.error('Error details:', err.message, err.code);
+            }
+        });
     }, [page.id, isClient, firestore]);
 
     useEffect(() => {

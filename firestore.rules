@@ -30,15 +30,15 @@ service cloud.firestore {
         allow write: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
       }
 
-      // Analytics Data
+      // Analytics Data - public write, owner-only read
       match /page_views/{viewId} {
-        allow get, list: if isSignedIn() && exists(/databases/$(database)/documents/pages/$(pageId)) && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
-        allow write: if true;
+        allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+        allow write: if true; // Anyone can log views
       }
 
       match /link_clicks/{clickId} {
-        allow get, list: if isSignedIn() && exists(/databases/$(database)/documents/pages/$(pageId)) && get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId == request.auth.uid;
-        allow write: if true;
+        allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+        allow write: if true; // Anyone can log clicks
       }
     }
 
