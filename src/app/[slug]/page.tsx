@@ -1,9 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, notFound } from 'next/navigation';
-import { doc, getDoc, collection, query, orderBy, where, getDocs, limit } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
+import { useEffect, useState, use } from 'react';
+import { notFound } from 'next/navigation';
 import type { Page as PageType, Link as LinkType, SlugLookup } from '@/lib/types';
 import PublicPageComponent from './public-page';
 import { ClientOnly } from '@/components/client-only';
@@ -13,30 +11,42 @@ import { Loader2 } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 };
 
 function PageContent({ slug }: { slug: string }) {
-  const firestore = useFirestore();
   const [page, setPage] = useState<PageType | null>(null);
   const [links, setLinks] = useState<LinkType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [firestore, setFirestore] = useState<any>(null);
 
   useEffect(() => {
-    if (!firestore || !slug) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchPageData = async () => {
+    // Initialize Firebase on client side
+    const initializeFirebaseAndFetch = async () => {
       try {
+        if (!slug) {
+          setLoading(false);
+          return;
+        }
+
         setLoading(true);
         setError(null);
 
-        const resolvePageFromSlug = async () => {
+        // Dynamically import and initialize Firebase to avoid SSR issues
+        const { initializeFirebase } = await import('@/firebase');
+        const firebaseServices = initializeFirebase();
+        
+        if (!firebaseServices.firestore) {
+          throw new Error('Failed to initialize Firestore');
+        }
+
+        setFirestore(firebaseServices.firestore);
+
+        const resolvePageFromSlug = async (firestoreInstance: any) => {
           try {
-            const slugRef = doc(firestore, 'slug_lookups', slug);
+            const { doc, getDoc } = await import('firebase/firestore');
+            const slugRef = doc(firestoreInstance, 'slug_lookups', slug);
             const slugSnap = await getDoc(slugRef);
 
             if (!slugSnap.exists()) {
@@ -44,13 +54,14 @@ function PageContent({ slug }: { slug: string }) {
             }
 
             const slugData = slugSnap.data() as SlugLookup;
-            const pageRef = doc(firestore, 'pages', slugData.pageId);
+            const pageRef = doc(firestoreInstance, 'pages', slugData.pageId);
             const pageSnap = await getDoc(pageRef);
             return pageSnap.exists() ? pageSnap : null;
           } catch (err) {
             console.error('Slug lookup failed, falling back to pages query:', err);
+            const { collection, query, orderBy, where, getDocs, limit } = await import('firebase/firestore');
             const fallbackQuery = query(
-              collection(firestore, 'pages'),
+              collection(firestoreInstance, 'pages'),
               where('slug', '==', slug),
               limit(1)
             );
@@ -59,7 +70,7 @@ function PageContent({ slug }: { slug: string }) {
           }
         };
 
-        const pageSnap = await resolvePageFromSlug();
+        const pageSnap = await resolvePageFromSlug(firebaseServices.firestore);
 
         if (!pageSnap || !pageSnap.exists()) {
           notFound();
@@ -70,8 +81,9 @@ function PageContent({ slug }: { slug: string }) {
         setPage(pageData);
 
         // Get links from subcollection
+        const { collection, query, orderBy, getDocs } = await import('firebase/firestore');
         const linksQuery = query(
-          collection(firestore, 'pages', pageSnap.id, 'links'),
+          collection(firebaseServices.firestore, 'pages', pageSnap.id, 'links'),
           orderBy('orderIndex', 'asc')
         );
         const linksSnap = await getDocs(linksQuery);
@@ -89,8 +101,8 @@ function PageContent({ slug }: { slug: string }) {
       }
     };
 
-    fetchPageData();
-  }, [firestore, slug]);
+    initializeFirebaseAndFetch();
+  }, [slug]);
 
   if (loading) {
     return (
@@ -139,6 +151,8 @@ function PageContent({ slug }: { slug: string }) {
 }
 
 export default function Page({ params }: Props) {
+  const { slug } = use(params);
+  
   return (
     <ClientOnly
       fallback={
@@ -152,7 +166,7 @@ export default function Page({ params }: Props) {
         </div>
       }
     >
-      <PageContent slug={params.slug} />
+      <PageContent slug={slug} />
     </ClientOnly>
   );
 }
