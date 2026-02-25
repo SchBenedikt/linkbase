@@ -141,7 +141,7 @@ export default function AnalyticsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div className="flex items-center gap-4">
             <Button asChild variant="outline" size="sm">
-              <Link href="/dashboard/analytics">
+              <Link href="/analytics">
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 All Pages
               </Link>

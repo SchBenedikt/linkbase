@@ -67,7 +67,7 @@ service cloud.firestore {
     }
 
     // Short Links (Private management data) - FINAL FIX
-    match /short_links/{code} {
+    match /shortLinks/{code} {
       // GET: Allow reading if the user is the owner. This is defensive.
       allow get: if 'ownerId' in resource.data && isOwner(resource.data.ownerId);
 
@@ -78,10 +78,10 @@ service cloud.firestore {
 
       // CREATE: A new document must have the correct ownerId and the code must not already exist.
       allow create: if isOwner(request.resource.data.ownerId) 
-                   && !exists(/databases/$(database)/documents/short_links/$(code));
+                   && !exists(/databases/$(database)/documents/shortLinks/$(code));
                    
       // UPDATE/DELETE: The existing document's ownerId must match the user.
-      allow update, delete: if isOwner(get(/databases/$(database)/documents/short_links/$(code)).data.ownerId);
+      allow update, delete: if isOwner(get(/databases/$(database)/documents/shortLinks/$(code)).data.ownerId);
     }
 
     // Short Links (Public data for redirection)
@@ -99,7 +99,7 @@ service cloud.firestore {
            && request.resource.data.keys().hasOnly(['originalUrl', 'clickCount'])
            && request.resource.data.originalUrl is string
            && request.resource.data.clickCount is int;
-      allow delete: if isSignedIn() && get(/databases/$(database)/documents/short_links/$(code)).data.ownerId == request.auth.uid;
+      allow delete: if isSignedIn() && get(/databases/$(database)/documents/shortLinks/$(code)).data.ownerId == request.auth.uid;
     }
   }
 }

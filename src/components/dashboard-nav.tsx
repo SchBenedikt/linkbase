@@ -9,8 +9,8 @@ const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/pages', label: 'Pages', icon: FileText },
     { href: '/blog', label: 'Blog', icon: BookOpen },
-    { href: '/dashboard/links', label: 'Links', icon: Link2 },
-    { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart2 },
+    { href: '/links', label: 'Links', icon: Link2 },
+    { href: '/analytics', label: 'Analytics', icon: BarChart2 },
     { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -30,8 +30,8 @@ export function DashboardNav() {
                         (pathname === item.href 
                             || (item.href === '/blog' && pathname.startsWith('/blog'))
                             || (item.href === '/pages' && pathname.startsWith('/pages'))
-                            || (item.href === '/dashboard/analytics' && pathname.startsWith('/dashboard/analytics'))
-                            || (item.href === '/dashboard/links' && pathname.startsWith('/dashboard/links'))
+                            || (item.href === '/analytics' && pathname.startsWith('/analytics'))
+                            || (item.href === '/links' && pathname.startsWith('/links'))
                         ) && "bg-accent text-accent-foreground"
                     )}
                 >

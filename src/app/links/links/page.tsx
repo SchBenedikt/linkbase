@@ -50,7 +50,7 @@ export default function LinksPage() {
 
   const shortLinksQuery = useMemoFirebase(
     () => (user && firestore && !isUserLoading)
-      ? query(collection(firestore, 'short_links'), where('ownerId', '==', user.uid))
+      ? query(collection(firestore, 'shortLinks'), where('ownerId', '==', user.uid))
       : null,
     [user, firestore, isUserLoading]
   );
@@ -99,7 +99,7 @@ export default function LinksPage() {
         return;
       }
       
-      const privateLinkRef = doc(firestore, 'short_links', code);
+      const privateLinkRef = doc(firestore, 'shortLinks', code);
       const publicLinkRef = doc(firestore, 'short_link_public', code);
 
       const existing = await getDoc(publicLinkRef);
@@ -151,7 +151,7 @@ export default function LinksPage() {
     if (!linkToDelete || !firestore) return;
     try {
       const batch = writeBatch(firestore);
-      batch.delete(doc(firestore, 'short_links', linkToDelete.code));
+      batch.delete(doc(firestore, 'shortLinks', linkToDelete.code));
       batch.delete(doc(firestore, 'short_link_public', linkToDelete.code));
       await batch.commit();
 

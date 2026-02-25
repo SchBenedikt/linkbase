@@ -64,7 +64,7 @@ export default function AnalyticsOverviewPage() {
             {sortedPages.map((page) => {
               const displayName = [page.firstName, page.lastName].filter(Boolean).join(' ') || page.title || 'Untitled Page';
               return (
-                <Link key={page.id} href={`/dashboard/analytics/${page.id}`} className="block group">
+                <Link key={page.id} href={`/analytics/${page.id}`} className="block group">
                   <Card className="h-full transition-shadow group-hover:shadow-md cursor-pointer border">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between gap-2">
