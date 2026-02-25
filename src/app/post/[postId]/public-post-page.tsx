@@ -11,8 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 
 type PublicPost = Omit<Post, 'createdAt' | 'updatedAt'> & {
-    createdAt: string;
-    updatedAt: string;
+    createdAt: string | Date | { toDate: () => Date };
+    updatedAt: string | Date | { toDate: () => Date };
 };
 
 type PublicPostPageComponentProps = {
@@ -22,7 +22,12 @@ type PublicPostPageComponentProps = {
 };
 
 export default function PublicPostPageComponent({ post, authorName, publicUrl }: PublicPostPageComponentProps) {
-    const publicationDate = post.createdAt ? format(new Date(post.createdAt), 'PPP') : '';
+    const publicationDate = post.createdAt ? format(
+        post.createdAt instanceof Date ? post.createdAt : 
+        (typeof post.createdAt === 'object' && 'toDate' in post.createdAt) ? (post.createdAt as any).toDate() : 
+        new Date(post.createdAt as string), 
+        'PPP'
+    ) : '';
 
     const jsonLd = {
         '@context': 'https://schema.org',

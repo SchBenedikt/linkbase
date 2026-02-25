@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import { useParams, notFound } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
@@ -13,7 +13,7 @@ import { Loader2 } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 type Props = {
-    params: { postId: string }
+    params: Promise<{ postId: string }>
 }
 
 function PostContent({ postId }: { postId: string }) {
@@ -102,6 +102,8 @@ function PostContent({ postId }: { postId: string }) {
 }
 
 export default function Page({ params }: Props) {
+  const resolvedParams = use(params);
+  
   return (
     <ClientOnly
       fallback={
@@ -115,7 +117,7 @@ export default function Page({ params }: Props) {
         </div>
       }
     >
-      <PostContent postId={params.postId} />
+      <PostContent postId={resolvedParams.postId} />
     </ClientOnly>
   );
 }
