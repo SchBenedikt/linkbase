@@ -98,7 +98,7 @@ export type Post = {
   content: string;
   slug: string;
   status: 'draft' | 'published';
-  category?: string;
+  categories?: string[];
   coverImage?: string;
   excerpt?: string;
   readingTime?: string;

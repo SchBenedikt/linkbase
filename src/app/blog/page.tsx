@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { collection, query, where, doc } from 'firebase/firestore';
 import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
 import { useRouter } from 'next/navigation';
@@ -21,12 +21,20 @@ import { BlogExploreView } from '@/components/blog-explore-view';
 
 export default function BlogDashboardPage() {
     const { user, isUserLoading } = useUser();
-    const firestore = useFirestore();
     const router = useRouter();
+
+    // Redirect non-authenticated users to public blog page
+    useEffect(() => {
+        if (!isUserLoading && !user) {
+            router.push('/blog/public');
+        }
+    }, [user, isUserLoading, router]);
+
+    const firestore = useFirestore();
     const [postToDelete, setPostToDelete] = useState<Post | null>(null);
 
     const postsQuery = useMemoFirebase(() =>
-        user ? query(collection(firestore, 'posts'), where('ownerId', '==', user.uid)) : null,
+        user && firestore ? query(collection(firestore, 'posts'), where('ownerId', '==', user.uid)) : null,
         [user, firestore]
     );
 
@@ -137,7 +145,16 @@ export default function BlogDashboardPage() {
                                                                     {post.readingTime}
                                                                 </span>
                                                             )}
-                                                            {post.category && <Badge variant="outline" className="text-xs">{post.category}</Badge>}
+                                                            {post.categories && post.categories.length > 0 && (
+                                                                <div className="flex flex-wrap gap-1">
+                                                                    {post.categories.slice(0, 2).map((category, index) => (
+                                                                        <Badge key={index} variant="outline" className="text-xs">{category}</Badge>
+                                                                    ))}
+                                                                    {post.categories.length > 2 && (
+                                                                        <Badge variant="outline" className="text-xs">+{post.categories.length - 2}</Badge>
+                                                                    )}
+                                                                </div>
+                                                            )}
                                                         </CardDescription>
                                                         {post.excerpt && (
                                                             <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{post.excerpt}</p>

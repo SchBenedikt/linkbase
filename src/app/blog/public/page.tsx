@@ -1,5 +1,6 @@
 'use client';
-import { useState, useMemo } from 'react';
+
+import { useMemo } from 'react';
 import { collection, query, where } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import type { Post } from '@/lib/types';
@@ -110,10 +111,8 @@ function PostCardSkeleton() {
     );
 }
 
-export function BlogExploreView() {
+export default function PublicBlogPage() {
     const firestore = useFirestore();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<string | null>('All');
 
     const publicPostsQuery = useMemoFirebase(() =>
         firestore ? query(collection(firestore, 'posts'), where('status', '==', 'published')) : null,
@@ -131,81 +130,44 @@ export function BlogExploreView() {
         });
     }, [unsortedPosts]);
 
-    const categories = useMemo(() => {
-        if (!posts) return [];
-        const allCategories = posts.flatMap(p => p.categories || []);
-        const uniqueCategories = [...new Set(allCategories)];
-        return ['All', ...uniqueCategories.sort()];
-    }, [posts]);
-
-    const filteredPosts = useMemo(() => {
-        if (!posts) return [];
-        return posts.filter(post => {
-            const matchesCategory = !selectedCategory || selectedCategory === 'All' || (post.categories && post.categories.includes(selectedCategory));
-            const term = searchTerm.toLowerCase();
-            const matchesSearch = !term ||
-                post.title.toLowerCase().includes(term) ||
-                post.authorName?.toLowerCase().includes(term) ||
-                post.excerpt?.toLowerCase().includes(term) ||
-                (post.categories && post.categories.some(cat => cat.toLowerCase().includes(term)));
-            return matchesCategory && matchesSearch;
-        });
-    }, [posts, searchTerm, selectedCategory]);
-
     if (isLoading) {
         return (
-            <div className="space-y-8">
-                <Skeleton className="h-10 w-64" />
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[...Array(6)].map((_, i) => <PostCardSkeleton key={i} />)}
+            <div className="min-h-screen bg-background">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="space-y-8">
+                        <Skeleton className="h-10 w-64" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[...Array(6)].map((_, i) => <PostCardSkeleton key={i} />)}
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-8">
-            <div className="space-y-4">
-                <div className="relative max-w-sm">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search posts by title, author…"
-                        className="pl-10"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
-                {categories.length > 1 && (
-                    <div className="flex flex-wrap items-center gap-2">
-                        {categories.map(category => (
-                            <button
-                                key={category}
-                                onClick={() => setSelectedCategory(category)}
-                                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                                    selectedCategory === category
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                                }`}
-                            >
-                                {category}
-                            </button>
-                        ))}
+        <div className="min-h-screen bg-background">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div className="space-y-8">
+                    <div>
+                        <h1 className="text-3xl font-bold mb-2">Explore Blog Posts</h1>
+                        <p className="text-muted-foreground">Discover insights, stories, and ideas from our community</p>
                     </div>
-                )}
+                    
+                    {posts.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {posts.map(post => (
+                                <PostCard key={post.id} post={post} />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-16 border-2 border-dashed rounded-lg">
+                            <h3 className="text-xl font-semibold">No posts available</h3>
+                            <p className="text-muted-foreground mt-2">Check back later for new content.</p>
+                        </div>
+                    )}
+                </div>
             </div>
-
-            {filteredPosts.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredPosts.map(post => (
-                        <PostCard key={post.id} post={post} />
-                    ))}
-                </div>
-            ) : (
-                <div className="text-center py-16 border-2 border-dashed rounded-lg">
-                    <h3 className="text-xl font-semibold">No posts found</h3>
-                    <p className="text-muted-foreground mt-2">Try adjusting your search or filter.</p>
-                </div>
-            )}
         </div>
     );
 }

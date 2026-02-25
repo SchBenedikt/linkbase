@@ -28,7 +28,7 @@ const postSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   content: z.string().min(1, 'Content is required.'),
   excerpt: z.string().max(300, 'Excerpt cannot be longer than 300 characters.').optional(),
-  category: z.string().optional(),
+  categories: z.string().optional(),
   coverImage: z.string().optional(),
   createdAt: z.date().optional(),
 });
@@ -70,7 +70,7 @@ export default function PostEditorPage() {
             title: '',
             content: '',
             excerpt: '',
-            category: '',
+            categories: '',
             coverImage: '',
             createdAt: new Date(),
         },
@@ -118,7 +118,7 @@ export default function PostEditorPage() {
                                             title: postData.title,
                                             content: postData.content,
                                             excerpt: postData.excerpt || '',
-                                            category: postData.category || '',
+                                            categories: postData.categories ? postData.categories.join(', ') : '',
                                             coverImage: postData.coverImage || '',
                                             createdAt: postData.createdAt?.toDate ? postData.createdAt.toDate() : new Date(postData.createdAt),
                                         });
@@ -191,8 +191,13 @@ export default function PostEditorPage() {
             }
         }
         const autoExcerpt = data.content.substring(0, 250).replace(/\s+/g, ' ').trim() + (data.content.length > 250 ? '\u2026' : '');
+        const categories = data.categories 
+            ? data.categories.split(',').map(cat => cat.trim()).filter(Boolean)
+            : [];
+        
         return {
             ...data,
+            categories,
             ...authorInfo,
             readingTime: calcReadingTime(data.content),
             excerpt: data.excerpt && data.excerpt.trim() ? data.excerpt : autoExcerpt,
@@ -441,12 +446,12 @@ export default function PostEditorPage() {
                                     )}
                                     <FormField
                                         control={form.control}
-                                        name="category"
+                                        name="categories"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Category</FormLabel>
+                                                <FormLabel>Categories</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="e.g. Technology" {...field} />
+                                                    <Input placeholder="e.g. Technology, Design, Business" {...field} />
                                                 </FormControl>
                                                 <FormDescription>Group this post with similar content.</FormDescription>
                                                 <FormMessage />

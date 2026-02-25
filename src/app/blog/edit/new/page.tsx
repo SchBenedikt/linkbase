@@ -64,6 +64,7 @@ function NewPostContent() {
       content: postData.content || '',
       slug: postData.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || '',
       excerpt: postData.content?.substring(0, 200) || '',
+      ownerId: user.uid,
       authorId: user.uid,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),

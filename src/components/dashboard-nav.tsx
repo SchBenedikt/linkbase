@@ -25,12 +25,12 @@ export function DashboardNav() {
                     variant="ghost"
                     size="sm"
                     className={cn(
-                        "text-muted-foreground",
+                        "hover:bg-accent hover:text-accent-foreground",
                         (pathname === item.href 
                             || (item.href === '/blog' && pathname.startsWith('/blog'))
                             || (item.href === '/dashboard/analytics' && pathname.startsWith('/dashboard/analytics'))
                             || (item.href === '/dashboard/links' && pathname.startsWith('/dashboard/links'))
-                        ) && "text-foreground bg-accent"
+                        ) && "bg-accent text-accent-foreground"
                     )}
                 >
                     <Link href={item.href}>
