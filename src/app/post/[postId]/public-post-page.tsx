@@ -105,12 +105,6 @@ export default function PublicPostPageComponent({ post, authorName, publicUrl }:
                                 </>
                             )}
                         </div>
-
-                        {post.excerpt && (
-                            <p className="mt-6 text-xl text-muted-foreground leading-relaxed border-l-4 border-primary pl-4">
-                                {post.excerpt}
-                            </p>
-                        )}
                     </header>
 
                     <Separator className="my-8" />
