@@ -395,7 +395,7 @@ export default function EditPage() {
     <div style={dynamicStyles as React.CSSProperties}>
       <main className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 bg-background text-foreground" style={mainStyle}>
         <div className="w-full max-w-7xl mx-auto">
-          <header className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between">
+          <header className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between bg-primary text-primary-foreground rounded-lg border p-3">
               <Button variant="outline" asChild>
                 <Link href="/dashboard">&larr; Back to Dashboard</Link>
               </Button>
