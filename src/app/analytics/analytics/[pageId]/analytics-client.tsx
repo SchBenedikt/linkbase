@@ -42,7 +42,7 @@ function StatCard({ label, value, icon: Icon, sub }: { label: string; value: str
 
 export default function AnalyticsPage() {
   const params = useParams();
-  const pageId = params.pageId as string;
+  const pageId = (params.pageId || params.id) as string; // Handle both pageId and id
   const firestore = useFirestore();
   const [range, setRange] = useState<Range>(30);
 
