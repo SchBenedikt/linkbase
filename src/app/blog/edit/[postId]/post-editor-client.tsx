@@ -1,12 +1,10 @@
 'use client';
 
-import { useEffect, useState, useTransition, useRef, useCallback } from 'react';
+import { useEffect, useState, useTransition, useRef, useCallback, use } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter, useParams } from 'next/navigation';
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc, addDoc, setDoc, serverTimestamp, collection, query, where, getDocs, limit, getDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -48,8 +46,6 @@ function countWords(text: string): number {
 }
 
 export default function PostEditorPage() {
-    const { user, isUserLoading } = useUser();
-    const firestore = useFirestore();
     const router = useRouter();
     const params = useParams();
     const { toast } = useToast();
@@ -57,17 +53,16 @@ export default function PostEditorPage() {
     const [isPublishing, startPublishing] = useTransition();
     const [isUnpublishing, startUnpublishing] = useTransition();
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [user, setUser] = useState<any>(null);
+    const [firestore, setFirestore] = useState<any>(null);
+    const [post, setPost] = useState<Post | null>(null);
     const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const postId = params.postId as string;
+    const resolvedParams = use(params as unknown as Promise<{ postId: string }>) as { postId: string };
+    const { postId } = resolvedParams;
     const isNewPost = postId === 'new';
-
-    const postRef = useMemoFirebase(() =>
-        firestore && !isNewPost ? doc(firestore, 'posts', postId) : null,
-        [firestore, postId, isNewPost]
-    );
-
-    const { data: post, isLoading: isPostLoading } = useDoc<Post>(postRef);
 
     const form = useForm<PostFormData>({
         resolver: zodResolver(postSchema),
@@ -87,22 +82,80 @@ export default function PostEditorPage() {
     const readingTimeDisplay = calcReadingTime(contentValue || '');
 
     useEffect(() => {
-        if (post) {
-            form.reset({
-                title: post.title,
-                content: post.content,
-                excerpt: post.excerpt || '',
-                category: post.category || '',
-                coverImage: post.coverImage || '',
-                createdAt: post.createdAt?.toDate ? post.createdAt.toDate() : new Date(post.createdAt),
-            });
-        }
-    }, [post, form]);
+        const initializeFirebaseAndLoadData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Initialize Firebase
+                const { initializeFirebase } = await import('@/firebase');
+                const firebaseServices = initializeFirebase();
+                
+                if (!firebaseServices.firestore || !firebaseServices.auth) {
+                    throw new Error('Firebase not properly initialized');
+                }
+
+                setFirestore(firebaseServices.firestore);
+
+                // Check authentication
+                const { onAuthStateChanged } = await import('firebase/auth');
+                return new Promise<void>((resolve, reject) => {
+                    const unsubscribe = onAuthStateChanged(firebaseServices.auth, (currentUser) => {
+                        unsubscribe();
+                        if (!currentUser) {
+                            reject(new Error('User not authenticated'));
+                            return;
+                        }
+                        setUser(currentUser);
+                        
+                        // Load post data if not new
+                        if (!isNewPost) {
+                            loadPostData(firebaseServices.firestore, postId)
+                                .then(postData => {
+                                    setPost(postData);
+                                    if (postData) {
+                                        form.reset({
+                                            title: postData.title,
+                                            content: postData.content,
+                                            excerpt: postData.excerpt || '',
+                                            category: postData.category || '',
+                                            coverImage: postData.coverImage || '',
+                                            createdAt: postData.createdAt?.toDate ? postData.createdAt.toDate() : new Date(postData.createdAt),
+                                        });
+                                    }
+                                    resolve();
+                                })
+                                .catch(reject);
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+
+            } catch (err) {
+                console.error('Error initializing:', err);
+                setError('Failed to load. Please refresh and try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        initializeFirebaseAndLoadData();
+    }, [postId, isNewPost, form]);
+
+    const loadPostData = async (firestoreInstance: any, postId: string): Promise<Post | null> => {
+        const { doc, getDoc } = await import('firebase/firestore');
+        const postRef = doc(firestoreInstance, 'posts', postId);
+        const postSnap = await getDoc(postRef);
+        return postSnap.exists() ? { id: postSnap.id, ...postSnap.data() } as Post : null;
+    };
 
     const buildPostData = useCallback(async (data: PostFormData, status: 'draft' | 'published') => {
         let authorInfo: Partial<Post> = {};
         if (status === 'published' && user && firestore) {
             try {
+                const { doc, query, collection, where, getDocs, limit, getDoc } = await import('firebase/firestore');
+                
                 const userProfileRef = doc(firestore, 'user_profiles', user.uid);
                 const pagesQuery = query(collection(firestore, 'pages'), where('ownerId', '==', user.uid), limit(1));
                 
@@ -157,6 +210,8 @@ export default function PostEditorPage() {
 
         if (isNewPost) {
             try {
+                const { addDoc, collection, serverTimestamp } = await import('firebase/firestore');
+                
                 const newPostData = {
                     ...enrichedData,
                     ownerId: user.uid,
@@ -174,8 +229,11 @@ export default function PostEditorPage() {
                 console.error("Error creating post:", error);
                 toast({ variant: 'destructive', title: 'Error', description: 'Could not create post.' });
             }
-        } else if (postRef) {
+        } else {
             try {
+                const { doc, setDoc, serverTimestamp } = await import('firebase/firestore');
+                
+                const postRef = doc(firestore, 'posts', postId);
                 const updatedData: Record<string, any> = {
                     ...enrichedData,
                     status: currentStatus,
@@ -195,17 +253,22 @@ export default function PostEditorPage() {
 
     // Autosave draft 30s after last change (existing posts only)
     useEffect(() => {
-        if (isNewPost) return;
+        if (isNewPost || !firestore) return;
         const subscription = form.watch(() => {
             if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
             autosaveTimerRef.current = setTimeout(async () => {
                 const isValid = await form.trigger(['title', 'content']);
-                if (isValid && postRef && firestore) {
+                if (isValid && firestore) {
                     const data = form.getValues();
                     const enriched = await buildPostData(data, post?.status || 'draft');
-                    setDoc(postRef, { ...enriched, updatedAt: serverTimestamp() }, { merge: true })
-                        .then(() => setLastSaved(new Date()))
-                        .catch(() => {});
+                    try {
+                        const { doc, setDoc, serverTimestamp } = await import('firebase/firestore');
+                        const postRef = doc(firestore, 'posts', postId);
+                        await setDoc(postRef, { ...enriched, updatedAt: serverTimestamp() }, { merge: true });
+                        setLastSaved(new Date());
+                    } catch (error) {
+                        console.error('Autosave failed:', error);
+                    }
                 }
             }, 30000);
         });
@@ -213,7 +276,7 @@ export default function PostEditorPage() {
             subscription.unsubscribe();
             if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
         };
-    }, [form, isNewPost, postRef, firestore, post?.status, buildPostData]);
+    }, [form, isNewPost, firestore, postId, post?.status, buildPostData]);
 
     const onSaveDraft = (data: PostFormData) => startSaving(() => handleSave(data, 'draft'));
     const onPublish = (data: PostFormData) => startPublishing(() => handleSave(data, 'published'));
@@ -226,13 +289,24 @@ export default function PostEditorPage() {
         form.setValue('excerpt', auto, { shouldDirty: true });
     };
 
-    const isLoading = isUserLoading || (isPostLoading && !isNewPost);
+    const isLoading = loading || (!post && !isNewPost);
     const isAnyPending = isSaving || isPublishing || isUnpublishing;
 
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <Loader2 className="h-16 w-16 animate-spin" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <p className="text-red-600 mb-4">{error}</p>
+                    <Button onClick={() => window.location.reload()}>Retry</Button>
+                </div>
             </div>
         );
     }
