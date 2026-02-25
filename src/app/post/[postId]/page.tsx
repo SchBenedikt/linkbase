@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, notFound } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
@@ -98,11 +98,27 @@ function PostContent({ postId }: { postId: string }) {
     );
   }
 
-  return <PublicPostPageComponent post={post} authorName={post.authorName || ''} authorBio={post.authorBio} publicUrl={typeof window !== 'undefined' ? window.location.origin : ''} />;
+  return <PublicPostPageComponent post={post} authorName={post.authorName || ''} authorBio={post.authorBio || undefined} publicUrl={typeof window !== 'undefined' ? window.location.origin : ''} />;
 }
 
 export default function Page({ params }: Props) {
-  const resolvedParams = use(params);
+  const resolvedParams = useParams();
+  const postId = resolvedParams.postId as string;
+  
+  if (!postId) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,hsl(var(--destructive)/0.12),transparent_60%)] text-foreground">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-center">Error</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">Invalid post ID.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   return (
     <ClientOnly
@@ -117,7 +133,7 @@ export default function Page({ params }: Props) {
         </div>
       }
     >
-      <PostContent postId={resolvedParams.postId} />
+      <PostContent postId={postId} />
     </ClientOnly>
   );
 }
