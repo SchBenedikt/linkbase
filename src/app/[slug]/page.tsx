@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
-import { notFound } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { notFound, useParams } from 'next/navigation';
 import type { Page as PageType, Link as LinkType, SlugLookup } from '@/lib/types';
 import PublicPageComponent from './public-page';
 import { ClientOnly } from '@/components/client-only';
@@ -11,7 +11,7 @@ import { Loader2 } from 'lucide-react';
 export const dynamic = 'force-dynamic';
 
 type Props = {
-  params: Promise<{ slug: string }>
+  params: { slug: string }
 };
 
 function PageContent({ slug }: { slug: string }) {
@@ -151,7 +151,8 @@ function PageContent({ slug }: { slug: string }) {
 }
 
 export default function Page({ params }: Props) {
-  const { slug } = use(params);
+  const resolvedParams = useParams();
+  const slug = resolvedParams.slug as string;
   
   return (
     <ClientOnly

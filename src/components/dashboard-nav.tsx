@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { LayoutDashboard, BookOpen, Settings, BarChart2, Link2 } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Settings, BarChart2, Link2, FileText } from 'lucide-react';
 
 const navItems = [
-    { href: '/dashboard', label: 'Pages', icon: LayoutDashboard },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/pages', label: 'Pages', icon: FileText },
     { href: '/blog', label: 'Blog', icon: BookOpen },
     { href: '/dashboard/links', label: 'Links', icon: Link2 },
     { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart2 },
@@ -28,6 +29,7 @@ export function DashboardNav() {
                         "hover:bg-accent hover:text-accent-foreground",
                         (pathname === item.href 
                             || (item.href === '/blog' && pathname.startsWith('/blog'))
+                            || (item.href === '/pages' && pathname.startsWith('/pages'))
                             || (item.href === '/dashboard/analytics' && pathname.startsWith('/dashboard/analytics'))
                             || (item.href === '/dashboard/links' && pathname.startsWith('/dashboard/links'))
                         ) && "bg-accent text-accent-foreground"
