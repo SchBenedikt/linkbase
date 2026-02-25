@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, BarChart3, Link2, MousePointer, TrendingUp, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import type { ShortLink, Page } from '@/lib/types';
+import AnalyticsClient from '../analytics/[pageId]/analytics-client';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -134,38 +135,8 @@ export default function AnalyticsRouter() {
   }
 
   if (idType === 'page') {
-    // Redirect to existing page analytics
-    return (
-      <div className="min-h-screen bg-background">
-        <header className="bg-primary text-primary-foreground border-b sticky top-0 z-50">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-            <DashboardNav />
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
-              <UserNav />
-            </div>
-          </div>
-        </header>
-        <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Card>
-            <CardContent className="flex items-center justify-center py-12">
-              <div className="text-center">
-                <BarChart3 className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <h2 className="text-xl font-semibold mb-2">Redirecting to Page Analytics...</h2>
-                <p className="text-muted-foreground mb-4">
-                  Taking you to the detailed page analytics for "{id}"
-                </p>
-                <Button asChild>
-                  <Link href={`/analytics/analytics/${id}`}>
-                    Go to Page Analytics
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </main>
-      </div>
-    );
+    // Show page analytics directly
+    return <AnalyticsClient />;
   }
 
   // Short link analytics
