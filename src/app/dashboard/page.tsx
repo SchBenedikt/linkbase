@@ -1,123 +1,108 @@
 'use client';
 
-import { useState, useMemo, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { collection, query, where, doc, getDocs, addDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, setDocumentNonBlocking } from '@/firebase';
+import { useState, useMemo } from 'react';
+import { collection, query, where, getDocs, doc } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { PlusCircle, Eye, Edit, Trash2, Search, Zap, ZapOff, Loader2 } from 'lucide-react';
+import { 
+  PlusCircle, 
+  FileText, 
+  FileText as Blog, 
+  Link2, 
+  BarChart3, 
+  Eye, 
+  Edit, 
+  TrendingUp,
+  Users,
+  Clock,
+  ArrowRight
+} from 'lucide-react';
 import Link from 'next/link';
-import type { Page } from '@/lib/types';
+import type { Page, Post } from '@/lib/types';
 import { UserNav } from '@/components/user-nav';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import { DashboardNav } from '@/components/dashboard-nav';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
 
-export default function DashboardPage() {
+export default function DashboardOverviewPage() {
     const { user, isUserLoading } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
 
-    const [pageToDelete, setPageToDelete] = useState<Page | null>(null);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [isCreating, startCreateTransition] = useTransition();
-
+    // Pages data
     const pagesQuery = useMemoFirebase(() =>
-        user ? query(collection(firestore, 'pages'), where('ownerId', '==', user.uid)) : null,
+        user && firestore ? query(collection(firestore!, 'pages'), where('ownerId', '==', user.uid)) : null,
         [user, firestore]
     );
     const { data: pages, isLoading: arePagesLoading } = useCollection<Page>(pagesQuery);
-    
-    const handleCreatePage = async () => {
-        if (!user || !firestore) return;
 
-        startCreateTransition(async () => {
-            const defaultSlug = `untitled-${Date.now()}`;
-            
-            const newPageData = {
-                ownerId: user.uid,
-                slug: defaultSlug,
-                title: 'Untitled Page',
-                status: 'draft' as const,
-                backgroundColor: '#f0f0f0',
-                foregroundColor: '#111827',
-                primaryColor: '#6366f1',
-                accentColor: '#d2e822',
-                cardColor: '#ffffff',
-                cardForegroundColor: '#111827',
-                borderRadius: 1.25,
-                borderWidth: 0,
-                borderColor: '#e5e7eb',
-                fontFamily: 'Bricolage Grotesque',
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
-            };
+    // Blog posts data
+    const postsQuery = useMemoFirebase(() =>
+        user && firestore ? query(collection(firestore!, 'posts'), where('ownerId', '==', user.uid)) : null,
+        [user, firestore]
+    );
+    const { data: posts, isLoading: arePostsLoading } = useCollection<Post>(postsQuery);
 
-            try {
-                const pageDocRef = await addDoc(collection(firestore, 'pages'), newPageData);
-                const slugDocRef = doc(firestore, 'slug_lookups', defaultSlug);
-                await setDoc(slugDocRef, { pageId: pageDocRef.id });
-                router.push(`/edit/${pageDocRef.id}`);
-            } catch(e) {
-                console.error("Error creating new page", e);
-                // Optionally, show a toast notification on error
-            }
-        });
-    };
+    // Calculate stats
+    const stats = useMemo(() => {
+        if (!pages && !posts) return null;
+        
+        const publishedPages = pages?.filter(p => p.status === 'published').length || 0;
+        const draftPages = pages?.filter(p => p.status === 'draft').length || 0;
+        const publishedPosts = posts?.filter(p => p.status === 'published').length || 0;
+        const draftPosts = posts?.filter(p => p.status === 'draft').length || 0;
+        
+        return {
+            totalPages: pages?.length || 0,
+            publishedPages,
+            draftPages,
+            totalPosts: posts?.length || 0,
+            publishedPosts,
+            draftPosts,
+        };
+    }, [pages, posts]);
 
-
-    const filteredPages = useMemo(() => {
-        if (!pages) return [];
-        return pages.filter(page => 
-            (page.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (page.slug || '').toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [pages, searchQuery]);
-
-    const handleConfirmDelete = async () => {
-        if (!pageToDelete || !firestore) return;
-
-        try {
-            const linksQuery = query(collection(firestore, 'pages', pageToDelete.id, 'links'));
-            const linksSnapshot = await getDocs(linksQuery);
-            linksSnapshot.forEach(linkDoc => {
-                deleteDocumentNonBlocking(linkDoc.ref);
+    // Get recent items
+    const recentItems = useMemo(() => {
+        const items: Array<{type: 'page' | 'post', title: string, updatedAt: any, url: string, status: string}> = [];
+        
+        pages?.forEach(page => {
+            items.push({
+                type: 'page',
+                title: page.title || 'Untitled Page',
+                updatedAt: page.updatedAt,
+                url: `/edit/${page.id}`,
+                status: page.status
             });
+        });
+        
+        posts?.forEach(post => {
+            items.push({
+                type: 'post',
+                title: post.title || 'Untitled Post',
+                updatedAt: post.updatedAt,
+                url: `/blog/edit/${post.id}`,
+                status: post.status
+            });
+        });
+        
+        return items
+            .sort((a, b) => {
+                const dateA = a.updatedAt?.toDate ? a.updatedAt.toDate().getTime() : 0;
+                const dateB = b.updatedAt?.toDate ? b.updatedAt.toDate().getTime() : 0;
+                return dateB - dateA;
+            })
+            .slice(0, 5);
+    }, [pages, posts]);
 
-            if (pageToDelete.slug) {
-                const slugRef = doc(firestore, 'slug_lookups', pageToDelete.slug);
-                deleteDocumentNonBlocking(slugRef);
-            }
-
-            const pageRef = doc(firestore, 'pages', pageToDelete.id);
-            deleteDocumentNonBlocking(pageRef);
-
-        } catch (error) {
-            console.error("Error deleting page:", error);
-        } finally {
-            setPageToDelete(null); 
-        }
-    };
-
-    const togglePageStatus = (page: Page) => {
-        if (!firestore) return;
-        const newStatus = page.status === 'published' ? 'draft' : 'published';
-        const pageRef = doc(firestore, 'pages', page.id);
-        setDocumentNonBlocking(pageRef, { status: newStatus }, { merge: true });
-    };
-    
-    if (isUserLoading || arePagesLoading) {
+    if (isUserLoading || arePagesLoading || arePostsLoading) {
         return (
             <div className="min-h-screen bg-background">
-                <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
+                <header className="bg-primary text-primary-foreground border-b sticky top-0 z-50">
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                         <Skeleton className="h-8 w-64" />
                         <div className="flex items-center gap-2">
@@ -127,11 +112,20 @@ export default function DashboardPage() {
                     </div>
                 </header>
                 <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                     <div className="flex items-center justify-between mb-8">
+                    <div className="mb-8">
                         <Skeleton className="h-10 w-64" />
-                     </div>
-                    <div className="grid gap-6">
-                        <Skeleton className="h-36 w-full" />
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                        {[1, 2, 3, 4].map(i => (
+                            <Card key={i}>
+                                <CardHeader className="pb-2">
+                                    <Skeleton className="h-4 w-20" />
+                                </CardHeader>
+                                <CardContent>
+                                    <Skeleton className="h-8 w-16" />
+                                </CardContent>
+                            </Card>
+                        ))}
                     </div>
                 </main>
             </div>
@@ -140,7 +134,7 @@ export default function DashboardPage() {
 
     return (
         <div className="min-h-screen bg-background">
-            <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-50">
+            <header className="bg-primary text-primary-foreground border-b sticky top-0 z-50">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
                     <DashboardNav />
                     <div className="flex items-center gap-2">
@@ -149,101 +143,227 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </header>
+            
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-bold tracking-tight">Your Pages</h2>
-                    <Button onClick={handleCreatePage} disabled={isCreating}>
-                        {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
-                        Create New Page
-                    </Button>
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+                    <p className="text-muted-foreground">Welcome back! Here's an overview of your content.</p>
                 </div>
-                
-                {pages && pages.length > 0 ? (
-                    <>
-                        <div className="mb-8 relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                                placeholder="Search pages by name or slug..."
-                                className="pl-10"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
 
-                        {filteredPages.length > 0 ? (
-                            <div className="grid gap-6">
-                                {filteredPages.map((page) => (
-                                    <Card key={page.id} className="shadow-none border">
-                                        <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-2">
-                                            <div>
-                                                <CardTitle className="text-2xl font-bold">
-                                                    {[page.firstName, page.lastName].filter(Boolean).join(' ') || page.title || 'Untitled Page'}
-                                                </CardTitle>
-                                                <CardDescription className="pt-2">
-                                                {page.slug && (
-                                                        <Link href={`/${page.slug}`} target="_blank" className="text-primary hover:underline flex items-center gap-1">
-                                                            links.schächner.de/{page.slug} <Eye className="h-4 w-4" />
-                                                        </Link>
-                                                    )}
-                                                </CardDescription>
-                                            </div>
-                                            <Badge variant={page.status === 'published' ? 'default' : 'secondary'} className="capitalize">
-                                                {page.status}
-                                            </Badge>
-                                        </CardHeader>
-                                        <CardFooter className="flex justify-between items-center">
-                                            <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
-                                                <Button variant="outline" size="sm" onClick={() => togglePageStatus(page)}>
-                                                    {page.status === 'published' ? <ZapOff className="mr-2 h-4 w-4" /> : <Zap className="mr-2 h-4 w-4" />}
-                                                    {page.status === 'published' ? 'Unpublish' : 'Publish'}
-                                                </Button>
-                                                <Button asChild size="sm">
-                                                    <Link href={`/edit/${page.id}`}>
-                                                        <Edit className="mr-2 h-4 w-4" />
-                                                        Edit
-                                                    </Link>
-                                                </Button>
-                                                <Button variant="destructive" size="sm" onClick={() => setPageToDelete(page)}>
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Delete
-                                                </Button>
-                                            </div>
-                                        </CardFooter>
-                                    </Card>
-                                ))}
-                            </div>
-                         ) : (
-                             <div className="text-center py-16 border-2 border-dashed rounded-lg">
-                                <h3 className="text-xl font-semibold">No pages found</h3>
-                                <p className="text-muted-foreground mt-2">Try a different search term.</p>
-                            </div>
-                         )}
-                    </>
-                ) : (
-                    <div className="text-center py-16 border-2 border-dashed rounded-lg">
-                        <h3 className="text-xl font-semibold">No pages created yet</h3>
-                        <p className="text-muted-foreground mt-2 mb-4">Get started by creating your first page.</p>
-                        <Button onClick={handleCreatePage} disabled={isCreating}>
-                            {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
-                            Create First Page
-                        </Button>
+                {/* Stats Cards */}
+                {stats && (
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Total Pages</CardTitle>
+                                <FileText className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.totalPages}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.publishedPages} published, {stats.draftPages} drafts
+                                </p>
+                            </CardContent>
+                        </Card>
+                        
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Blog Posts</CardTitle>
+                                <Blog className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.totalPosts}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.publishedPosts} published, {stats.draftPosts} drafts
+                                </p>
+                            </CardContent>
+                        </Card>
+                        
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Total Links</CardTitle>
+                                <Link2 className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">-</div>
+                                <p className="text-xs text-muted-foreground">
+                                    Analytics coming soon
+                                </p>
+                            </CardContent>
+                        </Card>
+                        
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Analytics</CardTitle>
+                                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">-</div>
+                                <p className="text-xs text-muted-foreground">
+                                    Analytics coming soon
+                                </p>
+                            </CardContent>
+                        </Card>
                     </div>
                 )}
+
+                {/* Quick Actions */}
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/pages')}>
+                        <CardContent className="p-6">
+                            <div className="flex items-center space-x-4">
+                                <div className="p-2 bg-primary/10 rounded-full">
+                                    <PlusCircle className="h-6 w-6 text-primary" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-semibold">Create Page</h3>
+                                    <p className="text-sm text-muted-foreground">Build a new page</p>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/blog')}>
+                        <CardContent className="p-6">
+                            <div className="flex items-center space-x-4">
+                                <div className="p-2 bg-primary/10 rounded-full">
+                                    <Blog className="h-6 w-6 text-primary" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-semibold">Write Post</h3>
+                                    <p className="text-sm text-muted-foreground">Create blog content</p>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer opacity-50">
+                        <CardContent className="p-6">
+                            <div className="flex items-center space-x-4">
+                                <div className="p-2 bg-muted rounded-full">
+                                    <Link2 className="h-6 w-6 text-muted-foreground" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-semibold">Manage Links</h3>
+                                    <p className="text-sm text-muted-foreground">Coming soon</p>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card className="hover:shadow-md transition-shadow cursor-pointer opacity-50">
+                        <CardContent className="p-6">
+                            <div className="flex items-center space-x-4">
+                                <div className="p-2 bg-muted rounded-full">
+                                    <BarChart3 className="h-6 w-6 text-muted-foreground" />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-semibold">View Analytics</h3>
+                                    <p className="text-sm text-muted-foreground">Coming soon</p>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="grid gap-6 lg:grid-cols-2">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Clock className="h-5 w-5" />
+                                Recent Activity
+                            </CardTitle>
+                            <CardDescription>
+                                Your recently updated pages and posts
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {recentItems.length > 0 ? (
+                                <div className="space-y-4">
+                                    {recentItems.map((item, index) => (
+                                        <div key={index} className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-muted rounded-full">
+                                                    {item.type === 'page' ? (
+                                                        <FileText className="h-4 w-4" />
+                                                    ) : (
+                                                        <Blog className="h-4 w-4" />
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium line-clamp-1">{item.title}</p>
+                                                    <p className="text-sm text-muted-foreground">
+                                                        {item.updatedAt?.toDate ? format(item.updatedAt.toDate(), 'MMM d, yyyy') : 'Unknown date'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant={item.status === 'published' ? 'default' : 'secondary'} className="text-xs">
+                                                    {item.status}
+                                                </Badge>
+                                                <Button variant="ghost" size="sm" asChild>
+                                                    <Link href={item.url}>
+                                                        <Edit className="h-4 w-4" />
+                                                    </Link>
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-8">
+                                    <p className="text-muted-foreground">No recent activity</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <TrendingUp className="h-5 w-5" />
+                                Quick Stats
+                            </CardTitle>
+                            <CardDescription>
+                                Overview of your content performance
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">Published Content</span>
+                                    <span className="font-medium">
+                                        {(stats?.publishedPages || 0) + (stats?.publishedPosts || 0)} items
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">Draft Content</span>
+                                    <span className="font-medium">
+                                        {(stats?.draftPages || 0) + (stats?.draftPosts || 0)} items
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-muted-foreground">Total Content</span>
+                                    <span className="font-medium">
+                                        {(stats?.totalPages || 0) + (stats?.totalPosts || 0)} items
+                                    </span>
+                                </div>
+                                <div className="pt-4 border-t">
+                                    <Button variant="outline" className="w-full" disabled>
+                                        <BarChart3 className="mr-2 h-4 w-4" />
+                                        View Detailed Analytics (Coming Soon)
+                                    </Button>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </main>
-            <AlertDialog open={!!pageToDelete} onOpenChange={(open) => !open && setPageToDelete(null)}>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete the page "{pageToDelete?.title}" and all associated links.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setPageToDelete(null)}>Cancel</AlertDialogCancel>
-                    <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleConfirmDelete}>Delete</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
         </div>
     );
 }
