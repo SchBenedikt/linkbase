@@ -60,7 +60,7 @@ export default function PostEditorPage() {
     const [post, setPost] = useState<Post | null>(null);
     const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const resolvedParams = use(params as unknown as Promise<{ postId: string }>) as { postId: string };
+    const resolvedParams = params as { postId: string };
     const { postId } = resolvedParams;
     const isNewPost = postId === 'new';
 
