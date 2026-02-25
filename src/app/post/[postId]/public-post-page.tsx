@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import JsonLdScript from '@/components/json-ld-script';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { useRouter } from 'next/navigation';
 
 type PublicPost = Omit<Post, 'createdAt' | 'updatedAt'> & {
     createdAt: string | Date | { toDate: () => Date };
@@ -18,16 +19,29 @@ type PublicPost = Omit<Post, 'createdAt' | 'updatedAt'> & {
 type PublicPostPageComponentProps = {
     post: PublicPost;
     authorName: string;
+    authorBio?: string;
     publicUrl: string;
 };
 
-export default function PublicPostPageComponent({ post, authorName, publicUrl }: PublicPostPageComponentProps) {
+export default function PublicPostPageComponent({ post, authorName, authorBio, publicUrl }: PublicPostPageComponentProps) {
+    const router = useRouter();
+    
     const publicationDate = post.createdAt ? format(
         post.createdAt instanceof Date ? post.createdAt : 
         (typeof post.createdAt === 'object' && 'toDate' in post.createdAt) ? (post.createdAt as any).toDate() : 
         new Date(post.createdAt as string), 
         'PPP'
     ) : '';
+
+    const handleBack = () => {
+        // Use browser's back functionality to go to the previous page
+        if (typeof window !== 'undefined' && window.history.length > 1) {
+            router.back();
+        } else {
+            // Fallback to blog if no history
+            router.push('/blog');
+        }
+    };
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -50,11 +64,9 @@ export default function PublicPostPageComponent({ post, authorName, publicUrl }:
 
             <header className="py-4 border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-                    <Button variant="outline" size="sm" asChild>
-                        <Link href={post.authorPageSlug ? `/${post.authorPageSlug}` : '/blog'}>
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            {post.authorPageSlug ? 'Back to profile' : 'Back to Blog'}
-                        </Link>
+                    <Button variant="outline" size="sm" onClick={handleBack}>
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back
                     </Button>
                     <Button variant="link" asChild className="font-headline font-bold text-xl text-primary">
                         <Link href="/">Linkbase*</Link>
@@ -76,7 +88,13 @@ export default function PublicPostPageComponent({ post, authorName, publicUrl }:
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <article className="max-w-3xl mx-auto">
                     <header className="mb-8">
-                        {post.category && <Badge className="mb-4">{post.category}</Badge>}
+                        {post.categories && post.categories.length > 0 && (
+                            <div className="mb-4">
+                                {post.categories.map((category, index) => (
+                                    <Badge key={index} className="mr-2">{category}</Badge>
+                                ))}
+                            </div>
+                        )}
                         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 text-foreground leading-tight">
                             {post.title}
                         </h1>
@@ -126,14 +144,14 @@ export default function PublicPostPageComponent({ post, authorName, publicUrl }:
                     <Separator className="my-12" />
 
                     {/* Author footer */}
-                    <div className="flex items-center gap-4 p-6 rounded-xl border bg-card">
+                    <div className="flex items-start gap-4 p-6 rounded-xl border bg-card">
                         <Link href={post.authorPageSlug ? `/${post.authorPageSlug}` : '#'}>
                             <Avatar className="h-14 w-14">
                                 <AvatarImage src={post.authorAvatarUrl} />
                                 <AvatarFallback className="text-lg">{authorInitial}</AvatarFallback>
                             </Avatar>
                         </Link>
-                        <div>
+                        <div className="flex-1">
                             <p className="text-xs text-muted-foreground uppercase tracking-widest mb-1">Written by</p>
                             <Link
                                 href={post.authorPageSlug ? `/${post.authorPageSlug}` : '#'}
@@ -141,6 +159,11 @@ export default function PublicPostPageComponent({ post, authorName, publicUrl }:
                             >
                                 {authorName}
                             </Link>
+                            {authorBio && (
+                                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+                                    {authorBio}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </article>

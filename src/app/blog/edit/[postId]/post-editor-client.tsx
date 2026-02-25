@@ -175,6 +175,7 @@ export default function PostEditorPage() {
                         authorName: [profileData.firstName, profileData.lastName].filter(Boolean).join(' ') || 'User',
                         authorAvatarUrl: profileData.avatarUrl,
                         authorPageSlug: pageSlug,
+                        authorBio: profileData.bio,
                     };
                 } else if (pageSlug) {
                     // Fallback to page data if profile doesn't exist
@@ -183,6 +184,7 @@ export default function PostEditorPage() {
                         authorName: [pageData.firstName, pageData.lastName].filter(Boolean).join(' ') || 'User',
                         authorAvatarUrl: pageData.avatarUrl,
                         authorPageSlug: pageData.slug,
+                        authorBio: pageData.bio,
                     };
                 }
 

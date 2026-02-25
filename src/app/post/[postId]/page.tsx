@@ -98,7 +98,7 @@ function PostContent({ postId }: { postId: string }) {
     );
   }
 
-  return <PublicPostPageComponent post={post} authorName={post.authorName || ''} publicUrl={typeof window !== 'undefined' ? window.location.origin : ''} />;
+  return <PublicPostPageComponent post={post} authorName={post.authorName || ''} authorBio={post.authorBio} publicUrl={typeof window !== 'undefined' ? window.location.origin : ''} />;
 }
 
 export default function Page({ params }: Props) {

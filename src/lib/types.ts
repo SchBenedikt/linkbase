@@ -107,6 +107,7 @@ export type Post = {
   authorName?: string;
   authorAvatarUrl?: string;
   authorPageSlug?: string;
+  authorBio?: string;
 };
 
 export type SlugLookup = {
