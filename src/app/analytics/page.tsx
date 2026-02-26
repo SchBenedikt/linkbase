@@ -148,9 +148,8 @@ export default function AnalyticsPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight flex items-center gap-2">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 Analytics
-                <Sparkles className="h-8 w-8 text-yellow-500" />
               </h1>
               <p className="text-muted-foreground text-lg mt-2">
                 Track your content performance and user engagement
@@ -274,7 +273,7 @@ export default function AnalyticsPage() {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-              <Card className="group cursor-pointer transition-all duration-300 border-l-4 border-l-blue-500" onClick={() => setView('pages')}>
+              <Card className="group cursor-pointer transition-all duration-300" onClick={() => setView('pages')}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Globe className="h-5 w-5 text-blue-600" />
@@ -295,7 +294,7 @@ export default function AnalyticsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="group cursor-pointer transition-all duration-300 border-l-4 border-l-green-500" onClick={() => setView('links')}>
+              <Card className="group cursor-pointer transition-all duration-300" onClick={() => setView('links')}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Link2 className="h-5 w-5 text-green-600" />

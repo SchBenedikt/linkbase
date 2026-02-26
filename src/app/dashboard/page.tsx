@@ -199,9 +199,8 @@ export default function DashboardOverviewPage() {
                 <div className="mb-8">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight flex items-center gap-2">
+                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
                                 Dashboard
-                                <Sparkles className="h-8 w-8 text-yellow-500" />
                             </h1>
                             <p className="text-muted-foreground text-lg mt-2">
                                 Welcome back, {user?.displayName || 'User'}! Here's your content overview.
@@ -310,7 +309,7 @@ export default function DashboardOverviewPage() {
                         Quick Actions
                     </h2>
                     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        <Card className="group transition-all duration-300 cursor-pointer border-l-4 border-l-blue-500" onClick={() => router.push('/pages')}>
+                        <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/pages')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full group-hover:scale-110 transition-transform">
@@ -325,7 +324,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="group transition-all duration-300 cursor-pointer border-l-4 border-l-green-500" onClick={() => router.push('/blog')}>
+                        <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/blog')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full group-hover:scale-110 transition-transform">
@@ -340,7 +339,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="group transition-all duration-300 cursor-pointer border-l-4 border-l-purple-500" onClick={() => router.push('/links')}>
+                        <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/links')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full group-hover:scale-110 transition-transform">
@@ -355,7 +354,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="group transition-all duration-300 cursor-pointer border-l-4 border-l-orange-500" onClick={() => router.push('/analytics')}>
+                        <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/analytics')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full group-hover:scale-110 transition-transform">

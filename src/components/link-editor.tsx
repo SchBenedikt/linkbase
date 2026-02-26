@@ -10,7 +10,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { Link } from '@/lib/types';
 import { Slider } from './ui/slider';
 import { getWebsiteMeta } from '@/lib/actions';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, ExternalLink } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -182,7 +182,7 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
                 </FormControl>
                 {mode === 'link' && (
                     <Button type="button" variant="outline" size="icon" onClick={handleFetchMeta} disabled={isFetchingMeta} aria-label="Fetch website metadata">
-                    {isFetchingMeta ? <Loader2 className="animate-spin" /> : <Sparkles />}
+                    {isFetchingMeta ? <Loader2 className="animate-spin" /> : <ExternalLink />}
                     </Button>
                 )}
               </div>

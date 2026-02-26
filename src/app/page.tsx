@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Palette, Link as LinkIcon, Sparkles, BarChart3, MoveRight, BookOpen, UserPlus, Share2 } from 'lucide-react';
+import { Palette, Link as LinkIcon, BarChart3, MoveRight, BookOpen, UserPlus, Share2 } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { UserNav } from '@/components/user-nav';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -117,7 +117,7 @@ export default function LandingPage() {
               <Card className="p-8 flex flex-col justify-between bg-accent text-accent-foreground rounded-3xl border-none">
                 <div>
                   <div className="p-2 bg-black/10 rounded-full w-fit mb-4">
-                    <Sparkles className="h-6 w-6" />
+                    <Palette className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">AI-powered Magic</h3>
                   <p className="text-accent-foreground/80">Describe your desired aesthetic and let our AI generate stunning, unique themes for you in seconds.</p>

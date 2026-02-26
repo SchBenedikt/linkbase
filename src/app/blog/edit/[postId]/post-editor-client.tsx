@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { UserNav } from '@/components/user-nav';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CalendarIcon, Eye, EyeOff, Sparkles, Save } from 'lucide-react';
+import { Loader2, CalendarIcon, Eye, EyeOff, Save } from 'lucide-react';
 import type { Post, Page, UserProfile } from '@/lib/types';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
@@ -521,7 +521,6 @@ export default function PostEditorPage() {
                                         )}
                                     />
                                     <Button type="button" variant="outline" size="sm" className="w-full" onClick={handleAutoExcerpt}>
-                                        <Sparkles className="mr-2 h-4 w-4" />
                                         Auto-generate from content
                                     </Button>
                                 </CardContent>

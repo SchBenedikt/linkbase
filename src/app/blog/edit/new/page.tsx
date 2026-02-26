@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { UserNav } from '@/components/user-nav';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CalendarIcon, Eye, Sparkles, Save } from 'lucide-react';
+import { Loader2, CalendarIcon, Eye, EyeOff, Save } from 'lucide-react';
 import { ClientOnly } from '@/components/client-only';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -431,7 +431,6 @@ function NewPostContent() {
                     )}
                   />
                   <Button type="button" variant="outline" size="sm" className="w-full" onClick={handleAutoExcerpt}>
-                    <Sparkles className="mr-2 h-4 w-4" />
                     Auto-generate from content
                   </Button>
                 </CardContent>
