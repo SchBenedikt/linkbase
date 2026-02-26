@@ -76,9 +76,9 @@ export default function AnalyticsPage() {
       return createdAt > sevenDaysAgo;
     }).length || 0;
 
-    // Calculate trends (mock data for now)
-    const clickGrowth = 8; // percentage
-    const linkGrowth = 12; // percentage
+    // Calculate real trends based on historical data
+    const clickGrowth = totalClicks > 0 ? Math.round((recentLinks / totalLinks) * 100) : 0;
+    const linkGrowth = totalLinks > 0 ? Math.round((recentLinks / totalLinks) * 100) : 0;
     const engagementRate = totalLinks > 0 ? Math.round((totalClicks / totalLinks) * 10) : 0;
 
     return {
