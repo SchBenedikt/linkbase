@@ -4,110 +4,75 @@ import type { ShortLinkPublic } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
-// Helper function to increment click count using Firestore SDK
+// Helper function to increment click count using REST API (fixed)
 async function incrementClickCount(projectId: string, apiKey: string, code: string) {
   try {
-    // Import Firebase SDK functions
-    const { doc, updateDoc, serverTimestamp, increment } = await import('firebase/firestore');
-    const { getFirestore } = await import('firebase/firestore');
-    const { initializeApp } = await import('firebase/app');
+    // Update private collection (for analytics)
+    const privateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}?updateMask=clickCount,updatedAt`;
     
-    // Initialize Firebase app
-    const firebaseConfig = {
-      projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-      apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-      authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-      appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
-    };
+    // First get current document to see if it exists
+    const getResponse = await fetch(
+      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}`
+    );
     
-    const app = initializeApp(firebaseConfig);
-    const firestore = getFirestore(app);
+    if (getResponse.ok) {
+      const doc = await getResponse.json();
+      const currentCount = doc.fields?.clickCount?.integerValue || '0';
+      
+      const updateResponse = await fetch(privateUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fields: {
+            clickCount: { integerValue: (parseInt(currentCount) + 1).toString() },
+            updatedAt: { timestampValue: new Date().toISOString() }
+          }
+        })
+      });
+      
+      if (!updateResponse.ok) {
+        console.error('Failed to update private collection:', await updateResponse.text());
+      } else {
+        console.log(`Short link ${code}: Successfully updated private collection`);
+      }
+    }
     
-    // Update private collection using Firestore SDK
-    const privateRef = doc(firestore, 'shortLinks', code);
-    await updateDoc(privateRef, {
-      clickCount: increment(1),
-      updatedAt: serverTimestamp()
-    });
+    // Also update public collection with fixed updateMask
+    const publicUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}?updateMask=clickCount`;
     
-    console.log(`Short link ${code}: Successfully updated click count with Firestore SDK`);
+    const publicGetResponse = await fetch(
+      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}`
+    );
     
-    // Also update public collection using Firestore SDK
-    const publicRef = doc(firestore, 'short_link_public', code);
-    await updateDoc(publicRef, {
-      clickCount: increment(1)
-    });
+    if (publicGetResponse.ok) {
+      const publicDoc = await publicGetResponse.json();
+      const currentPublicCount = publicDoc.fields?.clickCount?.integerValue || '0';
+      
+      const publicUpdateResponse = await fetch(publicUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fields: {
+            clickCount: { integerValue: (parseInt(currentPublicCount) + 1).toString() }
+          }
+        })
+      });
+      
+      if (!publicUpdateResponse.ok) {
+        console.error('Failed to update public collection:', await publicUpdateResponse.text());
+      } else {
+        console.log(`Short link ${code}: Successfully updated public collection`);
+      }
+    }
     
-    console.log(`Short link ${code}: Successfully updated public click count with Firestore SDK`);
+    console.log(`Short link ${code}: Click tracking completed successfully`);
     
   } catch (error) {
-    console.error(`Short link ${code}: Failed to update click count with Firestore SDK:`, error);
-    
-    // Fallback to REST API if SDK fails
-    try {
-      // Update private collection (for analytics)
-      const privateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}?updateMask=clickCount,updatedAt`;
-      
-      // First get current document to see if it exists
-      const getResponse = await fetch(
-        `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}`
-      );
-      
-      if (getResponse.ok) {
-        const doc = await getResponse.json();
-        const currentCount = doc.fields?.clickCount?.integerValue || '0';
-        
-        const updateResponse = await fetch(privateUrl, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            fields: {
-              clickCount: { integerValue: (parseInt(currentCount) + 1).toString() },
-              updatedAt: { timestampValue: new Date().toISOString() }
-            }
-          })
-        });
-        
-        if (!updateResponse.ok) {
-          console.error('Failed to update private collection with REST API:', await updateResponse.text());
-        }
-      }
-      
-      // Also update public collection with REST API
-      const publicUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}?updateMask=clickCount`;
-      
-      const publicGetResponse = await fetch(
-        `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}`
-      );
-      
-      if (publicGetResponse.ok) {
-        const publicDoc = await publicGetResponse.json();
-        const currentPublicCount = publicDoc.fields?.clickCount?.integerValue || '0';
-        
-        const publicUpdateResponse = await fetch(publicUrl, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            fields: {
-              clickCount: { integerValue: (parseInt(currentPublicCount) + 1).toString() }
-            }
-          })
-        });
-        
-        if (!publicUpdateResponse.ok) {
-          console.error('Failed to update public collection with REST API:', await publicUpdateResponse.text());
-        }
-      }
-      
-      console.log(`Short link ${code}: Successfully updated click count with REST API fallback`);
-      
-    } catch (fallbackError) {
-      console.error(`Short link ${code}: Both SDK and REST API failed:`, fallbackError);
-    }
+    console.error(`Short link ${code}: Click tracking failed:`, error);
   }
 }
 

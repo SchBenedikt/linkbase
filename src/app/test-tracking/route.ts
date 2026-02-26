@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       const doc = await getResponse.json();
       const currentCount = doc.fields?.clickCount?.integerValue || '0';
       
-      // Increment click count
+      // Increment click count with fixed updateMask
       const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${testCode}?updateMask=clickCount,updatedAt`;
       
       const updateResponse = await fetch(updateUrl, {
@@ -45,7 +45,8 @@ export async function GET(request: NextRequest) {
           message: 'Click tracking test successful',
           previousCount: parseInt(currentCount),
           newCount: parseInt(currentCount) + 1,
-          testUrl: `https://your-domain.com/s/${testCode}`
+          testUrl: `https://your-domain.com/s/${testCode}`,
+          note: 'Fixed REST API implementation'
         });
       } else {
         const errorText = await updateResponse.text();
