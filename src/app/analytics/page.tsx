@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { collection, query, where } from 'firebase/firestore';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -53,19 +53,27 @@ export default function AnalyticsPage() {
   );
   const { data: pages, isLoading: arePagesLoading } = useCollection<Page>(pagesQuery);
 
-  // Calculate enhanced stats
+  // Calculate enhanced stats with better error handling
   const stats = useMemo(() => {
     if (!links && !pages) return null;
 
     const totalLinks = links?.length || 0;
-    const totalClicks = links?.reduce((sum, link) => sum + (link.clickCount || 0), 0) || 0;
+    // Sum up clickCount from all links, ensure it's a number
+    const totalClicks = links?.reduce((sum, link) => {
+      const clicks = typeof link.clickCount === 'number' ? link.clickCount : parseInt(link.clickCount || '0');
+      return sum + clicks;
+    }, 0) || 0;
+    
     const totalPages = pages?.length || 0;
     const publishedPages = pages?.filter(p => p.status === 'published').length || 0;
     const draftPages = pages?.filter(p => p.status === 'draft').length || 0;
 
-    // Top performing link
-    const topLink = links?.length ? links.reduce((top, link) => 
-      (link.clickCount || 0) > (top.clickCount || 0) ? link : top) : null;
+    // Top performing link - ensure proper clickCount comparison
+    const topLink = links?.length ? links.reduce((top, link) => {
+      const topClicks = typeof top.clickCount === 'number' ? top.clickCount : parseInt(top.clickCount || '0');
+      const linkClicks = typeof link.clickCount === 'number' ? link.clickCount : parseInt(link.clickCount || '0');
+      return linkClicks > topClicks ? link : top;
+    }) : null;
 
     // Recent activity (last 7 days)
     const recentLinks = links?.filter(link => {
@@ -97,6 +105,22 @@ export default function AnalyticsPage() {
   }, [links, pages]);
 
   const isLoading = isUserLoading || areLinksLoading || arePagesLoading;
+
+  // Debug logging to track data loading
+  useEffect(() => {
+    console.log('Analytics Debug:', {
+      user: user?.uid,
+      linksCount: links?.length,
+      totalClicks: links?.reduce((sum, link) => {
+        const clicks = typeof link.clickCount === 'number' ? link.clickCount : parseInt(link.clickCount || '0');
+        return sum + clicks;
+      }, 0),
+      pagesCount: pages?.length,
+      isLoading,
+      areLinksLoading,
+      arePagesLoading
+    });
+  }, [links, pages, user, isLoading, areLinksLoading, arePagesLoading]);
 
   if (isLoading) {
     return (
