@@ -58,7 +58,7 @@ export function LinkCard({ link, onEdit, onDelete, appearance, isEditable = fals
                 src={link.thumbnailUrl}
                 alt={link.title}
                 data-ai-hint={link.thumbnailHint}
-                className="absolute inset-0 h-full w-full object-cover group-hover:scale-110 transition-transform duration-500 ease-in-out"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-in-out"
             />
         </div>
         <div className="relative flex flex-col justify-end p-5">

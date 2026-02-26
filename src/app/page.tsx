@@ -110,8 +110,8 @@ export default function LandingPage() {
                   <h3 className="font-headline text-2xl font-bold mb-2">Design without limits</h3>
                   <p className="text-primary-foreground/80 mb-4">Take full control of your page's appearance. Fine-tune every detail from colors and backgrounds to borders and corner radiuses.</p>
                 </div>
-                <Link href="/login" className="font-semibold inline-flex items-center gap-2 group text-primary-foreground/80 hover:text-primary-foreground">
-                  Start designing <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <Link href="/login" className="font-semibold inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground">
+                  Start designing <MoveRight className="h-4 w-4" />
                 </Link>
               </Card>
               <Card className="p-8 flex flex-col justify-between bg-accent text-accent-foreground rounded-3xl border-none">
@@ -140,8 +140,8 @@ export default function LandingPage() {
                   <h3 className="font-headline text-2xl font-bold mb-2">Detailed Analytics</h3>
                   <p className="text-secondary-foreground/80">Our upcoming analytics suite will give you deep insights into your audience. Understand which links get the most clicks and what content truly resonates.</p>
                 </div>
-                <Link href="/login" className="font-semibold inline-flex items-center gap-2 group text-secondary-foreground/80 hover:text-secondary-foreground">
-                  Get insights <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <Link href="/login" className="font-semibold inline-flex items-center gap-2 text-secondary-foreground/80 hover:text-secondary-foreground">
+                  Get insights <MoveRight className="h-4 w-4" />
                 </Link>
               </Card>
             </div>

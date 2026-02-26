@@ -289,7 +289,7 @@ export default function AnalyticsPage() {
                       <div className="text-2xl font-bold">{stats?.publishedPages || 0}</div>
                       <p className="text-sm text-muted-foreground">Published pages</p>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
                   </div>
                 </CardContent>
               </Card>
@@ -310,7 +310,7 @@ export default function AnalyticsPage() {
                       <div className="text-2xl font-bold">{stats?.totalLinks || 0}</div>
                       <p className="text-sm text-muted-foreground">Active links</p>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
                   </div>
                 </CardContent>
               </Card>
@@ -364,7 +364,7 @@ export default function AnalyticsPage() {
               <CardContent>
                 <Button asChild className="w-full group">
                   <Link href="/analytics/analytics">
-                    <BarChart2 className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
+                    <BarChart2 className="mr-2 h-4 w-4" />
                     View Page Analytics
                   </Link>
                 </Button>
@@ -391,10 +391,10 @@ export default function AnalyticsPage() {
                       .slice(0, 10)
                       .map((link, index) => (
                         <Link key={link.id} href={`/analytics/${link.id}`} className="block group">
-                          <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-all duration-200 hover:shadow-sm">
+                          <div className="flex items-center justify-between p-4 border rounded-lg transition-all duration-200">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">
+                                <p className="text-sm font-medium truncate">
                                   {link.title || 'Untitled'}
                                 </p>
                                 {index === 0 && (
@@ -411,7 +411,7 @@ export default function AnalyticsPage() {
                                 <div className="text-lg font-bold text-primary">{link.clickCount || 0}</div>
                                 <p className="text-xs text-muted-foreground">clicks</p>
                               </div>
-                              <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                              <ArrowRight className="h-4 w-4 text-muted-foreground" />
                             </div>
                           </div>
                         </Link>

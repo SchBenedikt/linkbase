@@ -81,7 +81,7 @@ export default function AnalyticsOverviewPage() {
                       )}
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-primary font-medium flex items-center gap-1.5 group-hover:underline">
+                      <p className="text-sm text-primary font-medium flex items-center gap-1.5">
                         <BarChart2 className="h-4 w-4" />
                         View Analytics
                       </p>

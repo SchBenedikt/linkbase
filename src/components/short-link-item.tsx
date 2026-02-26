@@ -18,7 +18,7 @@ export function ShortLinkItem({ link, siteUrl, onCopy, onDelete }: {
           <CardContent className="flex items-center gap-4 p-4">
             <div className="flex-1 min-w-0">
               <button
-                className="font-mono text-primary font-semibold text-sm hover:underline truncate block text-left"
+                className="font-mono text-primary font-semibold text-sm truncate block text-left"
                 onClick={onCopy}
                 title="Click to copy"
               >
@@ -38,7 +38,7 @@ export function ShortLinkItem({ link, siteUrl, onCopy, onDelete }: {
                   <ExternalLink className="h-4 w-4" />
                 </a>
               </Button>
-              <Button variant="ghost" size="icon" title="Delete" onClick={onDelete} className="text-destructive hover:text-destructive hover:bg-destructive/10">
+              <Button variant="ghost" size="icon" title="Delete" onClick={onDelete} className="text-destructive">
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
