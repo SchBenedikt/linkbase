@@ -65,7 +65,7 @@ export default function AnalyticsOverviewPage() {
               const displayName = [page.firstName, page.lastName].filter(Boolean).join(' ') || page.title || 'Untitled Page';
               return (
                 <Link key={page.id} href={`/analytics/${page.id}`} className="block group">
-                  <Card className="h-full transition-shadow group-hover:shadow-md cursor-pointer border">
+                  <Card className="h-full transition-all duration-300 cursor-pointer border">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between gap-2">
                         <CardTitle className="text-lg font-semibold leading-tight">{displayName}</CardTitle>

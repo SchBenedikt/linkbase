@@ -172,8 +172,8 @@ export default function AnalyticsPage() {
         {/* Enhanced Overview Stats */}
         {stats && (
           <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-8">
-            <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16" />
+            <Card className="relative overflow-hidden group transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Links</CardTitle>
                 <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full">
@@ -195,8 +195,8 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
             
-            <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-transparent rounded-full -mr-16 -mt-16" />
+            <Card className="relative overflow-hidden group transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-transparent rounded-full -mr-16 -mt-16" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Clicks</CardTitle>
                 <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full">
@@ -218,8 +218,8 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
             
-            <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full -mr-16 -mt-16" />
+            <Card className="relative overflow-hidden group transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full -mr-16 -mt-16" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Pages</CardTitle>
                 <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
@@ -238,8 +238,8 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
             
-            <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-full -mr-16 -mt-16" />
+            <Card className="relative overflow-hidden group transition-all duration-300">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-full -mr-16 -mt-16" />
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Engagement</CardTitle>
                 <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full">
@@ -278,7 +278,7 @@ export default function AnalyticsPage() {
 
           <TabsContent value="overview" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-              <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg border-l-4 border-l-blue-500" onClick={() => setView('pages')}>
+              <Card className="group cursor-pointer transition-all duration-300 border-l-4 border-l-blue-500" onClick={() => setView('pages')}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Globe className="h-5 w-5 text-blue-600" />
@@ -299,7 +299,7 @@ export default function AnalyticsPage() {
                 </CardContent>
               </Card>
 
-              <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg border-l-4 border-l-green-500" onClick={() => setView('links')}>
+              <Card className="group cursor-pointer transition-all duration-300 border-l-4 border-l-green-500" onClick={() => setView('links')}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Link2 className="h-5 w-5 text-green-600" />

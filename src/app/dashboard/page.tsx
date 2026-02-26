@@ -223,7 +223,7 @@ export default function DashboardOverviewPage() {
                 {/* Enhanced Stats Cards */}
                 {stats && (
                     <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-8">
-                        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                        <Card className="relative overflow-hidden group transition-all duration-300">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Pages</CardTitle>
@@ -243,7 +243,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                        <Card className="relative overflow-hidden group transition-all duration-300">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-transparent rounded-full -mr-16 -mt-16" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Blog Posts</CardTitle>
@@ -263,7 +263,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                        <Card className="relative overflow-hidden group transition-all duration-300">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full -mr-16 -mt-16" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Content</CardTitle>
@@ -286,7 +286,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
+                        <Card className="relative overflow-hidden group transition-all duration-300">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-full -mr-16 -mt-16" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Engagement</CardTitle>
@@ -314,7 +314,7 @@ export default function DashboardOverviewPage() {
                         Quick Actions
                     </h2>
                     <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-blue-500" onClick={() => router.push('/pages')}>
+                        <Card className="group transition-all duration-300 cursor-pointer border-l-4 border-l-blue-500" onClick={() => router.push('/pages')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full group-hover:scale-110 transition-transform">
@@ -329,7 +329,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-green-500" onClick={() => router.push('/blog')}>
+                        <Card className="group transition-all duration-300 cursor-pointer border-l-4 border-l-green-500" onClick={() => router.push('/blog')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full group-hover:scale-110 transition-transform">
@@ -344,7 +344,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-purple-500" onClick={() => router.push('/links')}>
+                        <Card className="group transition-all duration-300 cursor-pointer border-l-4 border-l-purple-500" onClick={() => router.push('/links')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full group-hover:scale-110 transition-transform">
@@ -359,7 +359,7 @@ export default function DashboardOverviewPage() {
                             </CardContent>
                         </Card>
                         
-                        <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-l-4 border-l-orange-500" onClick={() => router.push('/analytics')}>
+                        <Card className="group transition-all duration-300 cursor-pointer border-l-4 border-l-orange-500" onClick={() => router.push('/analytics')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full group-hover:scale-110 transition-transform">

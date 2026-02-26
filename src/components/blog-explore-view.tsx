@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Search, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 
 function PostCard({ post }: { post: Post }) {
     const router = useRouter();
@@ -27,9 +28,9 @@ function PostCard({ post }: { post: Post }) {
 
     return (
         <Link href={`/post/${post.id}`} className="group block">
-            <article className="flex flex-col h-full rounded-xl border bg-card overflow-hidden transition-shadow hover:shadow-md">
+            <Card className="group transition-all duration-300 cursor-pointer">
                 {post.coverImage ? (
-                    <div className="aspect-video overflow-hidden bg-muted">
+                    <div className="aspect-video overflow-hidden bg-muted rounded-t-lg">
                         <img
                             src={post.coverImage}
                             alt={post.title}
@@ -37,7 +38,7 @@ function PostCard({ post }: { post: Post }) {
                         />
                     </div>
                 ) : (
-                    <div className="aspect-video bg-gradient-to-br from-muted to-muted/60 flex items-center justify-center">
+                    <div className="aspect-video bg-gradient-to-br from-muted to-muted/60 flex items-center justify-center rounded-t-lg">
                         <span className="text-4xl font-bold text-muted-foreground/30 select-none">
                             {post.title?.charAt(0)?.toUpperCase()}
                         </span>
@@ -87,7 +88,7 @@ function PostCard({ post }: { post: Post }) {
                         </div>
                     </div>
                 </div>
-            </article>
+            </Card>
         </Link>
     );
 }

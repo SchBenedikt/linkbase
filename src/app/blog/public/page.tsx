@@ -28,7 +28,7 @@ function PostCard({ post }: { post: Post }) {
 
     return (
         <Link href={`/post/${post.id}`} className="group block">
-            <article className="flex flex-col h-full rounded-xl border bg-card overflow-hidden transition-shadow hover:shadow-md">
+            <article className="flex flex-col h-full rounded-xl border bg-card overflow-hidden transition-all duration-300">
                 {post.coverImage ? (
                     <div className="aspect-video overflow-hidden bg-muted">
                         <img

@@ -10,8 +10,6 @@ import {
 } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -42,10 +40,6 @@ const iconVariants = {
 export const HeroShowcase = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.3 });
-  const profileAvatar = PlaceHolderImages.find((p) => p.id === 'profile-avatar');
-  const linkThumb1 = PlaceHolderImages.find(p => p.id === 'link-thumb-1');
-  const linkThumb2 = PlaceHolderImages.find(p => p.id === 'link-thumb-2');
-  const linkThumb3 = PlaceHolderImages.find(p => p.id === 'link-thumb-3');
 
   const socialIcons = [Twitter, Instagram, Dribbble, Github, Youtube, Linkedin];
 
@@ -67,12 +61,7 @@ export const HeroShowcase = () => {
       >
         <div className="h-full w-full overflow-hidden rounded-2xl bg-accent/20">
           <div className="flex h-full flex-col items-center gap-2 p-2">
-            {profileAvatar && (
-              <Avatar className="mt-2 h-12 w-12 border-2">
-                <AvatarImage src={profileAvatar.imageUrl} alt="Avatar" />
-                <AvatarFallback>A</AvatarFallback>
-              </Avatar>
-            )}
+            <div className="mt-2 h-12 w-12 rounded-full bg-foreground/20" />
             <div
               className="h-3 w-20 rounded-full bg-foreground/10"
               aria-label="User name"
@@ -110,19 +99,14 @@ export const HeroShowcase = () => {
         </div>
         <div className="flex h-[calc(100%-1rem)] w-full rounded-md bg-accent/20">
           <div className="w-1/3 border-r border-dashed border-foreground/20 p-4">
-            {profileAvatar && (
-              <motion.div
-                custom={0}
-                initial="hidden"
-                animate={isInView ? 'visible' : 'hidden'}
-                variants={cardVariants}
-              >
-                <Avatar className="h-20 w-20 border-2">
-                  <AvatarImage src={profileAvatar.imageUrl} alt="Avatar" />
-                  <AvatarFallback>A</AvatarFallback>
-                </Avatar>
-              </motion.div>
-            )}
+            <motion.div
+              custom={0}
+              initial="hidden"
+              animate={isInView ? 'visible' : 'hidden'}
+              variants={cardVariants}
+            >
+              <div className="h-20 w-20 rounded-full bg-foreground/20" />
+            </motion.div>
             <motion.div
               custom={1}
               initial="hidden"
@@ -154,52 +138,28 @@ export const HeroShowcase = () => {
             </div>
           </div>
           <div className="grid w-2/3 grid-cols-3 grid-rows-2 gap-3 p-4">
-            {linkThumb1 && (
-                <motion.div
-                    custom={3}
-                    initial="hidden"
-                    animate={isInView ? 'visible' : 'hidden'}
-                    variants={cardVariants}
-                    className="relative col-span-2 row-span-1 h-full w-full overflow-hidden rounded-lg"
-                >
-                    <img 
-                        src={linkThumb1.imageUrl} 
-                        alt="Link 1" 
-                        className="absolute inset-0 h-full w-full object-cover rounded-lg" 
-                    />
-                </motion.div>
-            )}
-             {linkThumb2 && (
-                <motion.div
-                    custom={4}
-                    initial="hidden"
-                    animate={isInView ? 'visible' : 'hidden'}
-                    variants={cardVariants}
-                    className="relative h-full w-full overflow-hidden rounded-lg"
-                >
-                    <img 
-                        src={linkThumb2.imageUrl} 
-                        alt="Link 2" 
-                        className="absolute inset-0 h-full w-full object-cover rounded-lg" 
-                    />
-                </motion.div>
-             )}
-            {linkThumb3 && (
-                <motion.div
-                    custom={5}
-                    initial="hidden"
-                    animate={isInView ? 'visible' : 'hidden'}
-                    variants={cardVariants}
-                    className="relative h-full w-full overflow-hidden rounded-lg"
-                >
-                    <img 
-                        src={linkThumb3.imageUrl} 
-                        alt="Link 3" 
-                        className="absolute inset-0 h-full w-full object-cover rounded-lg" 
-                    />
-                </motion.div>
-            )}
-             <motion.div
+            <motion.div
+                custom={3}
+                initial="hidden"
+                animate={isInView ? 'visible' : 'hidden'}
+                variants={cardVariants}
+                className="col-span-2 row-span-1 h-full w-full rounded-lg bg-card"
+            />
+            <motion.div
+                custom={4}
+                initial="hidden"
+                animate={isInView ? 'visible' : 'hidden'}
+                variants={cardVariants}
+                className="h-full w-full rounded-lg bg-card"
+            />
+            <motion.div
+                custom={5}
+                initial="hidden"
+                animate={isInView ? 'visible' : 'hidden'}
+                variants={cardVariants}
+                className="h-full w-full rounded-lg bg-card"
+            />
+            <motion.div
               custom={6}
               initial="hidden"
               animate={isInView ? 'visible' : 'hidden'}

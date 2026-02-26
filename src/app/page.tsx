@@ -3,13 +3,11 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { PlaceHolderImages, type ImagePlaceholder } from '@/lib/placeholder-images';
 import { Palette, Link as LinkIcon, Sparkles, BarChart3, MoveRight, BookOpen, UserPlus, Share2 } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { UserNav } from '@/components/user-nav';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { HeroShowcase } from '@/components/hero-showcase';
@@ -17,9 +15,6 @@ import { BlogShowcase } from '@/components/blog-showcase';
 
 export default function LandingPage() {
   const { user, isUserLoading } = useUser();
-  const testimonial1 = PlaceHolderImages.find(p => p.id === 'testimonial-1');
-  const testimonial2 = PlaceHolderImages.find(p => p.id === 'testimonial-2');
-  const testimonial3 = PlaceHolderImages.find(p => p.id === 'testimonial-3');
 
 
   const renderAuthButtons = () => {
@@ -213,66 +208,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Testimonials Section */}
-        <section className="py-16 sm:py-24 bg-background">
-            <div className="container mx-auto px-4">
-                <div className="text-center max-w-3xl mx-auto mb-16">
-                    <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
-                        By creators, for creators.
-                    </h2>
-                    <p className="mt-4 text-lg sm:text-xl text-muted-foreground">
-                        Thousands already trust Linkbase to bundle and share their digital identity.
-                    </p>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <Card className="bg-card p-6 rounded-2xl shadow-none border">
-                        <CardContent className="p-0">
-                            <p className="text-foreground mb-6">"Finally a platform that gives me the creative freedom I need. The customization options are insane!"</p>
-                            <div className="flex items-center gap-3">
-                                {testimonial1 && <Avatar>
-                                    <AvatarImage src={testimonial1.imageUrl} alt="Anna L." />
-                                    <AvatarFallback>AL</AvatarFallback>
-                                </Avatar>}
-                                <div>
-                                    <p className="font-semibold">Anna L.</p>
-                                    <p className="text-sm text-muted-foreground">Designer & Illustrator</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-card p-6 rounded-2xl shadow-none border">
-                        <CardContent className="p-0">
-                            <p className="text-foreground mb-6">"Setup was a breeze. Within 10 minutes my page was online and looked fantastic."</p>
-                            <div className="flex items-center gap-3">
-                                {testimonial2 && <Avatar>
-                                    <AvatarImage src={testimonial2.imageUrl} alt="Marco B." />
-                                    <AvatarFallback>MB</AvatarFallback>
-                                </Avatar>}
-                                <div>
-                                    <p className="font-semibold">Marco B.</p>
-                                    <p className="text-sm text-muted-foreground">Musician & Producer</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                    <Card className="bg-card p-6 rounded-2xl shadow-none border">
-                        <CardContent className="p-0">
-                            <p className="text-foreground mb-6">"Linkbase exceeded my expectations. It's not just a 'link-in-bio', it's my digital business card."</p>
-                            <div className="flex items-center gap-3">
-                                {testimonial3 && <Avatar>
-                                    <AvatarImage src={testimonial3.imageUrl} alt="Clara S." />
-                                    <AvatarFallback>CS</AvatarFallback>
-                                </Avatar>}
-                                <div>
-                                    <p className="font-semibold">Clara S.</p>
-                                    <p className="text-sm text-muted-foreground">Food Blogger</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
-            </div>
-        </section>
         
         <section className="py-16 sm:py-24 bg-primary text-primary-foreground">
             <div className="container mx-auto px-4 text-center">
