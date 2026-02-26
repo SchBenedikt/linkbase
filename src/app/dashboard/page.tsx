@@ -224,7 +224,6 @@ export default function DashboardOverviewPage() {
                 {stats && (
                     <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-8">
                         <Card className="relative overflow-hidden group transition-all duration-300">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full -mr-16 -mt-16" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Pages</CardTitle>
                                 <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full">
@@ -244,7 +243,6 @@ export default function DashboardOverviewPage() {
                         </Card>
                         
                         <Card className="relative overflow-hidden group transition-all duration-300">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-500/10 to-transparent rounded-full -mr-16 -mt-16" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Blog Posts</CardTitle>
                                 <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full">
@@ -264,7 +262,6 @@ export default function DashboardOverviewPage() {
                         </Card>
                         
                         <Card className="relative overflow-hidden group transition-all duration-300">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full -mr-16 -mt-16" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Content</CardTitle>
                                 <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
@@ -287,7 +284,6 @@ export default function DashboardOverviewPage() {
                         </Card>
                         
                         <Card className="relative overflow-hidden group transition-all duration-300">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-full -mr-16 -mt-16" />
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Engagement</CardTitle>
                                 <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full">
