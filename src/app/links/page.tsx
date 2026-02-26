@@ -14,7 +14,7 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Info, Link2, PlusCircle, Trash2, BarChart3, Eye, TrendingUp } from 'lucide-react';
+import { Info, Link2, PlusCircle, Trash2 } from 'lucide-react';
 import type { ShortLink } from '@/lib/types';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { UserNav } from '@/components/user-nav';
@@ -65,10 +65,6 @@ export default function LinksPage() {
     );
   }, [links, search]);
 
-  const totalClicks = useMemo(() => {
-    if (!links) return 0;
-    return links.reduce((sum, link) => sum + (link.clickCount || 0), 0);
-  }, [links]);
 
   const handleCreate = async () => {
     if (!newUrl.trim() || !user || !firestore) return;
@@ -144,77 +140,9 @@ export default function LinksPage() {
           <Badge variant="secondary" className="text-sm">
             {filteredLinks.length} links
           </Badge>
-          <Badge variant="outline" className="text-sm">
-            {totalClicks} total clicks
-          </Badge>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Links</CardTitle>
-              <Link2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{links?.length || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Active short links
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Clicks</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalClicks}</div>
-              <p className="text-xs text-muted-foreground">
-                All-time clicks
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg. Clicks</CardTitle>
-              <Eye className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {links?.length ? Math.round(totalClicks / links.length) : 0}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Per link average
-              </p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Top Link</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {links?.length ? Math.max(...links.map(l => l.clickCount || 0)) : 0}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Most clicks
-              </p>
-            </CardContent>
-          </Card>
-        </div>
 
-        <Alert className="mb-8">
-          <Info className="h-4 w-4" />
-          <AlertTitle>Analytics Available</AlertTitle>
-          <AlertDescription>
-            View detailed click analytics and statistics in the <strong>Analytics</strong> section.
-          </AlertDescription>
-        </Alert>
 
         <Card className="mb-8">
           <CardHeader>

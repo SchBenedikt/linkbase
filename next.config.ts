@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   excludeDefaultMomentLocales: true,
-  trailingSlash: true,
+  trailingSlash: false,
   serverExternalPackages: ['firebase-admin'],
   webpack: (config, { isServer }) => {
     if (!isServer) {

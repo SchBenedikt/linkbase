@@ -127,6 +127,8 @@ export default function LinksPage() {
       });
       
       await batch.commit();
+      
+      console.log(`Short link created successfully: ${code} -> ${trimmedUrl}`);
 
       toast({ title: 'Short link created!', description: `${siteUrl}/s/${code}` });
       setNewUrl('');

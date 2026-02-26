@@ -3,10 +3,18 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl;
+  const pathname = url.pathname;
 
-  // Handle trailing slashes
-  if (!url.pathname.endsWith('/') && !url.pathname.includes('.')) {
-    const newUrl = new URL(url.pathname + '/', url.origin);
+  // Handle short links - redirect trailing slash to non-trailing slash
+  if (pathname.startsWith('/s/') && pathname.endsWith('/') && pathname.length > 3) {
+    const newUrl = new URL(pathname.slice(0, -1), url.origin);
+    newUrl.search = url.search;
+    return NextResponse.redirect(newUrl);
+  }
+
+  // Handle trailing slashes for other paths (but NOT short links)
+  if (!pathname.startsWith('/s/') && !pathname.endsWith('/') && !pathname.includes('.')) {
+    const newUrl = new URL(pathname + '/', url.origin);
     newUrl.search = url.search;
     return NextResponse.redirect(newUrl);
   }
@@ -22,15 +30,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public files)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
-  ],
+  matcher: [],
 };
