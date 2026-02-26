@@ -102,21 +102,21 @@ export default function LandingPage() {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-primary text-primary-foreground rounded-3xl border-none">
+              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-muted text-muted-foreground rounded-3xl border-none">
                 <div>
-                  <div className="p-2 bg-white/10 rounded-full w-fit mb-4">
+                  <div className="p-2 bg-foreground/10 rounded-full w-fit mb-4">
                     <Palette className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Design without limits</h3>
                   <p className="text-primary-foreground/80 mb-4">Take full control of your page's appearance. Fine-tune every detail from colors and backgrounds to borders and corner radiuses.</p>
                 </div>
-                <Link href="/login" className="font-semibold inline-flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground">
+                <Link href="/login" className="font-semibold inline-flex items-center gap-2 text-muted-foreground/80 hover:text-muted-foreground">
                   Start designing <MoveRight className="h-4 w-4" />
                 </Link>
               </Card>
-              <Card className="p-8 flex flex-col justify-between bg-accent text-accent-foreground rounded-3xl border-none">
+              <Card className="p-8 flex flex-col justify-between bg-muted text-muted-foreground rounded-3xl border-none">
                 <div>
-                  <div className="p-2 bg-black/10 rounded-full w-fit mb-4">
+                  <div className="p-2 bg-foreground/10 rounded-full w-fit mb-4">
                     <Palette className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">AI-powered Magic</h3>
@@ -132,15 +132,15 @@ export default function LandingPage() {
                   <p className="text-muted-foreground">Your central hub for everything you do. Link to socials, embed a Spotify track, or feature another creator's profile.</p>
                 </div>
               </Card>
-              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-secondary text-secondary-foreground rounded-3xl border-none">
+              <Card className="md:col-span-2 p-8 flex flex-col justify-between bg-muted text-muted-foreground rounded-3xl border-none">
                 <div>
-                  <div className="p-2 bg-black/10 rounded-full w-fit mb-4">
+                  <div className="p-2 bg-foreground/10 rounded-full w-fit mb-4">
                      <BarChart3 className="h-6 w-6" />
                   </div>
                   <h3 className="font-headline text-2xl font-bold mb-2">Detailed Analytics</h3>
                   <p className="text-secondary-foreground/80">Our upcoming analytics suite will give you deep insights into your audience. Understand which links get the most clicks and what content truly resonates.</p>
                 </div>
-                <Link href="/login" className="font-semibold inline-flex items-center gap-2 text-secondary-foreground/80 hover:text-secondary-foreground">
+                <Link href="/login" className="font-semibold inline-flex items-center gap-2 text-muted-foreground/80 hover:text-muted-foreground">
                   Get insights <MoveRight className="h-4 w-4" />
                 </Link>
               </Card>

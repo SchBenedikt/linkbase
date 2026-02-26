@@ -225,8 +225,8 @@ export default function DashboardOverviewPage() {
                         <Card className="relative overflow-hidden group transition-all duration-300">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Pages</CardTitle>
-                                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full">
-                                    <FileText className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                <div className="p-2 bg-muted rounded-full">
+                                    <PlusCircle className="h-4 w-4 text-muted-foreground" />
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -244,8 +244,8 @@ export default function DashboardOverviewPage() {
                         <Card className="relative overflow-hidden group transition-all duration-300">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Blog Posts</CardTitle>
-                                <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full">
-                                    <Blog className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                <div className="p-2 bg-muted rounded-full">
+                                    <Blog className="h-4 w-4 text-muted-foreground" />
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -263,8 +263,8 @@ export default function DashboardOverviewPage() {
                         <Card className="relative overflow-hidden group transition-all duration-300">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Content</CardTitle>
-                                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
-                                    <Target className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                <div className="p-2 bg-muted rounded-full">
+                                    <Target className="h-4 w-4 text-muted-foreground" />
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -285,8 +285,8 @@ export default function DashboardOverviewPage() {
                         <Card className="relative overflow-hidden group transition-all duration-300">
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                                 <CardTitle className="text-sm font-medium text-muted-foreground">Engagement</CardTitle>
-                                <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full">
-                                    <Zap className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                                <div className="p-2 bg-muted rounded-full">
+                                    <Zap className="h-4 w-4 text-muted-foreground" />
                                 </div>
                             </CardHeader>
                             <CardContent>
@@ -312,8 +312,8 @@ export default function DashboardOverviewPage() {
                         <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/pages')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
-                                        <PlusCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                    <div className="p-2 bg-muted rounded-full">
+                                        <PlusCircle className="h-6 w-6 text-muted-foreground" />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-lg">Create Page</h3>
@@ -327,8 +327,8 @@ export default function DashboardOverviewPage() {
                         <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/blog')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
-                                        <Blog className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                    <div className="p-2 bg-muted rounded-full">
+                                        <Blog className="h-6 w-6 text-muted-foreground" />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-lg">Write Post</h3>
@@ -342,8 +342,8 @@ export default function DashboardOverviewPage() {
                         <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/links')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-purple-100 dark:bg-purple-900 rounded-full">
-                                        <Link2 className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                                    <div className="p-2 bg-muted rounded-full">
+                                        <Link2 className="h-6 w-6 text-muted-foreground" />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-lg">Manage Links</h3>
@@ -357,8 +357,8 @@ export default function DashboardOverviewPage() {
                         <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/analytics')}>
                             <CardContent className="p-6">
                                 <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-orange-100 dark:bg-orange-900 rounded-full">
-                                        <BarChart3 className="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                                    <div className="p-2 bg-muted rounded-full">
+                                        <BarChart3 className="h-6 w-6 text-muted-foreground" />
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-semibold text-lg">View Analytics</h3>

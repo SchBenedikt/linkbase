@@ -174,8 +174,8 @@ export default function AnalyticsPage() {
             <Card className="relative overflow-hidden group transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Links</CardTitle>
-                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full">
-                  <Link2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <div className="p-2 bg-muted rounded-full">
+                  <Link2 className="h-4 w-4 text-muted-foreground" />
                 </div>
               </CardHeader>
               <CardContent>
@@ -196,8 +196,8 @@ export default function AnalyticsPage() {
             <Card className="relative overflow-hidden group transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Clicks</CardTitle>
-                <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full">
-                  <MousePointer className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <div className="p-2 bg-muted rounded-full">
+                  <MousePointer className="h-4 w-4 text-muted-foreground" />
                 </div>
               </CardHeader>
               <CardContent>
@@ -218,8 +218,8 @@ export default function AnalyticsPage() {
             <Card className="relative overflow-hidden group transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Pages</CardTitle>
-                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
-                  <Globe className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                <div className="p-2 bg-muted rounded-full">
+                  <Globe className="h-4 w-4 text-muted-foreground" />
                 </div>
               </CardHeader>
               <CardContent>
@@ -237,8 +237,8 @@ export default function AnalyticsPage() {
             <Card className="relative overflow-hidden group transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Engagement</CardTitle>
-                <div className="p-2 bg-orange-100 dark:bg-orange-900 rounded-full">
-                  <Zap className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                <div className="p-2 bg-muted rounded-full">
+                  <Zap className="h-4 w-4 text-muted-foreground" />
                 </div>
               </CardHeader>
               <CardContent>
@@ -276,7 +276,7 @@ export default function AnalyticsPage() {
               <Card className="group cursor-pointer transition-all duration-300" onClick={() => setView('pages')}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-blue-600" />
+                    <Globe className="h-5 w-5 text-muted-foreground" />
                     Page Analytics
                   </CardTitle>
                   <CardDescription>
@@ -297,7 +297,7 @@ export default function AnalyticsPage() {
               <Card className="group cursor-pointer transition-all duration-300" onClick={() => setView('links')}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Link2 className="h-5 w-5 text-green-600" />
+                    <Link2 className="h-5 w-5 text-muted-foreground" />
                     Short Link Analytics
                   </CardTitle>
                   <CardDescription>
@@ -334,15 +334,15 @@ export default function AnalyticsPage() {
                     <p className="text-sm text-muted-foreground mt-1">Total Clicks</p>
                   </div>
                   <div className="text-center p-4 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">{stats?.avgClicksPerLink || 0}</div>
+                    <div className="text-2xl font-bold text-muted-foreground">{stats?.avgClicksPerLink || 0}</div>
                     <p className="text-sm text-muted-foreground mt-1">Avg. Clicks</p>
                   </div>
                   <div className="text-center p-4 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">{stats?.recentLinks || 0}</div>
+                    <div className="text-2xl font-bold text-muted-foreground">{stats?.recentLinks || 0}</div>
                     <p className="text-sm text-muted-foreground mt-1">New Links (7d)</p>
                   </div>
                   <div className="text-center p-4 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">{stats?.engagementRate || 0}%</div>
+                    <div className="text-2xl font-bold text-muted-foreground">{stats?.engagementRate || 0}%</div>
                     <p className="text-sm text-muted-foreground mt-1">Engagement</p>
                   </div>
                 </div>
@@ -449,11 +449,11 @@ export default function AnalyticsPage() {
                       <p className="text-sm text-muted-foreground mt-1">Total Clicks</p>
                     </div>
                     <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{stats?.avgClicksPerLink || 0}</div>
+                      <div className="text-2xl font-bold text-muted-foreground">{stats?.avgClicksPerLink || 0}</div>
                       <p className="text-sm text-muted-foreground mt-1">Avg. Clicks per Link</p>
                     </div>
                     <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{stats?.recentLinks || 0}</div>
+                      <div className="text-2xl font-bold text-muted-foreground">{stats?.recentLinks || 0}</div>
                       <p className="text-sm text-muted-foreground mt-1">Created in last 7 days</p>
                     </div>
                   </div>
