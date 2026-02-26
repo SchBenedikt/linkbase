@@ -17,8 +17,8 @@ async function incrementClickCount(projectId: string, apiKey: string, code: stri
       const doc = await getResponse.json();
       const currentCount = doc.fields?.clickCount?.integerValue || '0';
       
-      // Use updateMask as query parameter
-      const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}?updateMask=clickCount,updatedAt`;
+      // Use updateMask as properly encoded query parameter
+      const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}?updateMask=clickCount%2CupdatedAt`;
       
       const updateResponse = await fetch(updateUrl, {
         method: 'PATCH',
@@ -48,7 +48,7 @@ async function incrementClickCount(projectId: string, apiKey: string, code: stri
       const publicDoc = await publicGetResponse.json();
       const currentPublicCount = publicDoc.fields?.clickCount?.integerValue || '0';
       
-      // Use updateMask as query parameter for public collection
+      // Use updateMask as properly encoded query parameter for public collection
       const publicUpdateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}?updateMask=clickCount`;
       
       const publicUpdateResponse = await fetch(publicUpdateUrl, {

@@ -23,8 +23,8 @@ export async function GET(request: NextRequest) {
       const doc = await getResponse.json();
       const currentCount = doc.fields?.clickCount?.integerValue || '0';
       
-      // Increment click count with fixed updateMask
-      const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${testCode}?updateMask=clickCount,updatedAt`;
+      // Increment click count with properly encoded updateMask
+      const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${testCode}?updateMask=clickCount%2CupdatedAt`;
       
       const updateResponse = await fetch(updateUrl, {
         method: 'PATCH',
