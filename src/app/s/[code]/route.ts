@@ -4,22 +4,23 @@ import type { ShortLinkPublic } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
-// Helper function to increment click count using REST API (fixed)
+// Helper function to increment click count using REST API (fixed updateMask)
 async function incrementClickCount(projectId: string, apiKey: string, code: string) {
   try {
     // Update private collection (for analytics)
-    const privateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}?updateMask=clickCount,updatedAt`;
+    const privateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}`;
     
     // First get current document to see if it exists
-    const getResponse = await fetch(
-      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}`
-    );
+    const getResponse = await fetch(privateUrl);
     
     if (getResponse.ok) {
       const doc = await getResponse.json();
       const currentCount = doc.fields?.clickCount?.integerValue || '0';
       
-      const updateResponse = await fetch(privateUrl, {
+      // Use updateMask as query parameter
+      const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}?updateMask=clickCount,updatedAt`;
+      
+      const updateResponse = await fetch(updateUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -39,18 +40,18 @@ async function incrementClickCount(projectId: string, apiKey: string, code: stri
       }
     }
     
-    // Also update public collection with fixed updateMask
-    const publicUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}?updateMask=clickCount`;
-    
-    const publicGetResponse = await fetch(
-      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}`
-    );
+    // Also update public collection
+    const publicUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}`;
+    const publicGetResponse = await fetch(publicUrl);
     
     if (publicGetResponse.ok) {
       const publicDoc = await publicGetResponse.json();
       const currentPublicCount = publicDoc.fields?.clickCount?.integerValue || '0';
       
-      const publicUpdateResponse = await fetch(publicUrl, {
+      // Use updateMask as query parameter for public collection
+      const publicUpdateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}?updateMask=clickCount`;
+      
+      const publicUpdateResponse = await fetch(publicUpdateUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
