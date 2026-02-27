@@ -63,7 +63,7 @@ export function DashboardNav() {
 
             {/* Mobile Navigation */}
             {isMobileMenuOpen && (
-                <div className="absolute top-16 left-0 right-0 bg-background border-b shadow-lg z-50 sm:hidden">
+                <div className="absolute top-16 left-0 right-0 bg-background border-b z-50 sm:hidden">
                     <nav className="container mx-auto px-4 py-4">
                         <div className="flex flex-col space-y-2">
                             {navItems.map(item => (

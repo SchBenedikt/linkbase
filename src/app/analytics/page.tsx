@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { UserNav } from '@/components/user-nav';
@@ -15,24 +14,47 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { 
   BarChart3, 
   TrendingUp, 
-  Eye, 
-  MousePointer, 
   Link2,
   Globe,
   ArrowRight,
   BarChart2,
-  ArrowUp,
-  ArrowDown,
   Activity,
   Zap,
-  Target,
-  Calendar,
-  Download,
   RefreshCw,
-  Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 import type { ShortLink, Page } from '@/lib/types';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts';
+
+function LinksBarChart({ links }: { links: ShortLink[] }) {
+  const data = links
+    .filter(l => (l.clickCount || 0) > 0)
+    .sort((a, b) => (b.clickCount || 0) - (a.clickCount || 0))
+    .slice(0, 10)
+    .map(l => ({ name: l.title || l.code || 'Untitled', clicks: l.clickCount || 0 }));
+
+  if (data.length === 0) {
+    return (
+      <div className="flex items-center justify-center py-8 text-muted-foreground text-sm">
+        No clicks recorded yet. Share your short links to start tracking.
+      </div>
+    );
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={Math.max(160, data.length * 36)}>
+      <BarChart data={data} layout="vertical">
+        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+        <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+        <YAxis type="category" dataKey="name" width={140} tick={{ fontSize: 11 }} />
+        <Tooltip />
+        <Bar dataKey="clicks" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
 
 export default function AnalyticsPage() {
   const { user, isUserLoading } = useUser();
@@ -252,32 +274,30 @@ export default function AnalyticsPage() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
                 {/* Pages Card */}
-                <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1" onClick={() => setView('pages')}>
+                <Card className="cursor-pointer transition-colors hover:bg-muted/50" onClick={() => setView('pages')}>
                     <CardHeader className="pb-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                                    <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                <div className="p-2 bg-primary/10 rounded-lg">
+                                    <Globe className="h-5 w-5 text-primary" />
                                 </div>
                                 <div>
                                     <CardTitle className="text-lg">Pages</CardTitle>
                                     <CardDescription className="text-sm">Content performance</CardDescription>
                                 </div>
                             </div>
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                            </div>
+                            <ArrowRight className="h-5 w-5 text-muted-foreground" />
                         </div>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{stats?.publishedPages || 0}</div>
-                                <p className="text-xs text-green-600 dark:text-green-400 font-medium">Published</p>
+                            <div className="text-center p-4 bg-muted rounded-lg">
+                                <div className="text-2xl font-bold">{stats?.publishedPages || 0}</div>
+                                <p className="text-xs text-muted-foreground font-medium">Published</p>
                             </div>
-                            <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                                <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">{stats?.draftPages || 0}</div>
-                                <p className="text-xs text-orange-600 dark:text-orange-400 font-medium">Drafts</p>
+                            <div className="text-center p-4 bg-muted rounded-lg">
+                                <div className="text-2xl font-bold">{stats?.draftPages || 0}</div>
+                                <p className="text-xs text-muted-foreground font-medium">Drafts</p>
                             </div>
                         </div>
                         <div className="mt-4 pt-4 border-t">
@@ -290,32 +310,30 @@ export default function AnalyticsPage() {
                 </Card>
 
                 {/* Links Card */}
-                <Card className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1" onClick={() => setView('links')}>
+                <Card className="cursor-pointer transition-colors hover:bg-muted/50" onClick={() => setView('links')}>
                     <CardHeader className="pb-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                                    <Link2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                <div className="p-2 bg-secondary/20 rounded-lg">
+                                    <Link2 className="h-5 w-5 text-secondary-foreground" />
                                 </div>
                                 <div>
                                     <CardTitle className="text-lg">Links</CardTitle>
                                     <CardDescription className="text-sm">Click tracking</CardDescription>
                                 </div>
                             </div>
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                            </div>
+                            <ArrowRight className="h-5 w-5 text-muted-foreground" />
                         </div>
                     </CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats?.totalLinks || 0}</div>
-                                <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">Total Links</p>
+                            <div className="text-center p-4 bg-muted rounded-lg">
+                                <div className="text-2xl font-bold">{stats?.totalLinks || 0}</div>
+                                <p className="text-xs text-muted-foreground font-medium">Total Links</p>
                             </div>
-                            <div className="text-center p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
-                                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{stats?.totalClicks || 0}</div>
-                                <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">Total Clicks</p>
+                            <div className="text-center p-4 bg-muted rounded-lg">
+                                <div className="text-2xl font-bold">{stats?.totalClicks || 0}</div>
+                                <p className="text-xs text-muted-foreground font-medium">Total Clicks</p>
                             </div>
                         </div>
                         <div className="mt-4 pt-4 border-t">
@@ -330,48 +348,64 @@ export default function AnalyticsPage() {
 
             {/* Quick Stats Row */}
             <div className="grid gap-4 md:grid-cols-3">
-                <Card className="border-l-4 border-l-green-500">
+                <Card>
                     <CardContent className="p-4">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-green-100 dark:bg-green-900 rounded-full">
-                                <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+                            <div className="p-2 bg-primary/10 rounded-full">
+                                <TrendingUp className="h-4 w-4 text-primary" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-green-600 dark:text-green-400">Engagement Rate</p>
+                                <p className="text-sm font-medium text-muted-foreground">Engagement Rate</p>
                                 <p className="text-2xl font-bold">{stats?.engagementRate || 0}%</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="border-l-4 border-l-blue-500">
+                <Card>
                     <CardContent className="p-4">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-full">
-                                <Activity className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            <div className="p-2 bg-secondary/20 rounded-full">
+                                <Activity className="h-4 w-4 text-secondary-foreground" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Recent Activity</p>
+                                <p className="text-sm font-medium text-muted-foreground">New Links (7d)</p>
                                 <p className="text-2xl font-bold">{stats?.recentLinks || 0}</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                <Card className="border-l-4 border-l-purple-500">
+                <Card>
                     <CardContent className="p-4">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-full">
-                                <Zap className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                            <div className="p-2 bg-accent/20 rounded-full">
+                                <Zap className="h-4 w-4 text-accent-foreground" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Top Performance</p>
+                                <p className="text-sm font-medium text-muted-foreground">Top Link</p>
                                 <p className="text-lg font-bold truncate">{stats?.topLink?.title || 'N/A'}</p>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
             </div>
+
+            {/* Links Click Chart */}
+            {links && links.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-5 w-5" />
+                    Link Clicks Overview
+                  </CardTitle>
+                  <CardDescription>Total clicks per short link</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <LinksBarChart links={links} />
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="pages" className="space-y-6">

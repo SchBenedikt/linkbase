@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Bricolage Grotesque', Arial, Helvetica, sans-serif;
 }
 
 @layer base {
@@ -33,6 +33,14 @@ body {
     --chart-4: 34 100% 53%; /* #ff9312 */
     --chart-5: 30 89% 16%; /* #4c2f05 */
     --radius: 1.25rem;
+    --sidebar-background: 102 53% 18%;
+    --sidebar-foreground: 70 79% 52%;
+    --sidebar-primary: 70 79% 52%;
+    --sidebar-primary-foreground: 102 53% 18%;
+    --sidebar-accent: 102 53% 25%;
+    --sidebar-accent-foreground: 70 79% 60%;
+    --sidebar-border: 102 53% 25%;
+    --sidebar-ring: 70 79% 52%;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -59,6 +67,14 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 34 100% 53%;
     --chart-5: 30 89% 16%;
+    --sidebar-background: 240 10% 6%;
+    --sidebar-foreground: 70 79% 52%;
+    --sidebar-primary: 70 79% 52%;
+    --sidebar-primary-foreground: 240 10% 6%;
+    --sidebar-accent: 240 5% 14%;
+    --sidebar-accent-foreground: 70 79% 60%;
+    --sidebar-border: 240 4% 15%;
+    --sidebar-ring: 70 79% 52%;
   }
 }
 
