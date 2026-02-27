@@ -131,14 +131,14 @@ export default function LandingPage() {
                 Share your pages, blog posts, and short links — all from a single beautiful profile. No code needed.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mt-6">
-                <Button asChild className="h-16 rounded-full text-lg font-bold px-12 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Link href="/login" className="flex items-center gap-3">
+                <Button asChild className="h-12 rounded-full text-base font-medium px-8">
+                  <Link href="/login">
                     Get Started for Free
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="h-16 rounded-full text-lg border-2 font-bold px-12 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-accent/10">
-                  <Link href="/login" className="flex items-center gap-3">
-                    See a demo <ArrowRight className="h-5 w-5" />
+                <Button asChild variant="outline" className="h-12 rounded-full text-base font-medium px-8">
+                  <Link href="/login" className="flex items-center gap-2">
+                    See a demo <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
               </div>
@@ -360,15 +360,15 @@ export default function LandingPage() {
             <p className="mt-4 text-lg text-primary-foreground/75 max-w-xl mx-auto">
               Join creators who use Linkbase to share their work, thoughts, and personality — all from one link.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-6 justify-center">
-              <Button asChild className="h-16 rounded-full text-lg font-bold px-12 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                <Link href="/login" className="flex items-center gap-3">
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild className="h-12 rounded-full text-base font-medium px-8">
+                <Link href="/login">
                   Start for free
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="h-16 rounded-full text-lg border-2 font-bold px-12 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-primary/10">
-                <Link href="/login" className="flex items-center gap-3">
-                  View demo <ArrowRight className="h-5 w-5" />
+              <Button asChild variant="outline" className="h-12 rounded-full text-base font-medium px-8">
+                <Link href="/login" className="flex items-center gap-2">
+                  View demo <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>
