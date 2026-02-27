@@ -23,16 +23,15 @@ export async function GET(request: NextRequest) {
       const doc = await getResponse.json();
       const currentCount = doc.fields?.clickCount?.integerValue || '0';
       
-      // Increment click count with properly encoded updateMask
-      const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${testCode}?updateMask=clickCount%2CupdatedAt`;
-      
-      const updateResponse = await fetch(updateUrl, {
+      // Increment click count with simplified approach without updateMask
+      const updateResponse = await fetch(getUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           fields: {
+            ...doc.fields, // Preserve existing fields
             clickCount: { integerValue: (parseInt(currentCount) + 1).toString() },
             updatedAt: { timestampValue: new Date().toISOString() }
           }
@@ -46,7 +45,7 @@ export async function GET(request: NextRequest) {
           previousCount: parseInt(currentCount),
           newCount: parseInt(currentCount) + 1,
           testUrl: `https://your-domain.com/s/${testCode}`,
-          note: 'Fixed REST API implementation'
+          note: 'Simplified REST API implementation without updateMask'
         });
       } else {
         const errorText = await updateResponse.text();

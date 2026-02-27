@@ -4,7 +4,7 @@ import type { ShortLinkPublic } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
-// Helper function to increment click count using REST API (fixed updateMask)
+// Helper function to increment click count using REST API (simplified approach without updateMask)
 async function incrementClickCount(projectId: string, apiKey: string, code: string) {
   try {
     // Update private collection (for analytics)
@@ -17,16 +17,15 @@ async function incrementClickCount(projectId: string, apiKey: string, code: stri
       const doc = await getResponse.json();
       const currentCount = doc.fields?.clickCount?.integerValue || '0';
       
-      // Use updateMask as properly encoded query parameter
-      const updateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}?updateMask=clickCount%2CupdatedAt`;
-      
-      const updateResponse = await fetch(updateUrl, {
+      // Use simple PATCH without updateMask - update the entire document
+      const updateResponse = await fetch(privateUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           fields: {
+            ...doc.fields, // Preserve existing fields
             clickCount: { integerValue: (parseInt(currentCount) + 1).toString() },
             updatedAt: { timestampValue: new Date().toISOString() }
           }
@@ -35,6 +34,13 @@ async function incrementClickCount(projectId: string, apiKey: string, code: stri
       
       if (!updateResponse.ok) {
         console.error('Failed to update private collection:', await updateResponse.text());
+        console.error('Request URL:', privateUrl);
+        console.error('Request body:', JSON.stringify({
+          fields: {
+            clickCount: { integerValue: (parseInt(currentCount) + 1).toString() },
+            updatedAt: { timestampValue: new Date().toISOString() }
+          }
+        }));
       } else {
         console.log(`Short link ${code}: Successfully updated private collection`);
       }
@@ -48,16 +54,15 @@ async function incrementClickCount(projectId: string, apiKey: string, code: stri
       const publicDoc = await publicGetResponse.json();
       const currentPublicCount = publicDoc.fields?.clickCount?.integerValue || '0';
       
-      // Use updateMask as properly encoded query parameter for public collection
-      const publicUpdateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/short_link_public/${code}?updateMask=clickCount`;
-      
-      const publicUpdateResponse = await fetch(publicUpdateUrl, {
+      // Use simple PATCH without updateMask for public collection
+      const publicUpdateResponse = await fetch(publicUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           fields: {
+            ...publicDoc.fields, // Preserve existing fields
             clickCount: { integerValue: (parseInt(currentPublicCount) + 1).toString() }
           }
         })
@@ -65,6 +70,12 @@ async function incrementClickCount(projectId: string, apiKey: string, code: stri
       
       if (!publicUpdateResponse.ok) {
         console.error('Failed to update public collection:', await publicUpdateResponse.text());
+        console.error('Request URL:', publicUrl);
+        console.error('Request body:', JSON.stringify({
+          fields: {
+            clickCount: { integerValue: (parseInt(currentPublicCount) + 1).toString() }
+          }
+        }));
       } else {
         console.log(`Short link ${code}: Successfully updated public collection`);
       }
