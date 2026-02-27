@@ -274,7 +274,7 @@ export default function AnalyticsPage() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-2">
                 {/* Pages Card */}
-                <Card className="cursor-pointer transition-colors hover:bg-muted/50" onClick={() => setView('pages')}>
+                <Card className="cursor-pointer border-2 border-transparent transition-colors hover:border-primary/30" onClick={() => setView('pages')}>
                     <CardHeader className="pb-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -310,7 +310,7 @@ export default function AnalyticsPage() {
                 </Card>
 
                 {/* Links Card */}
-                <Card className="cursor-pointer transition-colors hover:bg-muted/50" onClick={() => setView('links')}>
+                <Card className="cursor-pointer border-2 border-transparent transition-colors hover:border-primary/30" onClick={() => setView('links')}>
                     <CardHeader className="pb-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">

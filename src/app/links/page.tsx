@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { collection, query, where, doc, getDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ import {
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Info, Link2, PlusCircle, Trash2 } from 'lucide-react';
+import { Info, Link2, PlusCircle, Trash2, Loader2 } from 'lucide-react';
 import type { ShortLink } from '@/lib/types';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { UserNav } from '@/components/user-nav';
@@ -23,6 +23,7 @@ import { ShortLinkItem } from '@/components/short-link-item';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
+import { getWebsiteMeta } from '@/lib/actions';
 
 /** Generates a random alphanumeric code of a given length */
 function generateCode(len = 6): string {
@@ -47,6 +48,7 @@ export default function LinksPage() {
   const [newTitle, setNewTitle] = useState('');
   const [customCode, setCustomCode] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [isFetchingTitle, setIsFetchingTitle] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<ShortLink | null>(null);
   const [search, setSearch] = useState('');
 
@@ -98,6 +100,36 @@ export default function LinksPage() {
       setIsCreating(false);
     }
   };
+
+  const handleFetchTitle = async (url: string) => {
+    if (!url.trim() || !url.startsWith('http')) return;
+    setIsFetchingTitle(true);
+    try {
+      const result = await getWebsiteMeta(url);
+      if (result.title) {
+        setNewTitle(result.title);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setIsFetchingTitle(false);
+    }
+  };
+
+  const handleEdit = useCallback(async (id: string, data: { title: string; originalUrl: string }) => {
+    if (!firestore) return;
+    try {
+      await updateDoc(doc(firestore, 'shortLinks', id), {
+        title: data.title,
+        originalUrl: data.originalUrl,
+        updatedAt: serverTimestamp(),
+      });
+      toast({ title: 'Updated!', description: 'Short link has been updated.' });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to update link.' });
+      throw error;
+    }
+  }, [firestore, toast]);
 
   const handleDelete = useCallback(async () => {
     if (!linkToDelete || !firestore) return;
@@ -162,13 +194,22 @@ export default function LinksPage() {
                   placeholder="https://example.com/very/long/url"
                   value={newUrl}
                   onChange={(e) => setNewUrl(e.target.value)}
+                  onBlur={(e) => {
+                    const url = e.target.value.trim();
+                    if (url && url.startsWith('http') && !newTitle) {
+                      handleFetchTitle(url);
+                    }
+                  }}
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="title">Title (optional)</Label>
+                <Label htmlFor="title" className="flex items-center gap-2">
+                  Title (optional)
+                  {isFetchingTitle && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+                </Label>
                 <Input
                   id="title"
-                  placeholder="My Link"
+                  placeholder={isFetchingTitle ? 'Fetching title…' : 'My Link'}
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                 />
@@ -227,6 +268,7 @@ export default function LinksPage() {
                 siteUrl={siteUrl}
                 onCopy={() => copyToClipboard(link.code)}
                 onDelete={() => setLinkToDelete(link)}
+                onEdit={handleEdit}
               />
             ))}
           </div>
