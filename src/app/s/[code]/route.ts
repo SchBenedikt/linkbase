@@ -130,6 +130,15 @@ export async function GET(
       const originalUrl = publicData.fields?.originalUrl?.stringValue;
       
       if (originalUrl) {
+        // Check if link is disabled
+        const isActive = publicData.fields?.isActive?.booleanValue;
+        if (isActive === false) {
+          console.log(`Short link ${code}: Link is disabled, sending to client page`);
+          const clientUrl = new URL('/s', request.nextUrl);
+          clientUrl.searchParams.set('code', code);
+          return NextResponse.redirect(clientUrl, 307);
+        }
+
         console.log(`Short link ${code}: Found in public collection, redirecting to:`, originalUrl);
         
         // Track click using REST API
@@ -162,6 +171,15 @@ export async function GET(
     if (!originalUrl) {
       console.error(`Short link ${code}: No URL found in private collection`);
       notFound();
+    }
+
+    // Check if link is disabled in private collection
+    const isActivePrivate = privateData.fields?.isActive?.booleanValue;
+    if (isActivePrivate === false) {
+      console.log(`Short link ${code}: Link is disabled (private collection)`);
+      const clientUrl = new URL('/s', request.nextUrl);
+      clientUrl.searchParams.set('code', code);
+      return NextResponse.redirect(clientUrl, 307);
     }
     
     console.log(`Short link ${code}: Found in private collection, redirecting to:`, originalUrl);

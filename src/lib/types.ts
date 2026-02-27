@@ -163,6 +163,7 @@ export type ShortLink = {
   title?: string;
   ownerId: string;
   clickCount: number;
+  isActive?: boolean;    // default true when not set; false = link disabled
   createdAt: any;
   updatedAt: any;
 };

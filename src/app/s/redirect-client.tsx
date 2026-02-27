@@ -12,7 +12,7 @@ export default function RedirectClient() {
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
   const firestore = useFirestore();
-  const [status, setStatus] = useState<'loading' | 'redirecting' | 'not-found' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'redirecting' | 'not-found' | 'disabled' | 'error'>('loading');
   const [targetUrl, setTargetUrl] = useState('');
   const [countdown, setCountdown] = useState(3);
   const [errorMessage, setErrorMessage] = useState('');
@@ -39,6 +39,13 @@ export default function RedirectClient() {
 
         const data = snap.data();
         const url: string = data.originalUrl;
+
+        // Check if link is disabled
+        if (data.isActive === false) {
+          setStatus('disabled');
+          return;
+        }
+
         try {
           const parsed = new URL(url);
           if (!['http:', 'https:'].includes(parsed.protocol)) {
@@ -90,6 +97,21 @@ export default function RedirectClient() {
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.15),transparent_55%)] text-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-primary" />
         <p className="text-muted-foreground">Resolving link…</p>
+      </div>
+    );
+  }
+
+  if (status === 'disabled') {
+    return (
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.12),transparent_60%)] text-foreground">
+        <div className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center gap-5 px-6 text-center">
+          <AlertCircle className="h-12 w-12 text-muted-foreground" />
+          <h1 className="text-2xl font-bold">Link is disabled</h1>
+          <p className="text-muted-foreground">This short link has been temporarily disabled by its owner.</p>
+          <Button asChild variant="outline">
+            <Link href="/">Go to homepage</Link>
+          </Button>
+        </div>
       </div>
     );
   }

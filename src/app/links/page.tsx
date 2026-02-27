@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { collection, query, where, doc, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, query, where, doc, serverTimestamp, updateDoc, setDoc } from 'firebase/firestore';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,6 +85,7 @@ export default function LinksPage() {
         title: newTitle.trim() || 'Untitled Link',
         ownerId: user.uid,
         clickCount: 0,
+        isActive: true,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -130,6 +131,28 @@ export default function LinksPage() {
       throw error;
     }
   }, [firestore, toast]);
+
+  const handleToggleActive = useCallback(async (id: string, newActive: boolean) => {
+    if (!firestore) return;
+    const link = links?.find(l => l.id === id);
+    if (!link) return;
+    try {
+      await updateDoc(doc(firestore, 'shortLinks', id), {
+        isActive: newActive,
+        updatedAt: serverTimestamp(),
+      });
+      // Sync to public collection (create if missing) so the server-side redirect also respects isActive
+      await setDoc(doc(firestore, 'short_link_public', id), {
+        originalUrl: link.originalUrl,
+        clickCount: link.clickCount || 0,
+        isActive: newActive,
+      }, { merge: true });
+      toast({ title: newActive ? 'Link enabled' : 'Link disabled' });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Failed to update link.' });
+      throw error;
+    }
+  }, [firestore, links, toast]);
 
   const handleDelete = useCallback(async () => {
     if (!linkToDelete || !firestore) return;
@@ -269,6 +292,7 @@ export default function LinksPage() {
                 onCopy={() => copyToClipboard(link.code)}
                 onDelete={() => setLinkToDelete(link)}
                 onEdit={handleEdit}
+                onToggleActive={handleToggleActive}
               />
             ))}
           </div>
