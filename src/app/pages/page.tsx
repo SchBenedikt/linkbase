@@ -150,11 +150,11 @@ export default function PagesPage() {
                 </div>
             </header>
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-bold tracking-tight">Your Pages</h2>
-                    <Button onClick={handleCreatePage} disabled={isCreating}>
-                        {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
-                        Create New Page
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-bold tracking-tight">Pages</h2>
+                    <Button onClick={handleCreatePage} disabled={isCreating} className="gap-2">
+                        {isCreating ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlusCircle className="h-4 w-4" />}
+                        Create Page
                     </Button>
                 </div>
                 

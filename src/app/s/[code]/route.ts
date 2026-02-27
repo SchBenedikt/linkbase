@@ -1,49 +1,37 @@
 import { notFound } from 'next/navigation';
 import { NextRequest, NextResponse } from 'next/server';
 import type { ShortLinkPublic } from '@/lib/types';
+import { adminFirestore } from '@/firebase/admin';
 
 export const dynamic = 'force-dynamic';
 
-// Helper function to increment click count using REST API (simplified approach without updateMask)
+// Helper function to increment click count using Admin SDK for private, REST API for public
 async function incrementClickCount(projectId: string, apiKey: string, code: string) {
   try {
-    // Update private collection (for analytics)
-    const privateUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/shortLinks/${code}`;
-    
-    // First get current document to see if it exists
-    const getResponse = await fetch(privateUrl);
-    
-    if (getResponse.ok) {
-      const doc = await getResponse.json();
-      const currentCount = doc.fields?.clickCount?.integerValue || '0';
-      
-      // Use simple PATCH without updateMask - update the entire document
-      const updateResponse = await fetch(privateUrl, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fields: {
-            ...doc.fields, // Preserve existing fields
-            clickCount: { integerValue: (parseInt(currentCount) + 1).toString() },
-            updatedAt: { timestampValue: new Date().toISOString() }
-          }
-        })
-      });
-      
-      if (!updateResponse.ok) {
-        console.error('Failed to update private collection:', await updateResponse.text());
-        console.error('Request URL:', privateUrl);
-        console.error('Request body:', JSON.stringify({
-          fields: {
-            clickCount: { integerValue: (parseInt(currentCount) + 1).toString() },
-            updatedAt: { timestampValue: new Date().toISOString() }
-          }
-        }));
-      } else {
-        console.log(`Short link ${code}: Successfully updated private collection`);
+    // Update private collection (for analytics) using Admin SDK
+    if (adminFirestore) {
+      console.log(`Short link ${code}: Updating private collection using Admin SDK`);
+      try {
+        const privateDocRef = adminFirestore.collection('shortLinks').doc(code);
+        const privateDoc = await privateDocRef.get();
+        
+        if (privateDoc.exists) {
+          const currentCount = privateDoc.data()?.clickCount || 0;
+          console.log(`Short link ${code}: Current private click count: ${currentCount}`);
+          
+          await privateDocRef.update({
+            clickCount: currentCount + 1,
+            updatedAt: new Date()
+          });
+          console.log(`Short link ${code}: Successfully updated private collection`);
+        } else {
+          console.log(`Short link ${code}: Private collection document not found`);
+        }
+      } catch (adminError) {
+        console.error(`Short link ${code}: Admin SDK update failed:`, adminError);
       }
+    } else {
+      console.log(`Short link ${code}: Admin Firestore not available, skipping private collection update`);
     }
     
     // Also update public collection
@@ -55,17 +43,21 @@ async function incrementClickCount(projectId: string, apiKey: string, code: stri
       const currentPublicCount = publicDoc.fields?.clickCount?.integerValue || '0';
       
       // Use simple PATCH without updateMask for public collection
+      console.log(`Short link ${code}: Updating public collection with URL: ${publicUrl}`);
+      const publicRequestBody = {
+        fields: {
+          ...publicDoc.fields, // Preserve existing fields
+          clickCount: { integerValue: (parseInt(currentPublicCount) + 1).toString() }
+        }
+      };
+      console.log(`Short link ${code}: Public request body:`, JSON.stringify(publicRequestBody, null, 2));
+      
       const publicUpdateResponse = await fetch(publicUrl, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          fields: {
-            ...publicDoc.fields, // Preserve existing fields
-            clickCount: { integerValue: (parseInt(currentPublicCount) + 1).toString() }
-          }
-        })
+        body: JSON.stringify(publicRequestBody)
       });
       
       if (!publicUpdateResponse.ok) {

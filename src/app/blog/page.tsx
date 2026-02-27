@@ -105,10 +105,10 @@ export default function BlogDashboardPage() {
             </header>
             <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <Tabs defaultValue="manage" className="w-full">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                         <TabsList>
-                            <TabsTrigger value="manage">Manage Posts</TabsTrigger>
-                            <TabsTrigger value="explore">Explore All Posts</TabsTrigger>
+                            <TabsTrigger value="manage">Posts</TabsTrigger>
+                            <TabsTrigger value="explore">Explore</TabsTrigger>
                         </TabsList>
                         <Button asChild>
                             <Link href="/blog/edit/new">

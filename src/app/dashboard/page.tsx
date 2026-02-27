@@ -204,377 +204,132 @@ export default function DashboardOverviewPage() {
                 <div className="mb-8">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
+                            <h1 className="text-2xl font-bold tracking-tight">
                                 Dashboard
                             </h1>
-                            <p className="text-muted-foreground text-lg mt-2">
-                                Welcome back, {user?.displayName || 'User'}! Here's your content overview.
+                            <p className="text-muted-foreground mt-1">
+                                Welcome back, {user?.displayName || 'User'}!
                             </p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className="text-sm px-3 py-1">
-                                <Activity className="mr-1 h-3 w-3" />
-                                Active
-                            </Badge>
-                            <Badge variant="outline" className="text-sm px-3 py-1">
-                                <Calendar className="mr-1 h-3 w-3" />
+                            <Badge variant="secondary" className="text-xs">
                                 {format(new Date(), 'MMM dd')}
                             </Badge>
                         </div>
                     </div>
                 </div>
 
-                {/* Enhanced Stats Cards */}
+                {/* Stats Cards - Reduced to essential metrics */}
                 {stats && (
-                    <div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-8">
-                        <Card className="relative overflow-hidden group transition-all duration-300">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Total Pages</CardTitle>
-                                <div className="p-2 bg-muted rounded-full">
-                                    <PlusCircle className="h-4 w-4 text-muted-foreground" />
-                                </div>
+                    <div className="grid gap-4 md:grid-cols-3 mb-8">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Pages</CardTitle>
+                                <FileText className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl sm:text-3xl font-bold">{stats.totalPages}</div>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <Progress value={stats.totalPages > 0 ? (stats.publishedPages / stats.totalPages) * 100 : 0} className="flex-1 h-2" />
-                                    <span className="text-xs text-muted-foreground">{stats.publishedPages}/{stats.totalPages}</span>
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    {stats.publishedPages} published, {stats.draftPages} drafts
+                                <div className="text-2xl font-bold">{stats.totalPages}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.publishedPages} published
                                 </p>
                             </CardContent>
                         </Card>
                         
-                        <Card className="relative overflow-hidden group transition-all duration-300">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Blog Posts</CardTitle>
-                                <div className="p-2 bg-muted rounded-full">
-                                    <Blog className="h-4 w-4 text-muted-foreground" />
-                                </div>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Blog Posts</CardTitle>
+                                <Blog className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl sm:text-3xl font-bold">{stats.totalPosts}</div>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <Progress value={stats.totalPosts > 0 ? (stats.publishedPosts / stats.totalPosts) * 100 : 0} className="flex-1 h-2" />
-                                    <span className="text-xs text-muted-foreground">{stats.publishedPosts}/{stats.totalPosts}</span>
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    {stats.publishedPosts} published, {stats.draftPosts} drafts
+                                <div className="text-2xl font-bold">{stats.totalPosts}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.publishedPosts} published
                                 </p>
                             </CardContent>
                         </Card>
                         
-                        <Card className="relative overflow-hidden group transition-all duration-300">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Total Content</CardTitle>
-                                <div className="p-2 bg-muted rounded-full">
-                                    <Target className="h-4 w-4 text-muted-foreground" />
-                                </div>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">Total Content</CardTitle>
+                                <Target className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl sm:text-3xl font-bold">{stats.totalContent}</div>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <div className="flex items-center text-green-600 text-xs">
-                                        <ArrowUp className="h-3 w-3 mr-1" />
-                                        {stats.growthTrend}%
-                                    </div>
-                                    <span className="text-xs text-muted-foreground">growth</span>
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    {stats.publishedContent} published, {stats.draftContent} drafts
-                                </p>
-                            </CardContent>
-                        </Card>
-                        
-                        <Card className="relative overflow-hidden group transition-all duration-300">
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">Engagement</CardTitle>
-                                <div className="p-2 bg-muted rounded-full">
-                                    <Zap className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl sm:text-3xl font-bold">{stats.engagementRate}%</div>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <Progress value={stats.engagementRate} className="flex-1 h-2" />
-                                </div>
-                                <p className="text-xs text-muted-foreground mt-1">
-                                    Content engagement rate
+                                <div className="text-2xl font-bold">{stats.totalContent}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {stats.publishedContent} published
                                 </p>
                             </CardContent>
                         </Card>
                     </div>
                 )}
 
-                {/* Enhanced Quick Actions */}
+                {/* Quick Actions - Simplified */}
                 <div className="mb-8">
-                    <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-                        <Zap className="h-5 w-5 text-primary" />
-                        Quick Actions
-                    </h2>
-                    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-                        <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/pages')}>
-                            <CardContent className="p-6">
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-2 bg-muted rounded-full">
-                                        <PlusCircle className="h-6 w-6 text-muted-foreground" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-lg">Create Page</h3>
-                                        <p className="text-sm text-muted-foreground">Build a new page</p>
-                                    </div>
-                                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                                </div>
-                            </CardContent>
-                        </Card>
-                        
-                        <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/blog')}>
-                            <CardContent className="p-6">
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-2 bg-muted rounded-full">
-                                        <Blog className="h-6 w-6 text-muted-foreground" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-lg">Write Post</h3>
-                                        <p className="text-sm text-muted-foreground">Create blog content</p>
-                                    </div>
-                                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                                </div>
-                            </CardContent>
-                        </Card>
-                        
-                        <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/links')}>
-                            <CardContent className="p-6">
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-2 bg-muted rounded-full">
-                                        <Link2 className="h-6 w-6 text-muted-foreground" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-lg">Manage Links</h3>
-                                        <p className="text-sm text-muted-foreground">Short links</p>
-                                    </div>
-                                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                                </div>
-                            </CardContent>
-                        </Card>
-                        
-                        <Card className="group transition-all duration-300 cursor-pointer" onClick={() => router.push('/analytics')}>
-                            <CardContent className="p-6">
-                                <div className="flex items-center space-x-4">
-                                    <div className="p-2 bg-muted rounded-full">
-                                        <BarChart3 className="h-6 w-6 text-muted-foreground" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-semibold text-lg">View Analytics</h3>
-                                        <p className="text-sm text-muted-foreground">Track performance</p>
-                                    </div>
-                                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                                </div>
-                            </CardContent>
-                        </Card>
+                    <div className="flex flex-wrap gap-2">
+                        <Button onClick={() => router.push('/pages')} className="gap-2">
+                            <PlusCircle className="h-4 w-4" />
+                            Create Page
+                        </Button>
+                        <Button variant="outline" onClick={() => router.push('/blog')} className="gap-2">
+                            <Blog className="h-4 w-4" />
+                            Write Post
+                        </Button>
+                        <Button variant="outline" onClick={() => router.push('/links')} className="gap-2">
+                            <Link2 className="h-4 w-4" />
+                            Manage Links
+                        </Button>
+                        <Button variant="outline" onClick={() => router.push('/analytics')} className="gap-2">
+                            <BarChart3 className="h-4 w-4" />
+                            Analytics
+                        </Button>
                     </div>
                 </div>
 
-                {/* Content Growth Chart */}
-                <Card className="mb-8">
+                {/* Recent Activity - Simplified */}
+                <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <TrendingUp className="h-5 w-5 text-primary" />
-                            Content Growth
+                            <Clock className="h-5 w-5" />
+                            Recent Activity
                         </CardTitle>
-                        <CardDescription>
-                            Track your content creation over the past 7 days
-                        </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="h-64 sm:h-80">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={chartData}>
-                                    <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                                    <XAxis 
-                                        dataKey="date" 
-                                        tick={{ fontSize: 12 }}
-                                        tickLine={{ stroke: 'hsl(var(--border))' }}
-                                    />
-                                    <YAxis 
-                                        tick={{ fontSize: 12 }}
-                                        tickLine={{ stroke: 'hsl(var(--border))' }}
-                                    />
-                                    <Tooltip 
-                                        contentStyle={{ 
-                                            backgroundColor: 'hsl(var(--card))',
-                                            border: '1px solid hsl(var(--border))',
-                                            borderRadius: 'var(--radius)'
-                                        }}
-                                    />
-                                    <Line 
-                                        type="monotone" 
-                                        dataKey="total" 
-                                        stroke="hsl(var(--primary))" 
-                                        strokeWidth={3}
-                                        dot={{ fill: 'hsl(var(--primary))', r: 4 }}
-                                        activeDot={{ r: 6 }}
-                                    />
-                                    <Line 
-                                        type="monotone" 
-                                        dataKey="pages" 
-                                        stroke="hsl(var(--chart-1))" 
-                                        strokeWidth={2}
-                                        dot={{ fill: 'hsl(var(--chart-1))', r: 3 }}
-                                    />
-                                    <Line 
-                                        type="monotone" 
-                                        dataKey="posts" 
-                                        stroke="hsl(var(--chart-2))" 
-                                        strokeWidth={2}
-                                        dot={{ fill: 'hsl(var(--chart-2))', r: 3 }}
-                                    />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div className="flex flex-wrap gap-4 mt-4 justify-center">
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-primary" />
-                                <span className="text-sm text-muted-foreground">Total Content</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-chart-1" />
-                                <span className="text-sm text-muted-foreground">Pages</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-chart-2" />
-                                <span className="text-sm text-muted-foreground">Posts</span>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {/* Enhanced Recent Activity */}
-                <div className="grid gap-6 lg:grid-cols-2">
-                    <Card className="h-fit">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Clock className="h-5 w-5 text-primary" />
-                                Recent Activity
-                            </CardTitle>
-                            <CardDescription>
-                                Your recently updated pages and posts
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {recentItems.length > 0 ? (
-                                <div className="space-y-3">
-                                    {recentItems.map((item, index) => (
-                                        <div key={item.id} className="group relative">
-                                            {/* Timeline line */}
-                                            {index < recentItems.length - 1 && (
-                                                <div className="absolute left-6 top-12 w-0.5 h-8 bg-border" />
-                                            )}
-                                            <div className="flex items-start gap-3">
-                                                <div className="p-2 bg-muted rounded-full ring-4 ring-background relative z-10">
-                                                    {item.type === 'page' ? (
-                                                        <FileText className="h-4 w-4 text-blue-600" />
-                                                    ) : (
-                                                        <Blog className="h-4 w-4 text-green-600" />
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center justify-between mb-1">
-                                                        <p className="font-medium text-sm truncate group-hover:text-primary transition-colors">
-                                                            {item.title}
-                                                        </p>
-                                                        <Badge 
-                                                            variant={item.status === 'published' ? 'default' : 'secondary'} 
-                                                            className="text-xs ml-2 shrink-0"
-                                                        >
-                                                            {item.status}
-                                                        </Badge>
-                                                    </div>
-                                                    <p className="text-xs text-muted-foreground mb-2">
-                                                        {item.updatedAt?.toDate ? format(item.updatedAt.toDate(), 'MMM d, yyyy • h:mm a') : 'Unknown date'}
-                                                    </p>
-                                                    <Button variant="ghost" size="sm" asChild className="h-7 px-2 text-xs">
-                                                        <Link href={item.url} className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <Edit className="h-3 w-3 mr-1" />
-                                                            Edit
-                                                        </Link>
-                                                    </Button>
-                                                </div>
+                        {recentItems.length > 0 ? (
+                            <div className="space-y-3">
+                                {recentItems.slice(0, 5).map((item) => (
+                                    <div key={item.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-muted rounded-full">
+                                                {item.type === 'page' ? (
+                                                    <FileText className="h-4 w-4 text-blue-600" />
+                                                ) : (
+                                                    <Blog className="h-4 w-4 text-green-600" />
+                                                )}
+                                            </div>
+                                            <div>
+                                                <p className="font-medium text-sm">{item.title}</p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    {item.updatedAt?.toDate ? format(item.updatedAt.toDate(), 'MMM d') : 'Unknown'}
+                                                </p>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-12">
-                                    <Clock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                                    <p className="text-muted-foreground">No recent activity</p>
-                                    <p className="text-sm text-muted-foreground mt-1">Start creating content to see it here</p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-
-                    <Card className="h-fit">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <TrendingUp className="h-5 w-5 text-primary" />
-                                Performance Overview
-                            </CardTitle>
-                            <CardDescription>
-                                Key metrics and insights about your content
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                                        <div className="text-2xl font-bold text-primary">
-                                            {stats?.publishedContent || 0}
-                                        </div>
-                                        <p className="text-sm text-muted-foreground mt-1">Published</p>
+                                        <Badge 
+                                            variant={item.status === 'published' ? 'default' : 'secondary'} 
+                                            className="text-xs"
+                                        >
+                                            {item.status}
+                                        </Badge>
                                     </div>
-                                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                                        <div className="text-2xl font-bold text-orange-600">
-                                            {stats?.draftContent || 0}
-                                        </div>
-                                        <p className="text-sm text-muted-foreground mt-1">In Draft</p>
-                                    </div>
-                                </div>
-                                
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                                        <span className="text-sm font-medium">Total Content</span>
-                                        <span className="font-bold text-lg">{stats?.totalContent || 0}</span>
-                                    </div>
-                                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                                        <span className="text-sm font-medium">Growth Rate</span>
-                                        <div className="flex items-center gap-1">
-                                            <ArrowUp className="h-4 w-4 text-green-600" />
-                                            <span className="font-bold text-lg text-green-600">{stats?.growthTrend}%</span>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                                        <span className="text-sm font-medium">Engagement</span>
-                                        <div className="flex items-center gap-2">
-                                            <Progress value={stats?.engagementRate || 0} className="w-16 h-2" />
-                                            <span className="font-bold text-lg">{stats?.engagementRate}%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="pt-4 border-t">
-                                    <Button asChild className="w-full group">
-                                        <Link href="/analytics">
-                                            <BarChart3 className="mr-2 h-4 w-4 group-hover:rotate-12 transition-transform" />
-                                            View Detailed Analytics
-                                        </Link>
-                                    </Button>
-                                </div>
+                                ))}
                             </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                        ) : (
+                            <div className="text-center py-8">
+                                <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                                <p className="text-muted-foreground text-sm">No recent activity</p>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
             </main>
         </div>
     );
