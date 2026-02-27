@@ -130,13 +130,15 @@ export default function LandingPage() {
               <p className="max-w-md text-lg text-accent-foreground/75 leading-relaxed">
                 Share your pages, blog posts, and short links — all from a single beautiful profile. No code needed.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 mt-2">
-                <Button asChild size="lg" className="h-13 rounded-full text-base font-bold px-8">
-                  <Link href="/login">Get Started for Free</Link>
+              <div className="flex flex-col sm:flex-row gap-4 mt-6">
+                <Button asChild className="h-16 rounded-full text-lg font-bold px-12 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Link href="/login" className="flex items-center gap-3">
+                    Get Started for Free
+                  </Link>
                 </Button>
-                <Button asChild size="lg" variant="outline" className="h-13 rounded-full text-base border-accent-foreground/20 hover:bg-accent-foreground/5">
-                  <Link href="/login" className="flex items-center gap-2">
-                    See a demo <ArrowRight className="h-4 w-4" />
+                <Button asChild variant="outline" className="h-16 rounded-full text-lg border-2 font-bold px-12 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-accent/10">
+                  <Link href="/login" className="flex items-center gap-3">
+                    See a demo <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>
               </div>
@@ -358,12 +360,16 @@ export default function LandingPage() {
             <p className="mt-4 text-lg text-primary-foreground/75 max-w-xl mx-auto">
               Join creators who use Linkbase to share their work, thoughts, and personality — all from one link.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" asChild className="h-13 rounded-full text-base font-bold px-8 bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                <Link href="/login">Start for free</Link>
+            <div className="mt-10 flex flex-col sm:flex-row gap-6 justify-center">
+              <Button asChild className="h-16 rounded-full text-lg font-bold px-12 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+                <Link href="/login" className="flex items-center gap-3">
+                  Start for free
+                </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="h-13 rounded-full text-base border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-                <Link href="/login">View demo</Link>
+              <Button asChild variant="outline" className="h-16 rounded-full text-lg border-2 font-bold px-12 text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:bg-primary/10">
+                <Link href="/login" className="flex items-center gap-3">
+                  View demo <ArrowRight className="h-5 w-5" />
+                </Link>
               </Button>
             </div>
             <p className="mt-6 text-sm text-primary-foreground/50">No credit card required · Free plan forever</p>
