@@ -30,11 +30,13 @@ export default function ContactPage() {
 
       </main>
       <footer className="border-t mt-12">
-        <div className="container mx-auto px-4 py-8 flex flex-wrap gap-4 text-sm text-muted-foreground">
+        <div className="container mx-auto px-4 py-8 flex flex-wrap gap-4 sm:gap-6 text-sm text-muted-foreground">
+          <Link href="/features" className="hover:text-foreground">Features</Link>
+          <Link href="/pricing" className="hover:text-foreground">Pricing</Link>
+          <Link href="/contact" className="hover:text-foreground">Contact</Link>
           <Link href="/impressum" className="hover:text-foreground">Legal Notice</Link>
-          <Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link>
-          <Link href="/cookies" className="hover:text-foreground">Cookie Policy</Link>
-          <Link href="/" className="hover:text-foreground">Home</Link>
+          <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
+          <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
         </div>
       </footer>
     </div>

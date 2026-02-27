@@ -356,7 +356,7 @@ export default function LandingPage() {
               Ready to own your corner of the internet?
             </h2>
             <p className="mt-4 text-lg text-primary-foreground/75 max-w-xl mx-auto">
-              Join thousands of creators who use Linkbase to share their work, thoughts, and personality.
+              Join creators who use Linkbase to share their work, thoughts, and personality — all from one link.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild className="h-13 rounded-full text-base font-bold px-8 bg-primary-foreground text-primary hover:bg-primary-foreground/90">
