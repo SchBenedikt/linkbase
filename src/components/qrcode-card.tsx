@@ -38,7 +38,12 @@ export function QrCodeCard({ link, onEdit, onDelete, appearance, isEditable = fa
   return (
     <Card className="group relative overflow-hidden transition-all duration-300 ease-in-out bg-card flex flex-col items-center justify-center w-full h-full p-4" style={cardStyle}>
       {qrUrl ? (
-        <img src={qrUrl} alt={`QR code for ${link.url}`} className="w-full max-w-[160px] aspect-square rounded-lg" />
+        <img
+          src={qrUrl}
+          alt={`QR code for ${link.url}`}
+          className="w-full max-w-[160px] aspect-square rounded-lg"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+        />
       ) : (
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
           <QrCode className="h-10 w-10" />

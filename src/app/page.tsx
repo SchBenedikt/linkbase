@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Palette, Link as LinkIcon, BarChart3, MoveRight, BookOpen,
   UserPlus, Share2, Globe, ExternalLink, TrendingUp,
-  Sparkles, ArrowRight, Check,
+  Sparkles, ArrowRight, Check, Pin, MessageCircle,
   Music, Youtube, Instagram, Twitter, Github, Tv, Video, Cloud,
 } from 'lucide-react';
 import { useUser } from '@/firebase';
@@ -85,7 +85,26 @@ const INTEGRATION_ITEMS = [
   { icon: Tv, label: 'Twitch' },
   { icon: Video, label: 'TikTok' },
   { icon: Cloud, label: 'SoundCloud' },
+  { icon: Pin, label: 'Pinterest' },
+  { icon: MessageCircle, label: 'Discord' },
 ] as const;
+
+/** Feature comparison – all "true" entries for Linkbase are features that
+ *  actually ship in the codebase and work today. */
+const COMPARISON_ROWS: { feature: string; linkbase: true | string; others: true | false | string }[] = [
+  { feature: 'Unlimited links & pages', linkbase: true, others: false },
+  { feature: 'Built-in blog', linkbase: true, others: false },
+  { feature: 'Short link tracking', linkbase: true, others: false },
+  { feature: 'Social embeds (YouTube, Spotify…)', linkbase: true, others: false },
+  { feature: 'AI theme generator', linkbase: true, others: false },
+  { feature: 'Bento grid layout', linkbase: true, others: false },
+  { feature: 'QR code cards', linkbase: true, others: false },
+  { feature: 'Testimonial & FAQ widgets', linkbase: true, others: false },
+  { feature: 'Link scheduling', linkbase: true, others: false },
+  { feature: 'Drag-and-drop reorder', linkbase: true, others: true },
+  { feature: 'Basic analytics', linkbase: true, others: true },
+  { feature: 'Price', linkbase: 'Free forever', others: '$5–24/mo' },
+];
 
 export default function LandingPage() {
   const { user, isUserLoading } = useUser();
@@ -397,6 +416,48 @@ export default function LandingPage() {
                 <span className="text-xs font-medium">{label}</span>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ── Comparison table ────────────────────────────────────────── */}
+        <section className="py-20 sm:py-28 bg-card text-card-foreground">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <Badge className="mb-4 rounded-full px-4 py-1.5 bg-primary/10 text-primary border-primary/20 text-sm font-medium">
+                <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                See the difference
+              </Badge>
+              <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
+                Linkbase vs the rest
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                More features, zero cost. Here's what you get with Linkbase for free.
+              </p>
+            </div>
+            <div className="max-w-2xl mx-auto overflow-hidden rounded-2xl border border-border">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="text-left px-5 py-3 font-semibold">Feature</th>
+                    <th className="text-center px-5 py-3 font-semibold text-primary">Linkbase</th>
+                    <th className="text-center px-5 py-3 font-semibold text-muted-foreground">Others (free)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {COMPARISON_ROWS.map(({ feature, linkbase, others }) => (
+                    <tr key={feature}>
+                      <td className="px-5 py-3 text-foreground">{feature}</td>
+                      <td className="px-5 py-3 text-center">
+                        {linkbase === true ? <Check className="h-4 w-4 text-primary mx-auto" /> : <span className="text-muted-foreground">{linkbase}</span>}
+                      </td>
+                      <td className="px-5 py-3 text-center">
+                        {others === true ? <Check className="h-4 w-4 text-muted-foreground mx-auto" /> : others === false ? <span className="text-muted-foreground text-xs">Paid</span> : <span className="text-muted-foreground">{others}</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </section>
 
