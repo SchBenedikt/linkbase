@@ -156,12 +156,12 @@ export default function LandingPage() {
                 </Button>
                 <Button asChild variant="outline" className="h-12 rounded-full text-base font-medium px-8">
                   <Link href="/login" className="flex items-center gap-2">
-                    See a demo <ArrowRight className="h-4 w-4" />
+                    Sign up free <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
               </div>
               <ul className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-accent-foreground/60">
-                {['Free forever plan', 'No credit card', 'Custom domain ready'].map(t => (
+                {['Free forever plan', 'No credit card required'].map(t => (
                   <li key={t} className="flex items-center gap-1.5">
                     <Check className="h-3.5 w-3.5 text-primary" /> {t}
                   </li>
@@ -449,8 +449,8 @@ export default function LandingPage() {
                 </Link>
               </Button>
               <Button asChild variant="outline" className="h-12 rounded-full text-base font-medium px-8">
-                <Link href="/login" className="flex items-center gap-2">
-                  View demo <ArrowRight className="h-4 w-4" />
+                <Link href="/features" className="flex items-center gap-2">
+                  See all features <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
             </div>

@@ -13,7 +13,6 @@ const FREE_FEATURES = [
   'Testimonial & FAQ widgets',
   'Discord & Pinterest cards',
   'AI theme generator',
-  'Custom domain support',
   'App Download card',
 ];
 
