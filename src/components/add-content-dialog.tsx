@@ -7,6 +7,7 @@ import {
   Image as ImageIcon, ShoppingBag, User as UserIcon, MapPin,
   Instagram, Video, Music2, Cloud, CalendarDays, Github,
   Clock, Timer, Twitter, Tv, Heart, Mail, Smartphone, Headphones,
+  Pin, MessageCircle, Quote, HelpCircle,
 } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
@@ -22,6 +23,8 @@ import { DonationEditor, donationSchema } from './donation-editor';
 import { ContactInfoEditor, contactInfoSchema } from './contact-info-editor';
 import { AudioEditor, audioSchema } from './audio-editor';
 import { AppDownloadEditor, appDownloadSchema } from './appdownload-editor';
+import { TestimonialEditor, testimonialSchema } from './testimonial-editor';
+import { FaqEditor, faqSchema } from './faq-editor';
 import type { z } from 'zod';
 import type { Link } from '@/lib/types';
 
@@ -40,6 +43,8 @@ type ContentFormData = (
   | z.infer<typeof contactInfoSchema>
   | z.infer<typeof audioSchema>
   | z.infer<typeof appDownloadSchema>
+  | z.infer<typeof testimonialSchema>
+  | z.infer<typeof faqSchema>
 ) & { type: Link['type'] };
 
 interface AddContentDialogProps {
@@ -103,6 +108,10 @@ const CONTENT_SECTIONS: { label: string; items: ContentTypeButton[] }[] = [
       { type: 'contact-info', label: 'Contact Info', description: 'Email & phone card', icon: Mail },
       { type: 'audio', label: 'Audio Player', description: 'Embed an audio file', icon: Headphones },
       { type: 'appdownload', label: 'App Download', description: 'App Store & Play Store', icon: Smartphone },
+      { type: 'testimonial', label: 'Testimonial', description: 'Quote with star rating', icon: Quote },
+      { type: 'faq', label: 'FAQ', description: 'Accordion Q&A list', icon: HelpCircle },
+      { type: 'pinterest', label: 'Pinterest', description: 'Embed a Pinterest pin', icon: Pin },
+      { type: 'discord', label: 'Discord', description: 'Discord server widget', icon: MessageCircle },
     ],
   },
 ];
@@ -144,7 +153,9 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentToEdit.type === 'contact-info') return <ContactInfoEditor onSave={(d) => handleSave(d, 'contact-info')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'audio') return <AudioEditor onSave={(d) => handleSave(d, 'audio')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'appdownload') return <AppDownloadEditor onSave={(d) => handleSave(d, 'appdownload')} onCancel={onCancel} content={contentToEdit} />;
-    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch'} link={contentToEdit} />;
+    if (contentToEdit.type === 'testimonial') return <TestimonialEditor onSave={(d) => handleSave(d, 'testimonial')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'faq') return <FaqEditor onSave={(d) => handleSave(d, 'faq')} onCancel={onCancel} content={contentToEdit} />;
+    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord'} link={contentToEdit} />;
   }
 
   // Adding new content
@@ -162,11 +173,13 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentType === 'contact-info') return <ContactInfoEditor onSave={(d) => handleSave(d, 'contact-info')} onCancel={handleBack} />;
     if (contentType === 'audio') return <AudioEditor onSave={(d) => handleSave(d, 'audio')} onCancel={handleBack} />;
     if (contentType === 'appdownload') return <AppDownloadEditor onSave={(d) => handleSave(d, 'appdownload')} onCancel={handleBack} />;
+    if (contentType === 'testimonial') return <TestimonialEditor onSave={(d) => handleSave(d, 'testimonial')} onCancel={handleBack} />;
+    if (contentType === 'faq') return <FaqEditor onSave={(d) => handleSave(d, 'faq')} onCancel={handleBack} />;
     return (
       <LinkEditor
         onSave={(d) => handleSave(d, contentType)}
         onCancel={handleBack}
-        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch'}
+        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord'}
       />
     );
   }

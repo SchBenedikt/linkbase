@@ -32,6 +32,10 @@ import { DonationCard } from './donation-card';
 import { ContactInfoCard } from './contact-info-card';
 import { AudioCard } from './audio-card';
 import { AppDownloadCard } from './appdownload-card';
+import { PinterestCard } from './pinterest-card';
+import { DiscordCard } from './discord-card';
+import { TestimonialCard } from './testimonial-card';
+import { FaqCard } from './faq-card';
 
 // Grid constants  
 const GRID_COLS = 4;
@@ -187,6 +191,14 @@ function renderCardComponent(
       return <AudioCard {...props} />;
     case 'appdownload':
       return <AppDownloadCard {...props} />;
+    case 'pinterest':
+      return <PinterestCard {...props} />;
+    case 'discord':
+      return <DiscordCard {...props} />;
+    case 'testimonial':
+      return <TestimonialCard {...props} />;
+    case 'faq':
+      return <FaqCard {...props} />;
     default:
       return <LinkCard {...props} />;
   }
