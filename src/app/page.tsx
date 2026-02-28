@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Palette, Link as LinkIcon, BarChart3, MoveRight, BookOpen,
   UserPlus, Share2, Globe, ExternalLink, TrendingUp,
-  Sparkles, ArrowRight, Check, Star,
+  Sparkles, ArrowRight, Check,
   Music, Youtube, Instagram, Twitter, Github, Tv, Video, Cloud,
 } from 'lucide-react';
 import { useUser } from '@/firebase';
@@ -43,25 +43,20 @@ function MiniChart() {
 }
 
 /* ─── mini link card ─────────────────────────────────────────────────── */
-function MiniLinkCard({ icon, label, clicks }: { icon: React.ReactNode; label: string; clicks: number }) {
+function MiniLinkCard({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
     <div className="flex items-center gap-3 rounded-xl bg-background/60 border border-border/60 px-3 py-2.5">
       <span className="text-primary">{icon}</span>
       <span className="text-sm font-medium flex-1 truncate">{label}</span>
-      <span className="text-xs text-muted-foreground font-mono">{clicks} clicks</span>
+      <span className="text-xs text-muted-foreground font-mono">→</span>
     </div>
   );
 }
 
-const MOCK_SHORT_LINKS = [
-  { icon: <ExternalLink className="h-3.5 w-3.5" />, label: 'linkbase.io/s/launch', clicks: 248 },
-  { icon: <ExternalLink className="h-3.5 w-3.5" />, label: 'linkbase.io/s/portfolio', clicks: 91 },
-] as const;
-
-const MOCK_ANALYTICS_STATS = [
-  { label: 'Total Clicks', value: '1,482' },
-  { label: 'Pages', value: '6' },
-  { label: 'Short Links', value: '14' },
+/* ─── mini link card (no fabricated click counts) ───────────────────── */
+const DEMO_SHORT_LINKS = [
+  { icon: <ExternalLink className="h-3.5 w-3.5" />, label: 'linkbase.io/s/launch' },
+  { icon: <ExternalLink className="h-3.5 w-3.5" />, label: 'linkbase.io/s/portfolio' },
 ] as const;
 
 const HOW_IT_WORKS_STEPS = [
@@ -70,12 +65,16 @@ const HOW_IT_WORKS_STEPS = [
   { icon: Share2, step: '3', label: 'Share everywhere', desc: 'One link for your Instagram, email, or business card.' },
 ] as const;
 
-const STAT_ITEMS = [
-  { value: '10,000+', label: 'Creators' },
-  { value: '500k+', label: 'Page views' },
-  { value: '20+', label: 'Card types' },
+/** Verifiable feature highlights – counts match the actual implemented card types.
+ *  Card type count is derived from the `Link['type']` union in src/lib/types.ts. */
+const FEATURE_HIGHLIGHTS = [
+  { value: '28', label: 'Card types' },
   { value: '100%', label: 'Free' },
+  { value: '0', label: 'Lines of code' },
+  { value: '1', label: 'Link for everything' },
 ] as const;
+
+const ANALYTICS_LABELS = ['Total Clicks', 'Your Pages', 'Short Links'] as const;
 
 const INTEGRATION_ITEMS = [
   { icon: Youtube, label: 'YouTube' },
@@ -86,30 +85,6 @@ const INTEGRATION_ITEMS = [
   { icon: Tv, label: 'Twitch' },
   { icon: Video, label: 'TikTok' },
   { icon: Cloud, label: 'SoundCloud' },
-] as const;
-
-const TESTIMONIALS = [
-  {
-    quote: 'Linkbase replaced three separate tools for me. My audience loves how everything is in one place.',
-    name: 'Sophie K.',
-    role: 'Content Creator',
-    rating: 5,
-    initials: 'SK',
-  },
-  {
-    quote: 'The AI theme generator is genuinely magical. I went from "no idea" to a gorgeous branded page in 30 seconds.',
-    name: 'Marcus T.',
-    role: 'Indie Developer',
-    rating: 5,
-    initials: 'MT',
-  },
-  {
-    quote: "Finally a link-in-bio that doesn't look like every other one. The bento grid layout makes my page stand out.",
-    name: 'Lena R.',
-    role: 'Freelance Designer',
-    rating: 5,
-    initials: 'LR',
-  },
 ] as const;
 
 export default function LandingPage() {
@@ -199,11 +174,11 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Stats bar ───────────────────────────────────────────────── */}
+        {/* ── Feature highlights bar ──────────────────────────────────── */}
         <section className="bg-primary text-primary-foreground py-8 px-4">
           <div className="container mx-auto">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-              {STAT_ITEMS.map(({ value, label }) => (
+              {FEATURE_HIGHLIGHTS.map(({ value, label }) => (
                 <div key={label}>
                   <p className="text-3xl sm:text-4xl font-extrabold tracking-tighter">{value}</p>
                   <p className="text-sm text-primary-foreground/65 mt-1">{label}</p>
@@ -287,8 +262,8 @@ export default function LandingPage() {
                   <p className="text-muted-foreground text-sm mt-1">Create branded short URLs and track every click in real time.</p>
                 </div>
                 <div className="flex flex-col gap-2 mt-2">
-                  {MOCK_SHORT_LINKS.map(({ icon, label, clicks }) => (
-                    <MiniLinkCard key={label} icon={icon} label={label} clicks={clicks} />
+                  {DEMO_SHORT_LINKS.map(({ icon, label }) => (
+                    <MiniLinkCard key={label} icon={icon} label={label} />
                   ))}
                 </div>
               </BentoCard>
@@ -301,7 +276,7 @@ export default function LandingPage() {
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <TrendingUp className="h-3.5 w-3.5 text-primary" />
-                    <span>+24% this week</span>
+                    <span>Live click tracking</span>
                   </div>
                 </div>
                 <div>
@@ -317,10 +292,10 @@ export default function LandingPage() {
                   </div>
                   <MiniChart />
                   <div className="grid grid-cols-3 gap-3 mt-4">
-                    {MOCK_ANALYTICS_STATS.map(stat => (
-                      <div key={stat.label} className="text-center rounded-xl bg-background/60 py-3">
-                        <p className="text-lg font-bold">{stat.value}</p>
-                        <p className="text-xs text-muted-foreground">{stat.label}</p>
+                    {ANALYTICS_LABELS.map(label => (
+                      <div key={label} className="text-center rounded-xl bg-background/60 py-3">
+                        <p className="text-lg font-bold">—</p>
+                        <p className="text-xs text-muted-foreground">{label}</p>
                       </div>
                     ))}
                   </div>
@@ -425,37 +400,35 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── Testimonials ────────────────────────────────────────────── */}
+        {/* ── Early adopter section ───────────────────────────────────── */}
         <section className="py-20 sm:py-28 bg-muted/40">
           <div className="container mx-auto px-4">
-            <div className="text-center max-w-xl mx-auto mb-14">
+            <div className="max-w-2xl mx-auto text-center">
+              <Badge className="mb-6 rounded-full px-4 py-1.5 bg-primary/10 text-primary border-primary/20">
+                <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                Early access
+              </Badge>
               <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
-                Loved by creators
+                Be among the first
               </h2>
-              <p className="mt-4 text-lg text-muted-foreground">
-                Join thousands of creators who use Linkbase every day.
+              <p className="mt-4 text-lg text-muted-foreground max-w-lg mx-auto">
+                Linkbase is actively being built. Create your profile today and shape the platform from the very beginning — for free.
               </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {TESTIMONIALS.map(({ quote, name, role, rating, initials }) => (
-                <div key={name} className="rounded-3xl bg-card border border-border/60 p-7 flex flex-col gap-4 shadow-sm">
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: rating }).map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-primary text-primary" />
-                    ))}
+              <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  { icon: Check, text: 'No credit card required' },
+                  { icon: Check, text: 'Free plan forever' },
+                  { icon: Check, text: 'Your feedback shapes the roadmap' },
+                ].map(({ icon: Icon, text }) => (
+                  <div key={text} className="flex items-center gap-2.5 rounded-2xl bg-card border border-border/60 px-4 py-3 text-sm font-medium">
+                    <Icon className="h-4 w-4 text-primary flex-shrink-0" />
+                    {text}
                   </div>
-                  <p className="text-sm leading-relaxed flex-1">&ldquo;{quote}&rdquo;</p>
-                  <div className="flex items-center gap-3 mt-auto pt-2 border-t border-border/40">
-                    <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold flex-shrink-0">
-                      {initials}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">{name}</p>
-                      <p className="text-xs text-muted-foreground">{role}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              <Button asChild className="mt-8 h-12 rounded-full text-base font-medium px-8">
+                <Link href="/login">Create your free profile</Link>
+              </Button>
             </div>
           </div>
         </section>
@@ -467,7 +440,7 @@ export default function LandingPage() {
               Ready to own your corner of the internet?
             </h2>
             <p className="mt-4 text-lg text-primary-foreground/75 max-w-xl mx-auto">
-              Join creators who use Linkbase to share their work, thoughts, and personality — all from one link.
+              Build your digital home — pages, short links, a blog, and more, all from a single link. Free, always.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild className="h-12 rounded-full text-base font-medium px-8">
