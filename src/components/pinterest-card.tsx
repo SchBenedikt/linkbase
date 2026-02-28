@@ -36,7 +36,10 @@ function PinterestWidgetLoader() {
         document.head.appendChild(script);
       }
     } else {
-      try { win.PinUtils?.build(); } catch {}
+      try { win.PinUtils?.build(); } catch (e) {
+        // build() may fail if no pins are present yet; safe to ignore
+        console.debug('PinUtils.build failed:', e);
+      }
     }
   }, []);
   return null;

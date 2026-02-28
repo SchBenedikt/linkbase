@@ -63,15 +63,20 @@ export default function FeaturesPage() {
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4 py-16 max-w-4xl">
-        <div className="text-center mb-14">
-          <h1 className="text-4xl font-extrabold tracking-tight mb-3">Everything you need in one link</h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+      <main className="flex-1">
+        {/* Hero banner */}
+        <section className="bg-accent text-accent-foreground py-20 px-4 text-center">
+          <Badge className="mb-4 rounded-full px-4 py-1.5 bg-primary/15 text-primary border-primary/20 text-sm">
+            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+            Full platform overview
+          </Badge>
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tighter mb-4">Everything you need in one link</h1>
+          <p className="text-lg text-accent-foreground/70 max-w-xl mx-auto">
             Linkbase is the most powerful link-in-bio platform — with built-in social embeds, AI themes, a blog engine, and unique widgets no one else has.
           </p>
-        </div>
+        </section>
 
-        <div className="space-y-14">
+        <div className="container mx-auto px-4 py-16 max-w-4xl space-y-14">
           {FEATURE_SECTIONS.map((section) => (
             <div key={section.label}>
               <h2 className="text-xl font-bold mb-6 pb-2 border-b">{section.label}</h2>
@@ -95,13 +100,13 @@ export default function FeaturesPage() {
               </div>
             </div>
           ))}
-        </div>
 
-        <div className="mt-16 text-center">
-          <Button asChild size="lg" className="rounded-full px-8">
-            <Link href="/login">Start for free</Link>
-          </Button>
-          <p className="mt-3 text-sm text-muted-foreground">No credit card required</p>
+          <div className="mt-8 text-center pb-4">
+            <Button asChild size="lg" className="rounded-full px-8">
+              <Link href="/login">Start for free</Link>
+            </Button>
+            <p className="mt-3 text-sm text-muted-foreground">No credit card required</p>
+          </div>
         </div>
       </main>
 

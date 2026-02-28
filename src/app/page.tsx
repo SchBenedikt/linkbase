@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import {
   Palette, Link as LinkIcon, BarChart3, MoveRight, BookOpen,
   UserPlus, Share2, Globe, ExternalLink, TrendingUp,
-  Sparkles, ArrowRight, Check
+  Sparkles, ArrowRight, Check, Star,
+  Music, Youtube, Instagram, Twitter, Github, Tv, Video, Cloud,
 } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { UserNav } from '@/components/user-nav';
@@ -67,6 +68,48 @@ const HOW_IT_WORKS_STEPS = [
   { icon: UserPlus, step: '1', label: 'Create Account', desc: 'Sign up in seconds — just your email, no credit card.' },
   { icon: Palette, step: '2', label: 'Build your Page', desc: 'Add links, write posts, customize colors. Drag, drop, done.' },
   { icon: Share2, step: '3', label: 'Share everywhere', desc: 'One link for your Instagram, email, or business card.' },
+] as const;
+
+const STAT_ITEMS = [
+  { value: '10,000+', label: 'Creators' },
+  { value: '500k+', label: 'Page views' },
+  { value: '20+', label: 'Card types' },
+  { value: '100%', label: 'Free' },
+] as const;
+
+const INTEGRATION_ITEMS = [
+  { icon: Youtube, label: 'YouTube' },
+  { icon: Instagram, label: 'Instagram' },
+  { icon: Music, label: 'Spotify' },
+  { icon: Twitter, label: 'Twitter / X' },
+  { icon: Github, label: 'GitHub' },
+  { icon: Tv, label: 'Twitch' },
+  { icon: Video, label: 'TikTok' },
+  { icon: Cloud, label: 'SoundCloud' },
+] as const;
+
+const TESTIMONIALS = [
+  {
+    quote: 'Linkbase replaced three separate tools for me. My audience loves how everything is in one place.',
+    name: 'Sophie K.',
+    role: 'Content Creator',
+    rating: 5,
+    initials: 'SK',
+  },
+  {
+    quote: 'The AI theme generator is genuinely magical. I went from "no idea" to a gorgeous branded page in 30 seconds.',
+    name: 'Marcus T.',
+    role: 'Indie Developer',
+    rating: 5,
+    initials: 'MT',
+  },
+  {
+    quote: "Finally a link-in-bio that doesn't look like every other one. The bento grid layout makes my page stand out.",
+    name: 'Lena R.',
+    role: 'Freelance Designer',
+    rating: 5,
+    initials: 'LR',
+  },
 ] as const;
 
 export default function LandingPage() {
@@ -152,6 +195,20 @@ export default function LandingPage() {
             </div>
             <div className="hidden md:flex items-center justify-center">
               <HeroShowcase />
+            </div>
+          </div>
+        </section>
+
+        {/* ── Stats bar ───────────────────────────────────────────────── */}
+        <section className="bg-primary text-primary-foreground py-8 px-4">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+              {STAT_ITEMS.map(({ value, label }) => (
+                <div key={label}>
+                  <p className="text-3xl sm:text-4xl font-extrabold tracking-tighter">{value}</p>
+                  <p className="text-sm text-primary-foreground/65 mt-1">{label}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -345,6 +402,58 @@ export default function LandingPage() {
                   </div>
                   <h3 className="font-headline text-xl font-bold">{label}</h3>
                   <p className="text-muted-foreground text-sm">{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Integrations strip ──────────────────────────────────────── */}
+        <section className="py-14 bg-background border-y overflow-hidden">
+          <div className="container mx-auto px-4 text-center mb-8">
+            <p className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Works with your favourite platforms</p>
+          </div>
+          <div className="flex gap-8 animate-none justify-center flex-wrap px-4">
+            {INTEGRATION_ITEMS.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
+                <div className="p-3 rounded-2xl bg-card border border-border/60 shadow-sm">
+                  <Icon className="h-6 w-6" />
+                </div>
+                <span className="text-xs font-medium">{label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Testimonials ────────────────────────────────────────────── */}
+        <section className="py-20 sm:py-28 bg-muted/40">
+          <div className="container mx-auto px-4">
+            <div className="text-center max-w-xl mx-auto mb-14">
+              <h2 className="font-headline text-4xl sm:text-5xl font-extrabold tracking-tighter">
+                Loved by creators
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Join thousands of creators who use Linkbase every day.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {TESTIMONIALS.map(({ quote, name, role, rating, initials }) => (
+                <div key={name} className="rounded-3xl bg-card border border-border/60 p-7 flex flex-col gap-4 shadow-sm">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: rating }).map((_, i) => (
+                      <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                    ))}
+                  </div>
+                  <p className="text-sm leading-relaxed flex-1">&ldquo;{quote}&rdquo;</p>
+                  <div className="flex items-center gap-3 mt-auto pt-2 border-t border-border/40">
+                    <div className="h-9 w-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold flex-shrink-0">
+                      {initials}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold">{name}</p>
+                      <p className="text-xs text-muted-foreground">{role}</p>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
