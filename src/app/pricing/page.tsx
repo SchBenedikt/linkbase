@@ -14,6 +14,11 @@ const FREE_FEATURES = [
   'Discord & Pinterest cards',
   'AI theme generator',
   'App Download card',
+  'QR code cards',
+  'Video player embed',
+  'Section headers & dividers',
+  'Link scheduling',
+  'Visitor share button',
 ];
 
 const PRO_FEATURES = [

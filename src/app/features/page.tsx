@@ -5,6 +5,7 @@ import {
   Globe, BarChart3, BookOpen, Link2, Sparkles, Palette,
   Quote, HelpCircle, MessageCircle, Pin, Star, Tv, Instagram,
   Music, Youtube, Clock, Timer, MapPin, ShoppingBag,
+  Minus, Play, QrCode,
 } from 'lucide-react';
 
 type FeatureItem = {
@@ -47,6 +48,9 @@ const FEATURE_SECTIONS: { label: string; items: FeatureItem[] }[] = [
       { icon: MapPin, title: 'Embedded Map', description: 'Show your location with a Google Maps embed.' },
       { icon: ShoppingBag, title: 'Product Cards', description: 'Feature individual products with images, descriptions, and prices.' },
       { icon: Star, title: 'App Download', description: 'Promote your iOS and Android apps with store badges.' },
+      { icon: Minus, title: 'Section Header', description: 'Organize your page with titled dividers between content groups.', badge: 'New' },
+      { icon: Play, title: 'Video Player', description: 'Embed MP4 or WebM video files directly on your page.', badge: 'New' },
+      { icon: QrCode, title: 'QR Code', description: 'Auto-generated QR code card for any URL — perfect for offline sharing.', badge: 'New' },
     ],
   },
 ];

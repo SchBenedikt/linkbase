@@ -8,7 +8,7 @@ export type Link = {
   pageId: string;
   orderIndex: number;
   title: string;
-  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile' | 'map' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'clock' | 'countdown' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'donation' | 'contact-info' | 'audio' | 'appdownload' | 'pinterest' | 'discord' | 'testimonial' | 'faq';
+  type: 'link' | 'text' | 'spotify' | 'youtube' | 'article' | 'blog-overview' | 'image' | 'product' | 'profile' | 'map' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'clock' | 'countdown' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'donation' | 'contact-info' | 'audio' | 'appdownload' | 'pinterest' | 'discord' | 'testimonial' | 'faq' | 'header' | 'video' | 'qrcode';
   colSpan?: number;
   rowSpan?: number;
   content?: string; // For text cards or product description

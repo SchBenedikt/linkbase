@@ -7,7 +7,7 @@ import {
   Image as ImageIcon, ShoppingBag, User as UserIcon, MapPin,
   Instagram, Video, Music2, Cloud, CalendarDays, Github,
   Clock, Timer, Twitter, Tv, Heart, Mail, Smartphone, Headphones,
-  Pin, MessageCircle, Quote, HelpCircle,
+  Pin, MessageCircle, Quote, HelpCircle, Minus, Play, QrCode,
 } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
@@ -25,6 +25,9 @@ import { AudioEditor, audioSchema } from './audio-editor';
 import { AppDownloadEditor, appDownloadSchema } from './appdownload-editor';
 import { TestimonialEditor, testimonialSchema } from './testimonial-editor';
 import { FaqEditor, faqSchema } from './faq-editor';
+import { HeaderEditor, headerSchema } from './header-editor';
+import { VideoEditor, videoSchema } from './video-editor';
+import { QrCodeEditor, qrcodeSchema } from './qrcode-editor';
 import type { z } from 'zod';
 import type { Link } from '@/lib/types';
 
@@ -45,6 +48,9 @@ type ContentFormData = (
   | z.infer<typeof appDownloadSchema>
   | z.infer<typeof testimonialSchema>
   | z.infer<typeof faqSchema>
+  | z.infer<typeof headerSchema>
+  | z.infer<typeof videoSchema>
+  | z.infer<typeof qrcodeSchema>
 ) & { type: Link['type'] };
 
 interface AddContentDialogProps {
@@ -104,6 +110,9 @@ const CONTENT_SECTIONS: { label: string; items: ContentTypeButton[] }[] = [
   {
     label: 'More',
     items: [
+      { type: 'header', label: 'Section Header', description: 'Divider with label', icon: Minus },
+      { type: 'video', label: 'Video Player', description: 'Embed an MP4/WebM file', icon: Play },
+      { type: 'qrcode', label: 'QR Code', description: 'Auto-generated QR card', icon: QrCode },
       { type: 'donation', label: 'Support / Donate', description: 'PayPal, Ko-fi, BMAC…', icon: Heart },
       { type: 'contact-info', label: 'Contact Info', description: 'Email & phone card', icon: Mail },
       { type: 'audio', label: 'Audio Player', description: 'Embed an audio file', icon: Headphones },
@@ -155,6 +164,9 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentToEdit.type === 'appdownload') return <AppDownloadEditor onSave={(d) => handleSave(d, 'appdownload')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'testimonial') return <TestimonialEditor onSave={(d) => handleSave(d, 'testimonial')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'faq') return <FaqEditor onSave={(d) => handleSave(d, 'faq')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'header') return <HeaderEditor onSave={(d) => handleSave(d, 'header')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'video') return <VideoEditor onSave={(d) => handleSave(d, 'video')} onCancel={onCancel} content={contentToEdit} />;
+    if (contentToEdit.type === 'qrcode') return <QrCodeEditor onSave={(d) => handleSave(d, 'qrcode')} onCancel={onCancel} content={contentToEdit} />;
     return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord'} link={contentToEdit} />;
   }
 
@@ -175,6 +187,9 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentType === 'appdownload') return <AppDownloadEditor onSave={(d) => handleSave(d, 'appdownload')} onCancel={handleBack} />;
     if (contentType === 'testimonial') return <TestimonialEditor onSave={(d) => handleSave(d, 'testimonial')} onCancel={handleBack} />;
     if (contentType === 'faq') return <FaqEditor onSave={(d) => handleSave(d, 'faq')} onCancel={handleBack} />;
+    if (contentType === 'header') return <HeaderEditor onSave={(d) => handleSave(d, 'header')} onCancel={handleBack} />;
+    if (contentType === 'video') return <VideoEditor onSave={(d) => handleSave(d, 'video')} onCancel={handleBack} />;
+    if (contentType === 'qrcode') return <QrCodeEditor onSave={(d) => handleSave(d, 'qrcode')} onCancel={handleBack} />;
     return (
       <LinkEditor
         onSave={(d) => handleSave(d, contentType)}

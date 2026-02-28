@@ -68,7 +68,7 @@ const HOW_IT_WORKS_STEPS = [
 /** Verifiable feature highlights – counts match the actual implemented card types.
  *  Card type count is derived from the `Link['type']` union in src/lib/types.ts. */
 const FEATURE_HIGHLIGHTS = [
-  { value: '28', label: 'Card types' },
+  { value: '31', label: 'Card types' },
   { value: '100%', label: 'Free' },
   { value: '0', label: 'Lines of code' },
   { value: '1', label: 'Link for everything' },
