@@ -9,6 +9,8 @@ import { LinkList } from '@/components/link-list';
 import { useTheme } from '@/components/theme-provider';
 import { doc, setDoc, increment } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
+import { Share2, Copy, Check } from 'lucide-react';
+import { useState as useReactState } from 'react';
 
 const initialAppearance: AppearanceSettings = {
     backgroundImage: '',
@@ -25,6 +27,41 @@ const initialAppearance: AppearanceSettings = {
 };
 
 const isHex = (s: string | undefined): s is string => !!s && s.startsWith('#');
+
+/** Lightweight share button for visitors on public pages */
+function VisitorShareButton({ name }: { name: string }) {
+  const [copied, setCopied] = useReactState(false);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ title: `${name} — Linkbase`, url });
+        return;
+      } catch {
+        // user cancelled or API unavailable – fall through to clipboard
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      aria-label="Share this page"
+    >
+      {copied ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
+      {copied ? 'Copied!' : 'Share'}
+    </button>
+  );
+}
 
 export default function PublicPageComponent({ page, links, publicUrl }: { page: Page, links: LinkType[], publicUrl: string }) {
     const { theme } = useTheme();
@@ -43,6 +80,12 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
         image: page.avatarUrl,
         description: page.bio,
     };
+
+    // Dynamic document title for SEO & tab display
+    useEffect(() => {
+        const name = [page.firstName, page.lastName].filter(Boolean).join(' ');
+        document.title = name ? `${name} | Linkbase` : 'Linkbase';
+    }, [page.firstName, page.lastName]);
 
     useEffect(() => {
         setIsClient(true);
@@ -164,7 +207,8 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
                         />
                     </div>
                 </div>
-                <footer className="w-full max-w-7xl mx-auto mt-12 mb-6 text-center">
+                <footer className="w-full max-w-7xl mx-auto mt-12 mb-6 flex items-center justify-center gap-4">
+                    <VisitorShareButton name={[page.firstName, page.lastName].filter(Boolean).join(' ') || 'this page'} />
                     <a href="/" className="text-sm text-muted-foreground hover:text-primary font-semibold">
                         Powered by Linkbase
                     </a>

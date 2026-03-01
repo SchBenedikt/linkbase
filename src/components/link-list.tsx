@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState, useRef, useCallback, useEffect } from 'react';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Clock } from 'lucide-react';
 import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -32,6 +32,13 @@ import { DonationCard } from './donation-card';
 import { ContactInfoCard } from './contact-info-card';
 import { AudioCard } from './audio-card';
 import { AppDownloadCard } from './appdownload-card';
+import { PinterestCard } from './pinterest-card';
+import { DiscordCard } from './discord-card';
+import { TestimonialCard } from './testimonial-card';
+import { FaqCard } from './faq-card';
+import { HeaderCard } from './header-card';
+import { VideoCard } from './video-card';
+import { QrCodeCard } from './qrcode-card';
 
 // Grid constants  
 const GRID_COLS = 4;
@@ -187,6 +194,20 @@ function renderCardComponent(
       return <AudioCard {...props} />;
     case 'appdownload':
       return <AppDownloadCard {...props} />;
+    case 'pinterest':
+      return <PinterestCard {...props} />;
+    case 'discord':
+      return <DiscordCard {...props} />;
+    case 'testimonial':
+      return <TestimonialCard {...props} />;
+    case 'faq':
+      return <FaqCard {...props} />;
+    case 'header':
+      return <HeaderCard {...props} />;
+    case 'video':
+      return <VideoCard {...props} />;
+    case 'qrcode':
+      return <QrCodeCard {...props} />;
     default:
       return <LinkCard {...props} />;
   }
@@ -289,6 +310,13 @@ function SortableLinkItem(props: {
       {(previewCols !== null || previewRows !== null) && (
         <div className="absolute bottom-8 right-2 z-40 bg-black/80 text-white text-xs rounded px-2 py-0.5 pointer-events-none select-none">
           {activeCols}×{activeRows}
+        </div>
+      )}
+      {/* Schedule indicator badge */}
+      {(props.link.scheduledStart || props.link.scheduledEnd) && (
+        <div className="absolute top-2 left-2 z-30 flex items-center gap-1 bg-amber-500/90 text-white text-[10px] font-medium rounded-full px-2 py-0.5 pointer-events-none select-none">
+          <Clock className="h-3 w-3" />
+          Scheduled
         </div>
       )}
     </div>

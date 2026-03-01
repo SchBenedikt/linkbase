@@ -5,6 +5,7 @@ import {
   Github,
   Instagram,
   Linkedin,
+  Music,
   Twitter,
   Youtube,
 } from 'lucide-react';
@@ -138,35 +139,43 @@ export const HeroShowcase = () => {
             </div>
           </div>
           <div className="grid w-2/3 grid-cols-3 grid-rows-2 gap-3 p-4">
+            {/* YouTube-style card */}
             <motion.div
                 custom={3}
                 initial="hidden"
                 animate={isInView ? 'visible' : 'hidden'}
                 variants={cardVariants}
-                className="col-span-2 row-span-1 h-full w-full rounded-lg bg-card"
-            />
+                className="col-span-2 row-span-1 h-full w-full rounded-lg bg-primary/20 border border-primary/20 flex items-center justify-center"
+            >
+              <Youtube className="h-6 w-6 text-primary/60" />
+            </motion.div>
+            {/* Spotify-style card */}
             <motion.div
                 custom={4}
                 initial="hidden"
                 animate={isInView ? 'visible' : 'hidden'}
                 variants={cardVariants}
-                className="h-full w-full rounded-lg bg-card"
-            />
+                className="h-full w-full rounded-lg bg-accent/40 border border-accent/40 flex items-center justify-center"
+            >
+              <Music className="h-4 w-4 text-accent-foreground/60" />
+            </motion.div>
+            {/* Link card */}
             <motion.div
                 custom={5}
                 initial="hidden"
                 animate={isInView ? 'visible' : 'hidden'}
                 variants={cardVariants}
-                className="h-full w-full rounded-lg bg-card"
+                className="h-full w-full rounded-lg bg-card border border-border/60"
             />
+            {/* Blog post card */}
             <motion.div
               custom={6}
               initial="hidden"
               animate={isInView ? 'visible' : 'hidden'}
               variants={cardVariants}
-              className="col-span-2 h-full w-full rounded-lg bg-card p-2"
+              className="col-span-2 h-full w-full rounded-lg bg-card p-2 border border-border/60"
             >
-                <p className="text-xs font-bold">Latest Thoughts</p>
+                <p className="text-xs font-bold text-foreground/70">Latest Thoughts</p>
                 <div className="mt-1 h-2 w-full rounded-full bg-foreground/10" />
                 <div className="mt-1 h-2 w-2/3 rounded-full bg-foreground/10" />
              </motion.div>
