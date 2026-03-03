@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import JsonLdScript from '@/components/json-ld-script';
+import { BreadcrumbSchema } from '@/components/breadcrumb-schema';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
@@ -45,22 +46,69 @@ export default function PublicPostPageComponent({ post, authorName, authorBio, p
 
     const jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'Article',
+        '@type': 'BlogPosting',
         'headline': post.title,
-        'author': { '@type': 'Person', 'name': authorName },
-        'publisher': { '@type': 'Organization', 'name': 'Linkbase' },
-        'datePublished': post.createdAt,
-        'dateModified': post.updatedAt,
+        'author': { 
+            '@type': 'Person', 
+            'name': authorName,
+            ...(post.authorAvatarUrl && { 'image': post.authorAvatarUrl }),
+            ...(authorBio && { 'description': authorBio }),
+            ...(post.authorPageSlug && { 'url': `${process.env.NEXT_PUBLIC_SITE_URL}/${post.authorPageSlug}` })
+        },
+        'publisher': { 
+            '@type': 'Organization', 
+            'name': 'Linkbase',
+            'url': process.env.NEXT_PUBLIC_SITE_URL,
+            'logo': {
+                '@type': 'ImageObject',
+                'url': `${process.env.NEXT_PUBLIC_SITE_URL}/icon.svg`
+            }
+        },
+        'datePublished': post.createdAt instanceof Date ? post.createdAt.toISOString() : 
+                       (typeof post.createdAt === 'object' && 'toDate' in post.createdAt) ? (post.createdAt as any).toDate().toISOString() : 
+                       new Date(post.createdAt as string).toISOString(),
+        'dateModified': post.updatedAt instanceof Date ? post.updatedAt.toISOString() : 
+                       (typeof post.updatedAt === 'object' && 'toDate' in post.updatedAt) ? (post.updatedAt as any).toDate().toISOString() : 
+                       new Date(post.updatedAt as string).toISOString(),
         'mainEntityOfPage': { '@type': 'WebPage', '@id': publicUrl },
         'articleBody': post.content,
-        ...(post.coverImage ? { 'image': post.coverImage } : {}),
+        ...(post.coverImage ? { 
+            'image': {
+                '@type': 'ImageObject',
+                'url': post.coverImage,
+                'width': 1200,
+                'height': 630
+            }
+        } : {}),
+        ...(post.excerpt && { 'description': post.excerpt }),
+        ...(post.readingTime && { 'timeRequired': `PT${post.readingTime}` }),
+        ...(post.categories && post.categories.length > 0 && { 
+            'about': post.categories.map(category => ({
+                '@type': 'Thing',
+                'name': category
+            }))
+        }),
+        'isAccessibleForFree': true,
+        'isPartOf': {
+            '@type': 'Blog',
+            'name': 'Linkbase Blog',
+            'url': `${process.env.NEXT_PUBLIC_SITE_URL}/blog`
+        }
     };
 
     const authorInitial = authorName?.charAt(0)?.toUpperCase() || 'A';
 
+    // Breadcrumb items for structured data
+    const breadcrumbItems = [
+        { name: 'Home', url: process.env.NEXT_PUBLIC_SITE_URL || '/' },
+        { name: 'Blog', url: `${process.env.NEXT_PUBLIC_SITE_URL}/blog` },
+        { name: post.title, url: publicUrl }
+    ];
+
     return (
         <div className="bg-background min-h-screen">
             <JsonLdScript data={jsonLd} />
+            <BreadcrumbSchema items={breadcrumbItems} />
 
             <header className="py-4 border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">

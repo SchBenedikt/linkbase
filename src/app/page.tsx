@@ -388,11 +388,8 @@ export default function LandingPage() {
               <div className="hidden md:block absolute top-12 left-1/3 right-1/3 h-px bg-border z-0" />
               {HOW_IT_WORKS_STEPS.map(({ icon: Icon, step, label, desc }) => (
                 <div key={step} className="relative z-10 flex flex-col items-center text-center gap-4 p-8 rounded-3xl bg-background border border-border/60">
-                  <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-primary text-primary-foreground text-xl font-black font-headline">
-                    {step}
-                  </div>
-                  <div className="p-2 bg-foreground/5 rounded-full -mt-2">
-                    <Icon className="h-5 w-5" />
+                  <div className="flex items-center justify-center h-16 w-16 rounded-2xl bg-primary text-primary-foreground">
+                    <Icon className="h-7 w-7" />
                   </div>
                   <h3 className="font-headline text-xl font-bold">{label}</h3>
                   <p className="text-muted-foreground text-sm">{desc}</p>
