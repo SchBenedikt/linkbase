@@ -31,6 +31,16 @@ import {
 
 // ── Export helpers ────────────────────────────────────────────────────────────
 
+/** Escapes a cell value for CSV and wraps it in double-quotes. */
+function csvCell(value: string): string {
+  return `"${value.replace(/"/g, '""')}"`;
+}
+
+/** Converts an array of rows (header + data) to a CSV string. */
+function toCSV(rows: string[][]): string {
+  return rows.map(row => row.map(csvCell).join(',')).join('\n');
+}
+
 function linksToCSV(links: ShortLink[]): string {
   const header = ['code', 'title', 'originalUrl', 'clickCount', 'isActive', 'createdAt'];
   const rows = links.map(l => [
@@ -41,7 +51,7 @@ function linksToCSV(links: ShortLink[]): string {
     String(l.isActive !== false),
     l.createdAt?.toDate?.()?.toISOString() ?? '',
   ]);
-  return [header, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  return toCSV([header, ...rows]);
 }
 
 function pagesToCSV(pages: Page[]): string {
@@ -55,7 +65,7 @@ function pagesToCSV(pages: Page[]): string {
     p.lastName ?? '',
     p.updatedAt?.toDate?.()?.toISOString() ?? '',
   ]);
-  return [header, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  return toCSV([header, ...rows]);
 }
 
 function downloadFile(content: string, filename: string, type: string) {

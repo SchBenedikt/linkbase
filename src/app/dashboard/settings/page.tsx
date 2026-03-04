@@ -73,7 +73,7 @@ export default function SettingsPage() {
 
   // API keys collection
   const apiKeysQuery = useMemoFirebase(() =>
-    user && firestore ? query(collection(firestore!, 'api_keys'), where('ownerId', '==', user.uid)) : null,
+    user && firestore ? query(collection(firestore, 'api_keys'), where('ownerId', '==', user.uid)) : null,
     [user, firestore]
   );
   const { data: apiKeys, isLoading: areApiKeysLoading } = useCollection<{ id: string; name?: string; createdAt: any }>(apiKeysQuery);
@@ -86,7 +86,7 @@ export default function SettingsPage() {
       const arr = new Uint8Array(32);
       crypto.getRandomValues(arr);
       const key = 'lb_' + Array.from(arr).map(n => chars[n % chars.length]).join('');
-      const keyRef = doc(firestore!, 'api_keys', key);
+      const keyRef = doc(firestore, 'api_keys', key);
       await setDoc(keyRef, {
         ownerId: user.uid,
         name: newKeyName.trim() || 'Default',
@@ -106,7 +106,7 @@ export default function SettingsPage() {
   const handleRevokeApiKey = useCallback(async (keyId: string) => {
     if (!firestore) return;
     try {
-      await deleteDoc(doc(firestore!, 'api_keys', keyId));
+      await deleteDoc(doc(firestore, 'api_keys', keyId));
       toast({ title: 'API key revoked' });
     } catch (err: any) {
       toast({ variant: 'destructive', title: 'Error', description: err.message || 'Could not revoke API key.' });
@@ -516,7 +516,7 @@ export default function SettingsPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle>API Reference</CardTitle>
-                    <CardDescription>Base URL: <code className="text-xs bg-muted px-1 rounded">{typeof window !== 'undefined' ? window.location.origin : ''}/api/v1</code></CardDescription>
+                    <CardDescription>Base URL: <code className="text-xs bg-muted px-1 rounded">{window.location.origin}/api/v1</code></CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4 text-sm">
                     <p className="text-muted-foreground">Pass your API key in the <code className="bg-muted px-1 rounded">Authorization</code> header:</p>
