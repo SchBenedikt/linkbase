@@ -7,7 +7,7 @@
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
     "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
     "build": "next build",
-    "build:cloudflare": "next build && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "build:cloudflare": "next build && opennextjs-cloudflare build",
     "build:cf-pages": "next build",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
