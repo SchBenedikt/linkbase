@@ -39,7 +39,8 @@ export const metadata: Metadata = {
     'url shortener',
     'blog platform',
     'creator tools',
-    'online presence'
+    'online presence',
+    'links.schächner.de'
   ],
   authors: [{ name: 'Linkbase Team' }],
   creator: 'Linkbase',

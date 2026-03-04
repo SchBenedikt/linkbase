@@ -21,7 +21,7 @@ const FEATURE_SECTIONS: { label: string; items: FeatureItem[] }[] = [
     items: [
       { icon: Globe, title: 'Bento Pages', description: 'Drag-and-drop bento grid pages that turn your links into a beautiful, customisable profile.' },
       { icon: BookOpen, title: 'Integrated Blog', description: 'Write and publish blog posts directly on your Linkbase — no third-party platform needed.' },
-      { icon: Link2, title: 'Short Links', description: 'Create branded short URLs and track every click in real time.' },
+      { icon: Link2, title: 'Short Linkbase*', description: 'Create branded short URLs and track every click in real time.' },
       { icon: BarChart3, title: 'Detailed Analytics', description: 'See which links and pages perform best with real data and insights.' },
       { icon: Sparkles, title: 'AI Themes', description: 'Describe a vibe and get a stunning colour scheme generated in seconds.' },
       { icon: Palette, title: 'Full Design Control', description: 'Fonts, gradients, border radius, card colours — every detail under your control.' },

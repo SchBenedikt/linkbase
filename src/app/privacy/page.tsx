@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Privacy Policy and data protection information for Linkbase.',
+  description: 'Privacy Policy and data protection information for links.schächner.de.',
 };
 
 export default function PrivacyPage() {
@@ -11,27 +11,27 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="border-b">
         <div className="container mx-auto px-4 h-16 flex items-center">
-          <Link href="/" className="font-bold text-xl text-primary">Linkbase*</Link>
+          <Link href="/" className="font-bold text-xl text-primary">Links</Link>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-12 max-w-3xl">
         <h1 className="text-3xl font-extrabold tracking-tight mb-2">Privacy Policy</h1>
-        <p className="text-muted-foreground mb-8">Last updated: February 2025</p>
+        <p className="text-muted-foreground mb-8">Last updated: March 2026</p>
 
         <section className="space-y-6 text-sm leading-relaxed">
           <div>
             <h2 className="text-xl font-bold mb-2">1. Who we are</h2>
             <p>
-              Linkbase (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) is operated by Benedikt Schächner, Germany.
-              Contact: <a href="mailto:contact@linkbase.app" className="text-primary underline">contact@linkbase.app</a>
+              Links (&quot;we&quot;, &quot;our&quot;, &quot;us&quot;) is operated by Benedikt Schächner, Germany.
+              This is a personal link management platform without commercial contact options.
             </p>
           </div>
 
           <div>
             <h2 className="text-xl font-bold mb-2">2. Data we collect</h2>
             <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li><strong>Account data</strong>: email address and display name when you register via Google or email/password.</li>
+              <li><strong>Account data</strong>: email address and display name when you register via Google.</li>
               <li><strong>Profile data</strong>: name, bio, avatar URL, links, and appearance settings you add to your page.</li>
               <li><strong>Usage data</strong>: standard server logs (IP address, browser type, pages visited) for security and debugging.</li>
             </ul>
@@ -40,7 +40,7 @@ export default function PrivacyPage() {
           <div>
             <h2 className="text-xl font-bold mb-2">3. How we use your data</h2>
             <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-              <li>To provide and improve the Linkbase service.</li>
+              <li>To provide and improve the Links service.</li>
               <li>To display your public profile page to visitors.</li>
               <li>To authenticate you and keep your account secure.</li>
               <li>We do <strong>not</strong> sell your personal data to third parties.</li>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
             </p>
             <ul className="list-disc pl-5 space-y-1 text-muted-foreground mt-2">
               <li><strong>Google Firebase</strong> (Authentication &amp; Firestore database) – <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a></li>
-              <li><strong>Cloudflare Pages</strong> (hosting) – <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a></li>
+              <li><strong>Cloudflare Workers</strong> (hosting) – <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a></li>
               <li><strong>Google AI (Gemini)</strong> – used only when you explicitly generate an AI theme – <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary underline">Privacy Policy</a></li>
             </ul>
           </div>
@@ -70,9 +70,8 @@ export default function PrivacyPage() {
           <div>
             <h2 className="text-xl font-bold mb-2">6. Your rights (GDPR)</h2>
             <p className="text-muted-foreground">
-              Under the GDPR you have the right to access, rectify, erase, restrict, or port your personal data,
-              and to object to its processing. To exercise these rights, contact us at{' '}
-              <a href="mailto:contact@linkbase.app" className="text-primary underline">contact@linkbase.app</a>.
+              Under GDPR you have the right to access, rectify, erase, restrict, or port your personal data,
+              and to object to its processing. You can exercise these rights through your account settings page.
               You also have the right to lodge a complaint with your national data protection authority.
             </p>
           </div>
@@ -91,8 +90,7 @@ export default function PrivacyPage() {
         <div className="container mx-auto px-4 py-8 flex flex-wrap gap-4 sm:gap-6 text-sm text-muted-foreground">
           <Link href="/features" className="hover:text-foreground">Features</Link>
           <Link href="/pricing" className="hover:text-foreground">Pricing</Link>
-          <Link href="/contact" className="hover:text-foreground">Contact</Link>
-          <Link href="/impressum" className="hover:text-foreground">Legal Notice</Link>
+          <Link href="/impressum" className="hover:text-foreground">Impressum</Link>
           <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
           <Link href="/cookies" className="hover:text-foreground">Cookies</Link>
         </div>

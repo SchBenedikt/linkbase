@@ -74,7 +74,7 @@ const FEATURE_HIGHLIGHTS = [
   { value: '1', label: 'Link for everything' },
 ] as const;
 
-const ANALYTICS_LABELS = ['Total Clicks', 'Your Pages', 'Short Links'] as const;
+const ANALYTICS_LABELS = ['Total Clicks', 'Your Pages', 'Short Linkbase*'] as const;
 
 const INTEGRATION_ITEMS = [
   { icon: Youtube, label: 'YouTube' },
@@ -271,13 +271,13 @@ export default function LandingPage() {
             {/* Row 2 */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
 
-              {/* Short Links */}
+              {/* Short Linkbase* */}
               <BentoCard>
                 <div className="p-2 bg-foreground/10 rounded-xl w-fit">
                   <LinkIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-headline text-xl font-bold">Short Links</h3>
+                  <h3 className="font-headline text-xl font-bold">Short Linkbase*</h3>
                   <p className="text-muted-foreground text-sm mt-1">Create branded short URLs and track every click in real time.</p>
                 </div>
                 <div className="flex flex-col gap-2 mt-2">
@@ -531,7 +531,7 @@ export default function LandingPage() {
             <Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy</Link>
             <Link href="/cookies" className="text-muted-foreground hover:text-foreground">Cookies</Link>
           </nav>
-          <p className="text-sm text-muted-foreground">© 2025 Linkbase. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">© 2025 Linkbase*. All rights reserved.</p>
         </div>
       </footer>
     </div>
