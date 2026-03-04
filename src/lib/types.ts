@@ -86,6 +86,8 @@ export type Page = {
   borderColor?: string;
   fontFamily?: string;
   sensitiveContent?: boolean; // Age/content gate on public page
+  customCss?: string; // User-defined CSS injected on the public page
+  animationStyle?: 'none' | 'fade' | 'slide' | 'scale'; // Card entrance animation
   createdAt: any;
   updatedAt: any;
 };
@@ -141,6 +143,8 @@ export type AppearanceSettings = {
   borderWidth?: number;
   borderColor?: string;
   fontFamily?: string;
+  customCss?: string; // User-defined CSS injected on the public page
+  animationStyle?: 'none' | 'fade' | 'slide' | 'scale'; // Card entrance animation
 };
 
 export type PageViewRecord = {

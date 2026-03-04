@@ -5,6 +5,7 @@ import { PlusCircle, Clock } from 'lucide-react';
 import { DndContext, closestCenter, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable, rectSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { motion } from 'framer-motion';
 
 import type { Link, AppearanceSettings } from '@/lib/types';
 import { LinkCard } from './link-card';
@@ -413,9 +414,22 @@ export function LinkList({
   }
 
   // Public, non-editable view (scheduling already applied via visibleLinks)
+  const animStyle = appearance.animationStyle ?? 'fade';
+
+  const cardVariants = {
+    hidden: animStyle === 'none'
+      ? {}
+      : animStyle === 'slide'
+        ? { opacity: 0, y: 24 }
+        : animStyle === 'scale'
+          ? { opacity: 0, scale: 0.9 }
+          : { opacity: 0 }, // fade
+    visible: { opacity: 1, y: 0, scale: 1 },
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[10rem] gap-4">
-      {visibleLinks.map((link) => {
+      {visibleLinks.map((link, i) => {
         const componentType = resolveComponentType(link);
         const style: React.CSSProperties = {
           gridColumn: `span ${link.colSpan || 1}`,
@@ -423,14 +437,21 @@ export function LinkList({
         };
 
         return (
-          <div key={link.id} style={style}>
+          <motion.div
+            key={link.id}
+            style={style}
+            variants={cardVariants}
+            initial={animStyle !== 'none' ? 'hidden' : false}
+            animate="visible"
+            transition={{ duration: 0.35, delay: i * 0.06, ease: 'easeOut' }}
+          >
             {renderCardComponent(componentType, {
               link,
               ownerId,
               appearance,
               isEditable: false,
             })}
-          </div>
+          </motion.div>
         );
       })}
     </div>

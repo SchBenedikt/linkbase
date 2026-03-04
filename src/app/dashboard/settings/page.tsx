@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useAuth, useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
 import { updateEmail, updatePassword, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth';
-import { doc, writeBatch, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, writeBatch, getDoc, serverTimestamp, setDoc, collection, query, where, deleteDoc } from 'firebase/firestore';
 import type { UserProfile } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2, Trash2, Copy, Plus, Check, Code2 } from 'lucide-react';
 import { UserNav } from '@/components/user-nav';
 import {
   AlertDialog,
@@ -32,6 +32,7 @@ import { DashboardNav } from '@/components/dashboard-nav';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
 
 // Schemas
 const profileSchema = z.object({
@@ -66,6 +67,57 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState('');
   const [reauthAction, setReauthAction] = useState<{ type: 'email' | 'password', value: string } | null>(null);
   const [currentPassword, setCurrentPassword] = useState('');
+  const [newKeyName, setNewKeyName] = useState('');
+  const [isCreatingKey, setIsCreatingKey] = useState(false);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  // API keys collection
+  const apiKeysQuery = useMemoFirebase(() =>
+    user && firestore ? query(collection(firestore, 'api_keys'), where('ownerId', '==', user.uid)) : null,
+    [user, firestore]
+  );
+  const { data: apiKeys, isLoading: areApiKeysLoading } = useCollection<{ id: string; name?: string; createdAt: any }>(apiKeysQuery);
+
+  const handleCreateApiKey = useCallback(async () => {
+    if (!user || !firestore) return;
+    setIsCreatingKey(true);
+    try {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const arr = new Uint8Array(32);
+      crypto.getRandomValues(arr);
+      const key = 'lb_' + Array.from(arr).map(n => chars[n % chars.length]).join('');
+      const keyRef = doc(firestore, 'api_keys', key);
+      await setDoc(keyRef, {
+        ownerId: user.uid,
+        name: newKeyName.trim() || 'Default',
+        createdAt: serverTimestamp(),
+      });
+      setNewKeyName('');
+      // Copy to clipboard immediately
+      await navigator.clipboard.writeText(key).catch(() => {});
+      toast({ title: 'API key created', description: 'The key has been copied to your clipboard. Store it safely – it won\'t be shown again.' });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'Error', description: err.message || 'Could not create API key.' });
+    } finally {
+      setIsCreatingKey(false);
+    }
+  }, [user, firestore, newKeyName, toast]);
+
+  const handleRevokeApiKey = useCallback(async (keyId: string) => {
+    if (!firestore) return;
+    try {
+      await deleteDoc(doc(firestore, 'api_keys', keyId));
+      toast({ title: 'API key revoked' });
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: 'Error', description: err.message || 'Could not revoke API key.' });
+    }
+  }, [firestore, toast]);
+
+  const handleCopyKey = useCallback(async (key: string) => {
+    await navigator.clipboard.writeText(key).catch(() => {});
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  }, []);
 
   const userProfileRef = useMemoFirebase(() => 
     user ? doc(firestore, 'user_profiles', user.uid) : null,
@@ -268,9 +320,10 @@ export default function SettingsPage() {
             <h2 className="text-3xl font-bold tracking-tight mb-8">Settings</h2>
             
             <Tabs defaultValue="profile" className="max-w-4xl mx-auto">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="profile">Profile</TabsTrigger>
                 <TabsTrigger value="security">Security</TabsTrigger>
+                <TabsTrigger value="api" className="gap-2"><Code2 className="h-4 w-4" />Developer API</TabsTrigger>
               </TabsList>
 
               <TabsContent value="profile" className="mt-6">
@@ -384,6 +437,104 @@ export default function SettingsPage() {
                             </CardFooter>
                         </form>
                     </Form>
+                </Card>
+              </TabsContent>
+
+              {/* ── Developer API ──────────────────────────────────────────────────── */}
+              <TabsContent value="api" className="mt-6 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Developer API Keys</CardTitle>
+                    <CardDescription>
+                      Generate API keys to access the Linkbase REST API. Keep your keys safe — they grant
+                      full read access to your account data.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Create new key */}
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Key name (optional, e.g. My App)"
+                        value={newKeyName}
+                        onChange={(e) => setNewKeyName(e.target.value)}
+                        className="max-w-xs"
+                      />
+                      <Button onClick={handleCreateApiKey} disabled={isCreatingKey} className="gap-2">
+                        {isCreatingKey ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                        Generate Key
+                      </Button>
+                    </div>
+
+                    {/* Key list */}
+                    {areApiKeysLoading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : apiKeys && apiKeys.length > 0 ? (
+                      <div className="space-y-2">
+                        {apiKeys.map((k) => (
+                          <div key={k.id} className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium">{k.name || 'Unnamed key'}</p>
+                                <p className="text-xs text-muted-foreground font-mono">
+                                  {k.id.slice(0, 12)}••••••••••••••••••
+                                </p>
+                                {k.createdAt?.toDate && (
+                                  <p className="text-xs text-muted-foreground">
+                                    Created {k.createdAt.toDate().toLocaleDateString()}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 flex-shrink-0">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleCopyKey(k.id)}
+                                title="Copy key"
+                              >
+                                {copiedKey === k.id ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleRevokeApiKey(k.id)}
+                                title="Revoke key"
+                              >
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No API keys yet. Generate one above.</p>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* API reference */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>API Reference</CardTitle>
+                    <CardDescription>Base URL: <code className="text-xs bg-muted px-1 rounded">{window.location.origin}/api/v1</code></CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4 text-sm">
+                    <p className="text-muted-foreground">Pass your API key in the <code className="bg-muted px-1 rounded">Authorization</code> header:</p>
+                    <pre className="bg-muted p-3 rounded text-xs overflow-x-auto">{'Authorization: Bearer <your_api_key>'}</pre>
+                    <div className="space-y-2">
+                      {[
+                        { method: 'GET', path: '/api/v1/me', desc: 'Get your profile information' },
+                        { method: 'GET', path: '/api/v1/pages', desc: 'List all your pages' },
+                        { method: 'GET', path: '/api/v1/links', desc: 'List all your short links' },
+                      ].map(endpoint => (
+                        <div key={endpoint.path} className="flex items-start gap-3 p-2 rounded border">
+                          <Badge variant="secondary" className="font-mono text-xs flex-shrink-0">{endpoint.method}</Badge>
+                          <code className="text-xs font-mono">{endpoint.path}</code>
+                          <span className="text-xs text-muted-foreground ml-auto">{endpoint.desc}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>
