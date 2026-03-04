@@ -3,8 +3,7 @@ main = ".open-next/server-functions/default/index.mjs"
 compatibility_date = "2024-12-30"
 compatibility_flags = ["nodejs_compat"]
 
-[build]
-command = "npm run build && npx open-next build"
+# Build is handled by OpenNext, no need for separate build command
 
 [vars]
 GEMINI_API_KEY = "AIzaSyASyfHbUSQBh-EVkTC4eqX8JpD_Km3fa8E"
