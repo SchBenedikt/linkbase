@@ -74,10 +74,6 @@ export function LinkedInCard({
     backgroundColor: appearance.cardColor,
   };
 
-  if (!appearance.borderWidth) {
-    cardStyle.borderWidth = '0px';
-  }
-
   const textStyle: React.CSSProperties = { color: appearance.cardForegroundColor || '#111827' };
   const mutedStyle: React.CSSProperties = { color: appearance.cardForegroundColor || '#111827', opacity: 0.7 };
 

@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
         range,
         totalViews,
         totalClicks,
-        ctr: totalViews > 0 ? parseFloat(((totalClicks / totalViews) * 100).toFixed(2)) : 0,
+        ctr: totalViews > 0 ? Math.round((totalClicks / totalViews) * 10000) / 100 : 0,
         pageViews,
         linkClicks,
         geoStats,

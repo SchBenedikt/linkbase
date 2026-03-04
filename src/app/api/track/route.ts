@@ -36,20 +36,23 @@ function getClientIp(req: NextRequest): string {
   return 'unknown';
 }
 
-// Resolve country from IP using the free ip-api.com service
+// Resolve country from IP using the free ipapi.co service (HTTPS, 1k req/day free)
 async function resolveCountry(ip: string): Promise<string> {
   if (!ip || ip === 'unknown' || ip === '127.0.0.1' || ip.startsWith('::')) {
     return 'Unknown';
   }
   try {
     const res = await fetch(
-      `http://ip-api.com/json/${encodeURIComponent(ip)}?fields=status,country`,
-      { signal: AbortSignal.timeout(3000) },
+      `https://ipapi.co/${encodeURIComponent(ip)}/json/`,
+      {
+        headers: { 'User-Agent': 'linkbase/1.0' },
+        signal: AbortSignal.timeout(3000),
+      },
     );
     if (!res.ok) return 'Unknown';
-    const data = (await res.json()) as { status: string; country?: string };
-    if (data.status !== 'success' || !data.country) return 'Unknown';
-    return data.country;
+    const data = (await res.json()) as { country_name?: string; error?: boolean };
+    if (data.error || !data.country_name) return 'Unknown';
+    return data.country_name;
   } catch {
     return 'Unknown';
   }

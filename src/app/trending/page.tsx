@@ -15,11 +15,12 @@ interface TrendingLinkProps {
   rank: number;
   link: ShortLink;
   siteUrl: string;
+  maxClicks: number;
 }
 
-function TrendingLinkRow({ rank, link, siteUrl }: TrendingLinkProps) {
+function TrendingLinkRow({ rank, link, siteUrl, maxClicks }: TrendingLinkProps) {
   const shortUrl = `${siteUrl}/s/${link.code}`;
-  const barWidth = `${Math.min(100, link.clickCount)}%`;
+  const barWidth = `${Math.round(((link.clickCount || 0) / Math.max(1, maxClicks)) * 100)}%`;
 
   return (
     <div className="flex items-center gap-4 py-3 border-b last:border-0">
@@ -77,6 +78,11 @@ export default function TrendingPage() {
   const activeLinks = useMemo(
     () => (links || []).filter((l) => (l.clickCount || 0) > 0),
     [links],
+  );
+
+  const maxClicks = useMemo(
+    () => Math.max(1, ...activeLinks.map((l) => l.clickCount || 0)),
+    [activeLinks],
   );
 
   return (
@@ -148,6 +154,7 @@ export default function TrendingPage() {
                       rank={idx + 1}
                       link={link}
                       siteUrl={siteUrl}
+                      maxClicks={maxClicks}
                     />
                   ))}
                 </div>
