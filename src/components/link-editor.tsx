@@ -31,7 +31,7 @@ interface LinkEditorProps {
   link?: Link | null;
   onSave: (data: LinkEditorFormData) => void;
   onCancel: () => void;
-  mode?: 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord';
+  mode?: 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord' | 'linkedin';
 }
 
 export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditorProps) {
@@ -69,6 +69,7 @@ export function LinkEditor({ link, onSave, onCancel, mode = 'link' }: LinkEditor
     if (mode === 'twitch' && !form.getValues('title')) form.setValue('title', 'Twitch Stream');
     if (mode === 'pinterest' && !form.getValues('title')) form.setValue('title', 'Pinterest Pin');
     if (mode === 'discord' && !form.getValues('title')) form.setValue('title', 'Discord Server');
+    if (mode === 'linkedin' && !form.getValues('title')) form.setValue('title', 'LinkedIn Profile');
   }, [mode, form]);
 
   const { toast } = useToast();

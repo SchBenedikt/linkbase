@@ -1,20 +1,21 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { collection, query, where, doc, serverTimestamp, updateDoc, setDoc } from 'firebase/firestore';
+import { collection, query, where, doc, serverTimestamp, updateDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
   AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Info, Link2, PlusCircle, Trash2, Loader2 } from 'lucide-react';
+import { Info, Link2, PlusCircle, Trash2, Loader2, CheckSquare, Square } from 'lucide-react';
 import type { ShortLink } from '@/lib/types';
 import { DashboardNav } from '@/components/dashboard-nav';
 import { UserNav } from '@/components/user-nav';
@@ -51,6 +52,9 @@ export default function LinksPage() {
   const [isFetchingTitle, setIsFetchingTitle] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState<ShortLink | null>(null);
   const [search, setSearch] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
   const linksQuery = useMemoFirebase(() =>
     user && firestore ? query(collection(firestore!, 'shortLinks'), where('ownerId', '==', user.uid)) : null,
@@ -158,7 +162,6 @@ export default function LinksPage() {
     if (!linkToDelete || !firestore) return;
 
     try {
-      const { doc, deleteDoc } = await import('firebase/firestore');
       await deleteDoc(doc(firestore!, 'shortLinks', linkToDelete.id));
       toast({ title: 'Deleted!', description: `Short link /s/${linkToDelete.code} has been removed.` });
     } catch (error: any) {
@@ -168,6 +171,40 @@ export default function LinksPage() {
       setLinkToDelete(null);
     }
   }, [linkToDelete, firestore, toast]);
+
+  const handleBulkDelete = useCallback(async () => {
+    if (!firestore || selectedIds.size === 0) return;
+    setIsBulkDeleting(true);
+    try {
+      await Promise.all(
+        Array.from(selectedIds).map((id) => deleteDoc(doc(firestore!, 'shortLinks', id))),
+      );
+      toast({ title: `Deleted ${selectedIds.size} link${selectedIds.size !== 1 ? 's' : ''}.` });
+      setSelectedIds(new Set());
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Error', description: error.message || 'Bulk delete failed.' });
+    } finally {
+      setIsBulkDeleting(false);
+      setShowBulkDeleteConfirm(false);
+    }
+  }, [firestore, selectedIds, toast]);
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    if (selectedIds.size === filteredLinks.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredLinks.map((l) => l.id)));
+    }
+  }, [selectedIds.size, filteredLinks]);
 
   const copyToClipboard = (code: string) => {
     const url = `${siteUrl}/s/${code}`;
@@ -284,16 +321,58 @@ export default function LinksPage() {
           </div>
         ) : filteredLinks.length > 0 ? (
           <div className="space-y-4">
+            {/* Bulk actions toolbar */}
+            <div className="flex items-center gap-3 py-2 px-1">
+              <button
+                type="button"
+                onClick={toggleSelectAll}
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                aria-label={selectedIds.size === filteredLinks.length ? 'Deselect all' : 'Select all'}
+              >
+                {selectedIds.size === filteredLinks.length && filteredLinks.length > 0 ? (
+                  <CheckSquare className="h-4 w-4 text-primary" />
+                ) : (
+                  <Square className="h-4 w-4" />
+                )}
+                {selectedIds.size === 0 ? 'Select all' : `${selectedIds.size} selected`}
+              </button>
+              {selectedIds.size > 0 && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => setShowBulkDeleteConfirm(true)}
+                  disabled={isBulkDeleting}
+                >
+                  {isBulkDeleting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="mr-2 h-4 w-4" />
+                  )}
+                  Delete {selectedIds.size} link{selectedIds.size !== 1 ? 's' : ''}
+                </Button>
+              )}
+            </div>
+
             {filteredLinks.map((link) => (
-              <ShortLinkItem
-                key={link.id}
-                link={link}
-                siteUrl={siteUrl}
-                onCopy={() => copyToClipboard(link.code)}
-                onDelete={() => setLinkToDelete(link)}
-                onEdit={handleEdit}
-                onToggleActive={handleToggleActive}
-              />
+              <div key={link.id} className="flex items-start gap-3">
+                <Checkbox
+                  id={`sel-${link.id}`}
+                  checked={selectedIds.has(link.id)}
+                  onCheckedChange={() => toggleSelect(link.id)}
+                  className="mt-4 flex-shrink-0"
+                  aria-label={`Select ${link.title || link.code}`}
+                />
+                <div className="flex-1 min-w-0">
+                  <ShortLinkItem
+                    link={link}
+                    siteUrl={siteUrl}
+                    onCopy={() => copyToClipboard(link.code)}
+                    onDelete={() => setLinkToDelete(link)}
+                    onEdit={handleEdit}
+                    onToggleActive={handleToggleActive}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         ) : (
@@ -312,6 +391,7 @@ export default function LinksPage() {
           </Card>
         )}
 
+        {/* Single-link delete confirmation */}
         <AlertDialog open={!!linkToDelete} onOpenChange={(open) => !open && setLinkToDelete(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -324,6 +404,28 @@ export default function LinksPage() {
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={handleDelete}>
                 Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Bulk delete confirmation */}
+        <AlertDialog open={showBulkDeleteConfirm} onOpenChange={setShowBulkDeleteConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete {selectedIds.size} link{selectedIds.size !== 1 ? 's' : ''}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete the selected {selectedIds.size} short link{selectedIds.size !== 1 ? 's' : ''} and all their click data. This cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={handleBulkDelete}
+                disabled={isBulkDeleting}
+              >
+                {isBulkDeleting ? 'Deleting…' : `Delete ${selectedIds.size} link${selectedIds.size !== 1 ? 's' : ''}`}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

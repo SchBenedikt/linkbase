@@ -40,6 +40,7 @@ import { FaqCard } from './faq-card';
 import { HeaderCard } from './header-card';
 import { VideoCard } from './video-card';
 import { QrCodeCard } from './qrcode-card';
+import { LinkedInCard } from './linkedin-card';
 
 // Grid constants  
 const GRID_COLS = 4;
@@ -209,6 +210,8 @@ function renderCardComponent(
       return <VideoCard {...props} />;
     case 'qrcode':
       return <QrCodeCard {...props} />;
+    case 'linkedin':
+      return <LinkedInCard {...props} />;
     default:
       return <LinkCard {...props} />;
   }
