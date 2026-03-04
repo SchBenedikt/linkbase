@@ -40,6 +40,18 @@ service cloud.firestore {
         allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
         allow write: if true; // Anyone can log clicks
       }
+
+      // Geolocation analytics – owner-only read, server writes via Admin SDK
+      match /geo_stats/{countryId} {
+        allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+        allow write: if false; // Only Admin SDK can write
+      }
+
+      // Device analytics – owner-only read, server writes via Admin SDK
+      match /device_stats/{deviceId} {
+        allow get, list: if isOwner(get(/databases/$(database)/documents/pages/$(pageId)).data.ownerId);
+        allow write: if false; // Only Admin SDK can write
+      }
     }
 
     // Blog Posts
@@ -100,6 +112,14 @@ service cloud.firestore {
            && request.resource.data.originalUrl is string
            && request.resource.data.clickCount is int;
       allow delete: if isSignedIn() && get(/databases/$(database)/documents/shortLinks/$(code)).data.ownerId == request.auth.uid;
+    }
+
+    // Developer API keys – owner-only read/write
+    match /api_keys/{keyId} {
+      allow get, list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+      allow update: if false;
     }
   }
 }

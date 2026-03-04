@@ -19,6 +19,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { ProfileEditor, profileSchema } from '@/components/profile-editor';
 import { AddContentDialog } from '@/components/add-content-dialog';
+import { InstagramImportDialog, type ImportedPost } from '@/components/instagram-import-dialog';
 import { hexToHsl, getContrastColor, isColorLight, resolveReadableFg } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserNav } from '@/components/user-nav';
@@ -26,7 +27,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
-import { Zap, ZapOff } from 'lucide-react';
+import { Zap, ZapOff, Instagram } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 
 
@@ -63,6 +64,7 @@ export default function EditPage() {
 
   const [sheetState, setSheetState] = useState<SheetState>({ open: false });
   const [linkToDelete, setLinkToDelete] = useState<LinkType | null>(null);
+  const [isInstagramImportOpen, setIsInstagramImportOpen] = useState(false);
   const appearanceSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isAppearanceLocalRef = useRef(false);
 
@@ -212,6 +214,30 @@ export default function EditPage() {
       });
     }
     closeSheet();
+  };
+
+  const handleInstagramImport = (posts: ImportedPost[]) => {
+    if (!linksRef || !pageId) return;
+    posts.forEach((post, idx) => {
+      const tempId = crypto.randomUUID();
+      const newContent: LinkType = {
+        id: tempId,
+        pageId,
+        orderIndex: (links?.length || 0) + idx,
+        title: post.title,
+        type: post.type,
+        url: post.url,
+        colSpan: post.colSpan,
+        rowSpan: post.rowSpan,
+      };
+      setLinksData((prev) => [...(prev || []), newContent]);
+      const { id, ...dataToSave } = newContent;
+      addDocumentNonBlocking(linksRef, dataToSave).then((docRef) => {
+        if (docRef) {
+          setLinksData((prev) => prev!.map((l) => (l.id === tempId ? { ...l, id: docRef.id } : l)));
+        }
+      });
+    });
   };
   
   const confirmDeleteLink = () => {
@@ -408,6 +434,15 @@ export default function EditPage() {
                 {page.status === 'published' ? 'Unpublish' : 'Publish'}
               </Button>
               {page.slug && page.status === 'published' && <ShareButton publicUrl={`${window.location.origin}/${page.slug}`} />}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsInstagramImportOpen(true)}
+                title="Import Instagram posts"
+              >
+                <Instagram className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">Import</span>
+              </Button>
               <ThemeSwitcher 
                 onThemeApply={handleThemeApply}
                 onAppearanceSave={handleAppearanceSave}
@@ -481,6 +516,12 @@ export default function EditPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <InstagramImportDialog
+        open={isInstagramImportOpen}
+        onOpenChange={setIsInstagramImportOpen}
+        onImport={handleInstagramImport}
+      />
     </div>
   );
 }

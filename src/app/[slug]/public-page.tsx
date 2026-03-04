@@ -7,8 +7,6 @@ import JsonLdScript from '@/components/json-ld-script';
 import { ProfileHeader } from '@/components/profile-header';
 import { LinkList } from '@/components/link-list';
 import { useTheme } from '@/components/theme-provider';
-import { doc, setDoc, increment } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 import { Share2, Copy, Check } from 'lucide-react';
 import { useState as useReactState } from 'react';
 
@@ -65,7 +63,6 @@ function VisitorShareButton({ name }: { name: string }) {
 
 export default function PublicPageComponent({ page, links, publicUrl }: { page: Page, links: LinkType[], publicUrl: string }) {
     const { theme } = useTheme();
-    const firestore = useFirestore();
     const [dynamicStyles, setDynamicStyles] = useState<React.CSSProperties>({});
     const [appearance, setAppearance] = useState<AppearanceSettings>(initialAppearance);
     const [isClient, setIsClient] = useState(false);
@@ -92,16 +89,16 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
     }, []);
 
     useEffect(() => {
-        if (!isClient || !page?.id || !firestore) return;
-        const today = new Date().toISOString().split('T')[0];
-        const viewRef = doc(firestore, 'pages', page.id, 'page_views', today);
-        setDoc(viewRef, { pageId: page.id, date: today, count: increment(1) }, { merge: true }).catch((err) => {
+        if (!isClient || !page?.id) return;
+        // Use server-side tracking endpoint so the server can read the real IP for geolocation
+        fetch('/api/track', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pageId: page.id }),
+        }).catch((err) => {
             console.error('Failed to track page view:', err);
-            if (err instanceof Error) {
-                console.error('Error details:', err.message, err.code);
-            }
         });
-    }, [page.id, isClient, firestore]);
+    }, [page.id, isClient]);
 
     useEffect(() => {
         if (!page || !isClient) return;

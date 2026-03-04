@@ -7,7 +7,7 @@ import {
   Image as ImageIcon, ShoppingBag, User as UserIcon, MapPin,
   Instagram, Video, Music2, Cloud, CalendarDays, Github,
   Clock, Timer, Twitter, Tv, Heart, Mail, Smartphone, Headphones,
-  Pin, MessageCircle, Quote, HelpCircle, Minus, Play, QrCode,
+  Pin, MessageCircle, Quote, HelpCircle, Minus, Play, QrCode, Linkedin,
 } from 'lucide-react';
 import { LinkEditor, linkSchema } from './link-editor';
 import { TextEditor, textSchema } from './text-editor';
@@ -105,6 +105,7 @@ const CONTENT_SECTIONS: { label: string; items: ContentTypeButton[] }[] = [
       { type: 'github', label: 'GitHub', description: 'Show a GitHub repo', icon: Github },
       { type: 'twitter', label: 'Twitter / X', description: 'Embed a tweet or post', icon: Twitter },
       { type: 'twitch', label: 'Twitch', description: 'Embed a live stream', icon: Tv },
+      { type: 'linkedin', label: 'LinkedIn', description: 'Show a LinkedIn profile', icon: Linkedin },
     ],
   },
   {
@@ -167,7 +168,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
     if (contentToEdit.type === 'header') return <HeaderEditor onSave={(d) => handleSave(d, 'header')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'video') return <VideoEditor onSave={(d) => handleSave(d, 'video')} onCancel={onCancel} content={contentToEdit} />;
     if (contentToEdit.type === 'qrcode') return <QrCodeEditor onSave={(d) => handleSave(d, 'qrcode')} onCancel={onCancel} content={contentToEdit} />;
-    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord'} link={contentToEdit} />;
+    return <LinkEditor onSave={(d) => handleSave(d, contentToEdit.type as any)} onCancel={onCancel} mode={contentToEdit.type as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord' | 'linkedin'} link={contentToEdit} />;
   }
 
   // Adding new content
@@ -194,7 +195,7 @@ export function AddContentDialog({ onSave, onCancel, contentToEdit }: AddContent
       <LinkEditor
         onSave={(d) => handleSave(d, contentType)}
         onCancel={handleBack}
-        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord'}
+        mode={contentType as 'link' | 'spotify' | 'youtube' | 'instagram' | 'tiktok' | 'soundcloud' | 'vimeo' | 'calendly' | 'github' | 'twitter' | 'twitch' | 'pinterest' | 'discord' | 'linkedin'}
       />
     );
   }

@@ -4,14 +4,15 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { collection, query, where, orderBy } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, TrendingUp, MousePointerClick, BarChart2, Percent } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, TrendingUp, MousePointerClick, BarChart2, Percent, Globe, Smartphone, Monitor, Tablet } from 'lucide-react';
 import Link from 'next/link';
 import {
-  LineChart, Line, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import type { PageViewRecord, LinkClickRecord, Link as LinkType } from '@/lib/types';
 import { DashboardNav } from '@/components/dashboard-nav';
@@ -24,6 +25,21 @@ type Range = 7 | 30 | 90;
 const BAR_HEIGHT_PX = 36;
 /** Minimum height (px) for the bar chart container. */
 const BAR_CHART_MIN_HEIGHT = 200;
+
+const DEVICE_COLORS: Record<string, string> = {
+  desktop: 'hsl(var(--primary))',
+  mobile: 'hsl(var(--accent))',
+  tablet: '#f97316',
+};
+
+const DEVICE_ICONS: Record<string, React.ElementType> = {
+  desktop: Monitor,
+  mobile: Smartphone,
+  tablet: Tablet,
+};
+
+type GeoStat = { id: string; country: string; count: number };
+type DeviceStat = { id: string; device: string; count: number };
 
 function StatCard({ label, value, icon: Icon, sub }: { label: string; value: string | number; icon: React.ElementType; sub?: string }) {
   return (
@@ -40,9 +56,60 @@ function StatCard({ label, value, icon: Icon, sub }: { label: string; value: str
   );
 }
 
+/** Click heatmap: shows each link as a coloured bar based on its relative click share */
+function ClickHeatmap({ links, clicksByLink }: { links: LinkType[]; clicksByLink: Record<string, number> }) {
+  const sortedLinks = useMemo(() => {
+    return [...links]
+      .sort((a, b) => a.orderIndex - b.orderIndex)
+      .map((l) => ({ ...l, clicks: clicksByLink[l.id] || 0 }));
+  }, [links, clicksByLink]);
+
+  const maxClicks = useMemo(() => Math.max(1, ...sortedLinks.map((l) => l.clicks)), [sortedLinks]);
+
+  if (!sortedLinks.length) return null;
+
+  return (
+    <Card className="mb-8">
+      <CardHeader>
+        <CardTitle>Link Click Heatmap</CardTitle>
+        <CardDescription>Click intensity relative to your most-clicked link</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-1.5">
+          {sortedLinks.map((l) => {
+            const pct = Math.round((l.clicks / maxClicks) * 100);
+            const hue = Math.round(120 - (pct / 100) * 120); // green→red gradient
+            return (
+              <div key={l.id} className="flex items-center gap-2">
+                <span
+                  className="text-xs text-muted-foreground truncate"
+                  style={{ minWidth: '8rem', maxWidth: '10rem' }}
+                  title={l.title || 'Untitled'}
+                >
+                  {l.title || 'Untitled'}
+                </span>
+                <div className="flex-1 h-5 rounded bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded transition-all duration-500"
+                    style={{
+                      width: `${pct}%`,
+                      backgroundColor: `hsl(${hue}, 80%, 50%)`,
+                    }}
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground w-10 text-right">{l.clicks}</span>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function AnalyticsPage() {
   const params = useParams();
-  const pageId = (params.pageId || params.id) as string; // Handle both pageId and id
+  const pageId = (params.pageId || params.id) as string;
   const firestore = useFirestore();
   const [range, setRange] = useState<Range>(30);
 
@@ -71,9 +138,21 @@ export default function AnalyticsPage() {
     [firestore, pageId]
   );
 
+  const geoQuery = useMemoFirebase(
+    () => pageId && firestore ? collection(firestore, 'pages', pageId, 'geo_stats') : null,
+    [firestore, pageId]
+  );
+
+  const deviceQuery = useMemoFirebase(
+    () => pageId && firestore ? collection(firestore, 'pages', pageId, 'device_stats') : null,
+    [firestore, pageId]
+  );
+
   const { data: pageViews, isLoading: viewsLoading } = useCollection<PageViewRecord>(viewsQuery);
   const { data: linkClicks, isLoading: clicksLoading } = useCollection<LinkClickRecord>(clicksQuery);
   const { data: links } = useCollection<LinkType>(linksQuery);
+  const { data: geoStats } = useCollection<GeoStat>(geoQuery);
+  const { data: deviceStats } = useCollection<DeviceStat>(deviceQuery);
 
   const dateRange = useMemo(() => {
     const dates: string[] = [];
@@ -118,9 +197,22 @@ export default function AnalyticsPage() {
       .slice(0, 10);
   }, [clicksByLink, links]);
 
-  // Daily avg
-  const avgViewsPerDay = range > 0 ? (totalViews / range).toFixed(1) : '0';
+  const topCountries = useMemo(() => {
+    return [...(geoStats || [])]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10)
+      .map((g) => ({ name: g.country, visits: g.count }));
+  }, [geoStats]);
 
+  const deviceChartData = useMemo(() => {
+    return (deviceStats || []).map((d) => ({
+      name: d.device.charAt(0).toUpperCase() + d.device.slice(1),
+      value: d.count,
+      device: d.device,
+    }));
+  }, [deviceStats]);
+
+  const avgViewsPerDay = range > 0 ? (totalViews / range).toFixed(1) : '0';
   const isLoading = viewsLoading || clicksLoading;
 
   return (
@@ -146,7 +238,6 @@ export default function AnalyticsPage() {
             </Button>
             <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
           </div>
-          {/* Time range selector */}
           <div className="flex items-center gap-1 border rounded-lg p-1">
             {([7, 30, 90] as Range[]).map((r) => (
               <Button
@@ -168,6 +259,7 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <>
+            {/* Summary stat cards */}
             <div className="grid gap-6 grid-cols-2 md:grid-cols-4 mb-8">
               <StatCard label={`Total Views (${range}d)`} value={totalViews} icon={TrendingUp} sub={`~${avgViewsPerDay}/day`} />
               <StatCard label={`Total Clicks (${range}d)`} value={totalClicks} icon={MousePointerClick} />
@@ -180,6 +272,7 @@ export default function AnalyticsPage() {
               />
             </div>
 
+            {/* Page views line chart */}
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle>Page Views (Last {range} Days)</CardTitle>
@@ -188,7 +281,6 @@ export default function AnalyticsPage() {
                 <ResponsiveContainer width="100%" height={260}>
                   <LineChart data={viewsChartData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    {/* Show every tick for 7d, every 5th for 30d, every 9th for 90d */}
                     <XAxis dataKey="date" tick={{ fontSize: 11 }} interval={range === 7 ? 0 : range === 30 ? 4 : 8} />
                     <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
                     <Tooltip />
@@ -198,6 +290,98 @@ export default function AnalyticsPage() {
               </CardContent>
             </Card>
 
+            {/* Click heatmap */}
+            {links && links.length > 0 && (
+              <ClickHeatmap links={links} clicksByLink={clicksByLink} />
+            )}
+
+            {/* Geo + Device row */}
+            <div className="grid gap-6 md:grid-cols-2 mb-8">
+              {/* Top countries */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="h-4 w-4" /> Top Countries
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {topCountries.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4 text-center">
+                      No geolocation data yet. Geo tracking starts with new page visits.
+                    </p>
+                  ) : (
+                    <ResponsiveContainer width="100%" height={Math.max(BAR_CHART_MIN_HEIGHT, topCountries.length * BAR_HEIGHT_PX)}>
+                      <BarChart data={topCountries} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
+                        <YAxis type="category" dataKey="name" width={100} tick={{ fontSize: 11 }} />
+                        <Tooltip />
+                        <Bar dataKey="visits" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Device breakdown */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Monitor className="h-4 w-4" /> Device Breakdown
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {deviceChartData.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-4 text-center">
+                      No device data yet. Device tracking starts with new page visits.
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      <ResponsiveContainer width="100%" height={200}>
+                        <PieChart>
+                          <Pie
+                            data={deviceChartData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={50}
+                            outerRadius={80}
+                            paddingAngle={3}
+                            dataKey="value"
+                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            labelLine={false}
+                          >
+                            {deviceChartData.map((entry, index) => (
+                              <Cell
+                                key={`cell-${index}`}
+                                fill={DEVICE_COLORS[entry.device] || `hsl(${index * 120}, 60%, 50%)`}
+                              />
+                            ))}
+                          </Pie>
+                          <Tooltip />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="flex flex-wrap gap-3 justify-center">
+                        {deviceChartData.map((d) => {
+                          const Icon = DEVICE_ICONS[d.device] || Monitor;
+                          return (
+                            <div key={d.device} className="flex items-center gap-1.5 text-sm">
+                              <div
+                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: DEVICE_COLORS[d.device] || 'hsl(var(--muted))' }}
+                              />
+                              <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                              <span>{d.name}: {d.value.toLocaleString()}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Link clicks bar chart */}
             {clicksChartData.length > 0 ? (
               <Card>
                 <CardHeader>
