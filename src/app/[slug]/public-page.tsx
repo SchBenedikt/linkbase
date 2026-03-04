@@ -193,6 +193,13 @@ export default function PublicPageComponent({ page, links, publicUrl }: { page: 
     return (
         <div style={dynamicStyles}>
             <JsonLdScript data={jsonLd} />
+            {/* Inject user-defined custom CSS safely inside a <style> tag */}
+            {page.customCss && (
+                <style
+                    // eslint-disable-next-line react/no-danger
+                    dangerouslySetInnerHTML={{ __html: page.customCss }}
+                />
+            )}
              <main className="min-h-screen p-4 sm:p-6 md:p-8 transition-colors duration-500 bg-background text-foreground" style={mainStyle}>
                 <div className="w-full max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
                     <aside className="md:col-span-1 md:sticky md:top-8 h-fit">

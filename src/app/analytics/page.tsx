@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { collection, query, where } from 'firebase/firestore';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -21,12 +21,54 @@ import {
   Activity,
   Zap,
   RefreshCw,
+  Download,
 } from 'lucide-react';
 import Link from 'next/link';
 import type { ShortLink, Page } from '@/lib/types';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
+
+// ── Export helpers ────────────────────────────────────────────────────────────
+
+function linksToCSV(links: ShortLink[]): string {
+  const header = ['code', 'title', 'originalUrl', 'clickCount', 'isActive', 'createdAt'];
+  const rows = links.map(l => [
+    l.code,
+    l.title ?? '',
+    l.originalUrl,
+    String(l.clickCount ?? 0),
+    String(l.isActive !== false),
+    l.createdAt?.toDate?.()?.toISOString() ?? '',
+  ]);
+  return [header, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+}
+
+function pagesToCSV(pages: Page[]): string {
+  const header = ['id', 'slug', 'title', 'status', 'firstName', 'lastName', 'updatedAt'];
+  const rows = pages.map(p => [
+    p.id,
+    p.slug,
+    p.title ?? '',
+    p.status,
+    p.firstName ?? '',
+    p.lastName ?? '',
+    p.updatedAt?.toDate?.()?.toISOString() ?? '',
+  ]);
+  return [header, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+}
+
+function downloadFile(content: string, filename: string, type: string) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 function LinksBarChart({ links }: { links: ShortLink[] }) {
   const data = links
@@ -74,6 +116,44 @@ export default function AnalyticsPage() {
     [user, firestore]
   );
   const { data: pages, isLoading: arePagesLoading } = useCollection<Page>(pagesQuery);
+
+  // Export handlers
+  const exportLinksCSV = useCallback(() => {
+    if (!links?.length) return;
+    downloadFile(linksToCSV(links), 'links.csv', 'text/csv');
+  }, [links]);
+
+  const exportLinksJSON = useCallback(() => {
+    if (!links?.length) return;
+    const data = links.map(l => ({
+      code: l.code,
+      title: l.title ?? null,
+      originalUrl: l.originalUrl,
+      clickCount: l.clickCount ?? 0,
+      isActive: l.isActive !== false,
+      createdAt: l.createdAt?.toDate?.()?.toISOString() ?? null,
+    }));
+    downloadFile(JSON.stringify(data, null, 2), 'links.json', 'application/json');
+  }, [links]);
+
+  const exportPagesCSV = useCallback(() => {
+    if (!pages?.length) return;
+    downloadFile(pagesToCSV(pages), 'pages.csv', 'text/csv');
+  }, [pages]);
+
+  const exportPagesJSON = useCallback(() => {
+    if (!pages?.length) return;
+    const data = pages.map(p => ({
+      id: p.id,
+      slug: p.slug,
+      title: p.title ?? null,
+      status: p.status,
+      firstName: p.firstName ?? null,
+      lastName: p.lastName ?? null,
+      updatedAt: p.updatedAt?.toDate?.()?.toISOString() ?? null,
+    }));
+    downloadFile(JSON.stringify(data, null, 2), 'pages.json', 'application/json');
+  }, [pages]);
 
   // Calculate enhanced stats with better error handling
   const stats = useMemo(() => {
@@ -205,6 +285,22 @@ export default function AnalyticsPage() {
                 <Button variant="outline" size="sm" className="gap-2">
                     <RefreshCw className="h-4 w-4" />
                     Refresh
+                </Button>
+                <Button variant="outline" size="sm" className="gap-2" onClick={exportLinksCSV} disabled={!links?.length}>
+                    <Download className="h-4 w-4" />
+                    Links CSV
+                </Button>
+                <Button variant="outline" size="sm" className="gap-2" onClick={exportLinksJSON} disabled={!links?.length}>
+                    <Download className="h-4 w-4" />
+                    Links JSON
+                </Button>
+                <Button variant="outline" size="sm" className="gap-2" onClick={exportPagesCSV} disabled={!pages?.length}>
+                    <Download className="h-4 w-4" />
+                    Pages CSV
+                </Button>
+                <Button variant="outline" size="sm" className="gap-2" onClick={exportPagesJSON} disabled={!pages?.length}>
+                    <Download className="h-4 w-4" />
+                    Pages JSON
                 </Button>
             </div>
           </div>

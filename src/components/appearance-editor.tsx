@@ -8,6 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import type { AppearanceSettings } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Textarea } from './ui/textarea';
 
 interface AppearanceEditorProps {
   initialSettings: AppearanceSettings;
@@ -185,6 +186,50 @@ export function AppearanceEditor({ initialSettings, onSave, onCancel }: Appearan
                 defaultValue={[settings.borderWidth ?? 0]}
                 onValueChange={(value) => updateSetting('borderWidth', value[0])}
               />
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="animations">
+          <AccordionTrigger>Animations</AccordionTrigger>
+          <AccordionContent className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label>Card Entrance Animation</Label>
+              <Select
+                value={settings.animationStyle || 'fade'}
+                onValueChange={(value) => updateSetting('animationStyle', value as AppearanceSettings['animationStyle'])}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select animation" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="fade">Fade In</SelectItem>
+                  <SelectItem value="slide">Slide Up</SelectItem>
+                  <SelectItem value="scale">Scale In</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Animation applied when cards appear on the public page.
+              </p>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="custom-css">
+          <AccordionTrigger>Custom CSS</AccordionTrigger>
+          <AccordionContent className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label>Custom CSS</Label>
+              <Textarea
+                placeholder={`/* Add your custom styles here */\n.card { box-shadow: 0 4px 24px rgba(0,0,0,0.12); }\n`}
+                value={settings.customCss || ''}
+                onChange={(e) => updateSetting('customCss', e.target.value)}
+                className="font-mono text-xs min-h-[140px] resize-y"
+                spellCheck={false}
+              />
+              <p className="text-xs text-muted-foreground">
+                These styles are injected into your public page. Use with care.
+              </p>
             </div>
           </AccordionContent>
         </AccordionItem>
