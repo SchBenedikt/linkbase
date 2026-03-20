@@ -12,6 +12,7 @@ export default function robots(): MetadataRoute.Robots {
         '/dashboard/',
         '/edit/',
         '/blog/edit/',
+        '/admin/',
       ],
     },
     sitemap: siteUrl ? `${siteUrl}/sitemap.xml` : undefined,

@@ -1,4 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <rect width="32" height="32" rx="8" fill="#6366f1"/>
-  <text x="16" y="23" font-family="Arial,sans-serif" font-size="22" font-weight="bold" text-anchor="middle" fill="white">L</text>
+  <!-- Background with rounded corners -->
+  <rect width="32" height="32" rx="6" fill="#6366f1"/>
+
+  <!-- Modern link chain icon design -->
+  <!-- First link (top-left) -->
+  <path d="M10 14.5c0-1.38 1.12-2.5 2.5-2.5h3c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-3c-1.93 0-3.5 1.57-3.5 3.5s1.57 3.5 3.5 3.5h3c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-3c-1.38 0-2.5-1.12-2.5-2.5z" fill="white" opacity="0.9"/>
+
+  <!-- Second link (bottom-right) -->
+  <path d="M22 17.5c0 1.38-1.12 2.5-2.5 2.5h-3c-.28 0-.5.22-.5.5s.22.5.5.5h3c1.93 0 3.5-1.57 3.5-3.5s-1.57-3.5-3.5-3.5h-3c-.28 0-.5.22-.5.5s.22.5.5.5h3c1.38 0 2.5 1.12 2.5 2.5z" fill="white" opacity="0.9"/>
+
+  <!-- Connecting line -->
+  <path d="M12.5 16.5h7c.28 0 .5-.22.5-.5s-.22-.5-.5-.5h-7c-.28 0-.5.22-.5.5s.22.5.5.5z" fill="white"/>
+
+  <!-- Asterisk accent (top-right corner) -->
+  <circle cx="25" cy="7" r="2.5" fill="white" opacity="0.2"/>
+  <text x="25" y="9" font-family="Arial,sans-serif" font-size="6" font-weight="bold" text-anchor="middle" fill="#6366f1">*</text>
 </svg>
