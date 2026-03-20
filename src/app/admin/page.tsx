@@ -26,7 +26,7 @@ import {
   TrendingUp, FileText, Calendar, Activity,
 } from 'lucide-react';
 import { collection, getDocs, query, orderBy, limit, where, Timestamp } from 'firebase/firestore';
-import { db } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import type { Page, Post } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -51,6 +51,7 @@ interface UserProfile {
 
 export default function AdminPage() {
   const router = useRouter();
+  const firestore = useFirestore();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -102,9 +103,13 @@ export default function AdminPage() {
   const loadData = async () => {
     setDataLoading(true);
     try {
+      if (!firestore) {
+        throw new Error('Firestore is not available');
+      }
+      
       // Load pages
       const pagesQuery = query(
-        collection(db, 'pages'),
+        collection(firestore, 'pages'),
         orderBy('updatedAt', 'desc'),
         limit(100)
       );
@@ -114,7 +119,7 @@ export default function AdminPage() {
 
       // Load posts
       const postsQuery = query(
-        collection(db, 'posts'),
+        collection(firestore, 'posts'),
         orderBy('updatedAt', 'desc'),
         limit(100)
       );
@@ -124,7 +129,7 @@ export default function AdminPage() {
 
       // Load short links
       const linksQuery = query(
-        collection(db, 'shortLinks'),
+        collection(firestore, 'shortLinks'),
         orderBy('createdAt', 'desc'),
         limit(100)
       );
@@ -309,7 +314,6 @@ export default function AdminPage() {
                           <TableHead>Title</TableHead>
                           <TableHead>Owner</TableHead>
                           <TableHead>Status</TableHead>
-                          <TableHead>Links</TableHead>
                           <TableHead>Updated</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -322,13 +326,12 @@ export default function AdminPage() {
                               </a>
                             </TableCell>
                             <TableCell>{page.title || page.slug}</TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{page.userId}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{page.ownerId}</TableCell>
                             <TableCell>
                               <Badge variant={page.status === 'published' ? 'default' : 'secondary'}>
                                 {page.status}
                               </Badge>
                             </TableCell>
-                            <TableCell>{page.links?.length || 0}</TableCell>
                             <TableCell className="text-sm text-muted-foreground">
                               {page.updatedAt?.toDate().toLocaleDateString()}
                             </TableCell>
@@ -370,14 +373,21 @@ export default function AdminPage() {
                                 {post.title}
                               </a>
                             </TableCell>
-                            <TableCell className="text-sm text-muted-foreground">{post.authorId}</TableCell>
+                            <TableCell className="text-sm text-muted-foreground">{post.ownerId}</TableCell>
                             <TableCell>
                               <Badge variant={post.status === 'published' ? 'default' : 'secondary'}>
                                 {post.status}
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              {post.category && <Badge variant="outline">{post.category}</Badge>}
+                              {post.categories && post.categories.length > 0 && (
+                                <div className="flex gap-1">
+                                  {post.categories.slice(0, 2).map((cat, idx) => (
+                                    <Badge key={idx} variant="outline">{cat}</Badge>
+                                  ))}
+                                  {post.categories.length > 2 && <Badge variant="outline">+{post.categories.length - 2}</Badge>}
+                                </div>
+                              )}
                             </TableCell>
                             <TableCell className="text-sm text-muted-foreground">
                               {post.updatedAt?.toDate().toLocaleDateString()}
